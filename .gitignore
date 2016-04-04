@@ -1,5 +1,2 @@
 *.o
-makefile
-README.md
-TODO
 bin/terminal_gem_match
