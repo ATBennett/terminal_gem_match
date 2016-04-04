@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <utility>
 #include <ncurses.h>
-#include "Board.h"
+#include "../include/Board.h"
 
 using namespace std;
 

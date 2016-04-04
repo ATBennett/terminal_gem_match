@@ -1,4 +1,4 @@
-#include "Gem.h"
+#include "../include/Gem.h"
 #include <ncurses.h>
 
 Gem::Gem(int ncolour, int nscore)
