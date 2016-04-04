@@ -345,14 +345,13 @@ void Board::printExtras(){
     if(highlight) mvprintw(cy*GemSize+2,cx*2*GemSize,"++++++");
     else mvprintw(cy*GemSize+2,cx*2*GemSize,"======");
     attroff(COLOR_PAIR(COLOR_BLACK));
-    mvprintw(boardHeight*GemSize,0,"Score: %.0f",score);
-    mvprintw(boardHeight*GemSize+1,0,"Turns Remaining: %d",turns);
+    mvprintw(10,boardWidth*2*GemSize + 4,"Score: %.0f",score);
+    mvprintw(11,boardWidth*2*GemSize + 4,"Turns Remaining: %d",turns);
     mvprintw(1,boardWidth*2*GemSize + 4,"Controls: ");
     mvprintw(3,boardWidth*2*GemSize + 4,"Arrow keys: move cursor");
-    mvprintw(5,boardWidth*2*GemSize + 4,"Space bar: select Gem/swap");
-    mvprintw(6,boardWidth*2*GemSize + 4,"X: cancel");
-    mvprintw(8,boardWidth*2*GemSize + 4,"You must make a match");
-    mvprintw(9,boardWidth*2*GemSize + 4,"for a move to be valid");
+    mvprintw(5,boardWidth*2*GemSize + 4,"Space bar: select Gem");
+    mvprintw(7,boardWidth*2*GemSize + 4,"You must make a match");
+    mvprintw(8,boardWidth*2*GemSize + 4,"for a move to be valid");
     return;
 }
 

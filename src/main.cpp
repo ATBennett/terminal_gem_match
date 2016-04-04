@@ -23,7 +23,7 @@ int main()
 
 	start_color();
 	curs_set(0);
-    Board MainBoard(10,10);
+    Board MainBoard(8,8);
     MainBoard.setTurns(30);
     MainBoard.printBoard();
     vector<pair<int,int> > MatchedGems = MainBoard.matched();
@@ -62,6 +62,7 @@ int main()
                 MainBoard.printBoard();
                 refresh();
                 if(!MainBoard.matched().empty()){
+                    MainBoard.setTurns(MainBoard.getTurns() - 1);
                     while(!MainBoard.matched().empty()){
                         MainBoard.fancyRemoveMatched(MainBoard.matched());
                     }
