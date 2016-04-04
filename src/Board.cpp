@@ -1,11 +1,8 @@
 #include <iostream>
-#include <ctime>
-#include <cstdlib>
 #include <ncurses.h>
 #include <unistd.h>
 #include <algorithm>
 #include "../include/Board.h"
-#include "../include/Gem.h"
 
 #define GemSize 3
 #define speed 2
@@ -45,13 +42,13 @@ Gem* Board::RandGem(){
     int randNum = rand() % 7;
     switch(randNum)
     {
-        case 0 : return new Gem(COLOR_BLUE,5);
-        case 1 : return new Gem(COLOR_CYAN,5);
-        case 2 : return new Gem(COLOR_GREEN,5);
-        case 3 : return new Gem(COLOR_MAGENTA,5);
-        case 4 : return new Gem(COLOR_RED,5);
-        case 5 : return new Gem(COLOR_WHITE,5);
-        case 6 : return new Gem(COLOR_YELLOW,5);
+        case 0 : return new RedGem();
+        case 1 : return new GreenGem();
+        case 2 : return new YellowGem();
+        case 3 : return new BlueGem();
+        case 4 : return new MagentaGem();
+        case 5 : return new CyanGem();
+        case 6 : return new WhiteGem();
         default : return NULL;
     }
 }
@@ -114,7 +111,7 @@ std::vector<std::pair<int,int> > Board::matched(){
                 int matchLength = 1;
                 while(match && j+matchLength < boardWidth){
                     if(GemBoard[j+matchLength][i] != NULL){
-                        if(GemBoard[j][i]->getColour() == GemBoard[j+matchLength][i]->getColour()) matchLength++;
+                        if(GemBoard[j][i]->getColor() == GemBoard[j+matchLength][i]->getColor()) matchLength++;
                         else match = false;
                     }
                     else match = false;
@@ -132,7 +129,7 @@ std::vector<std::pair<int,int> > Board::matched(){
                 bool match = true;
                 while(match && i+matchLength < boardHeight){
                     if(GemBoard[j][i+matchLength] != NULL){
-                        if(GemBoard[j][i]->getColour() == GemBoard[j][i+matchLength]->getColour()) matchLength++;
+                        if(GemBoard[j][i]->getColor() == GemBoard[j][i+matchLength]->getColor()) matchLength++;
                         else match = false;
                     }
                     else match = false;
@@ -215,7 +212,7 @@ void Board::createSpecial(std::vector<std::pair<int,int> > GemLocs){
         for(unsigned int j = 0; j< GemLocs.size(); j++){
             int newX = GemLocs[j].first;
             int newY = GemLocs[j].second;
-            if(GemBoard[currX][currY]->getColour()==GemBoard[newX][newY]->getColour()){
+            if(GemBoard[currX][currY]->getColor()==GemBoard[newX][newY]->getColor()){
                 if(newY == currY && newX == currX - 1) doNothingH = true;
                 if(newX == currX && newY == currY - 1) doNothingV = true;
                 if(!doNothingH && newY == currY){
@@ -363,10 +360,10 @@ void Board::printEnd(){
         for(int y = 0; y < boardHeight; y++){
             for(int x = 0; x < boardWidth; x++){
                 if(i+y < boardHeight){
-                    attron(COLOR_PAIR(GemBoard[x][y]->getColour()));
+                    attron(COLOR_PAIR(GemBoard[x][y]->getColor()));
                     mvprintw((i*2)+y*2+1,x*4,"    ");
                     mvprintw((i*2)+y*2+2,x*4,"    ");
-                    attroff(COLOR_PAIR(GemBoard[x][y]->getColour()));
+                    attroff(COLOR_PAIR(GemBoard[x][y]->getColor()));
                 }
             }
         }
@@ -376,10 +373,10 @@ void Board::printEnd(){
         for(int y = 0; y < boardHeight; y++){
             for(int x = 0; x < boardWidth; x++){
                 if(i+y < boardHeight){
-                    attron(COLOR_PAIR(GemBoard[x][y]->getColour()));
+                    attron(COLOR_PAIR(GemBoard[x][y]->getColor()));
                     mvprintw((i*2)+y*2+2,x*4,"    ");
                     mvprintw((i*2)+y*2+3,x*4,"    ");
-                    attroff(COLOR_PAIR(GemBoard[x][y]->getColour()));
+                    attroff(COLOR_PAIR(GemBoard[x][y]->getColor()));
                 }
             }
         }

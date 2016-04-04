@@ -1,9 +1,5 @@
 #include <ncurses.h>
-#include <iostream>
 #include <string>
-#include <unistd.h>
-#include <utility>
-#include <ncurses.h>
 #include "../include/Board.h"
 
 using namespace std;

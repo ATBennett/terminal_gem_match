@@ -17,9 +17,11 @@ INCLUDES 	:= 	$(wildcard include/*.h)
 OBJECTS		:= 	$(SOURCES:src/%.cpp=obj/%.o)
 
 bin/$(TARGET): $(OBJECTS)
+	@ mkdir -p bin
 	$(CC) $^ -o $@ $(LFLAGS)
 
 $(OBJECTS): obj/%.o : src/%.cpp
+	@ mkdir -p obj
 	$(CC) -c $(CFLAGS) $< -o $@
 
 .PHONY: clean cleanest
