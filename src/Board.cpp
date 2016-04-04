@@ -4,8 +4,8 @@
 #include <ncurses.h>
 #include <unistd.h>
 #include <algorithm>
-#include "Board.h"
-#include "Gem.h"
+#include "../include/Board.h"
+#include "../include/Gem.h"
 
 #define GemSize 3
 #define speed 2
