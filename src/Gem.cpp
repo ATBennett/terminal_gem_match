@@ -1,17 +1,15 @@
 #include "../include/Gem.h"
 #include <ncurses.h>
 
-Gem::Gem(int ncolour, int nscore)
-{
+Gem::Gem(){
     newGem = true;
-    colour=ncolour;
-    score=nscore;
-    type = 'R';
+    color=COLOR_BLACK;
+    score=0;
+    type = 'X';
     falling = false;
 }
 
-Gem::~Gem()
-{
+Gem::~Gem(){
     //dtor
 }
 
@@ -19,17 +17,11 @@ char Gem::getType(){
     return type;
 }
 
-void Gem::setType(char nType){
-    type = nType;
-    return;
-}
-int Gem::getColour()
-{
-    return colour;
+int Gem::getColor(){
+    return color;
 }
 
-int Gem::getScore()
-{
+int Gem::getScore(){
     return score;
 }
 
@@ -59,27 +51,24 @@ void Gem::printVoid(int xloc, int yloc){
     attroff(COLOR_PAIR(COLOR_BLACK));
 }
 
-void Gem::printShrink1(int xloc,int yloc)
-{
-    attron(COLOR_PAIR(colour));
+void Gem::printShrink1(int xloc,int yloc){
+    attron(COLOR_PAIR(color));
     mvprintw(yloc,xloc+2,"  ");
     mvprintw(yloc+1,xloc,"      ");
     mvprintw(yloc+2,xloc+2,"  ");
-    attroff(COLOR_PAIR(colour));
+    attroff(COLOR_PAIR(color));
 }
 
-void Gem::printShrink2(int xloc,int yloc)
-{
-    attron(COLOR_PAIR(colour));
+void Gem::printShrink2(int xloc,int yloc){
+    attron(COLOR_PAIR(color));
     mvprintw(yloc+1,xloc+2,"  ");
-    attroff(COLOR_PAIR(colour));
+    attroff(COLOR_PAIR(color));
 }
 
-void Gem::printGem(int xloc,int yloc)
-{
-    attron(COLOR_PAIR(colour));
+void Gem::printGem(int xloc,int yloc){
+    attron(COLOR_PAIR(color));
     if(yloc >= 0) mvprintw(yloc,xloc,"/    \\");
     if(yloc + 1 >= 0) mvprintw(yloc+1,xloc,"|    |");
     if(yloc + 2 >= 0) mvprintw(yloc+2,xloc,"\\    /");
-    attroff(COLOR_PAIR(colour));
+    attroff(COLOR_PAIR(color));
 }
