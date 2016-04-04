@@ -1,4 +1,3 @@
-#include <utility>
 #ifndef GEM_H
 #define GEM_H
 
@@ -6,21 +5,18 @@
 class Gem
 {
     private:
-        int colour;
-        int score;
         bool falling;
         bool newGem;
-        char type;
     public:
-        Gem(int,int);
+        Gem();
         virtual ~Gem();
 
         void printVoid(int,int);
-        void printGem(int,int);
-        void printShrink1(int,int);
-        void printShrink2(int,int);
+        virtual void printGem(int,int);
+        virtual void printShrink1(int,int);
+        virtual void printShrink2(int,int);
 
-        int getColour();
+        int getColor();
         int getScore();
         char getType();
         bool getFalling();
@@ -28,7 +24,9 @@ class Gem
         bool getIfNew();
         void setOld();
     protected:
-        void setType(char);
+        int color;
+        int score;
+        char type;
 };
 
 #endif // GEM_H
