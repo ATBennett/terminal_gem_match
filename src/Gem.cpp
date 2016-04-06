@@ -1,3 +1,5 @@
+//Implementation of the Gem superclass
+
 #include "../include/Gem.h"
 #include <ncurses.h>
 
@@ -42,7 +44,7 @@ void Gem::setOld(){
     newGem = false;
     return;
 }
-
+// Prints a Gem sized blank space at x,y 
 void Gem::printVoid(int xloc, int yloc){
     attron(COLOR_PAIR(COLOR_BLACK));
     mvprintw(yloc,xloc,"      ");
@@ -50,7 +52,7 @@ void Gem::printVoid(int xloc, int yloc){
     mvprintw(yloc+2,xloc,"      ");
     attroff(COLOR_PAIR(COLOR_BLACK));
 }
-
+// Prints a smaller version of the gem at x,y
 void Gem::printShrink1(int xloc,int yloc){
     attron(COLOR_PAIR(color));
     mvprintw(yloc,xloc+2,"  ");
@@ -59,12 +61,13 @@ void Gem::printShrink1(int xloc,int yloc){
     attroff(COLOR_PAIR(color));
 }
 
+// Prints an even smaller version of the gem at x,y
 void Gem::printShrink2(int xloc,int yloc){
     attron(COLOR_PAIR(color));
     mvprintw(yloc+1,xloc+2,"  ");
     attroff(COLOR_PAIR(color));
 }
-
+// By Default a gem prints it's color in a 6x3 square
 void Gem::printGem(int xloc,int yloc){
     attron(COLOR_PAIR(color));
     if(yloc >= 0) mvprintw(yloc,xloc,"/    \\");
