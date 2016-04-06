@@ -1,3 +1,5 @@
+//Implementations of the 7 basic gems with seperate print functions
+
 #include "../include/BasicGems.h"
 #include <ncurses.h>
 
