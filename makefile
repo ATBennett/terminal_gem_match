@@ -13,7 +13,7 @@ TARGET = terminal_gem_match
 
 #Builds the lists of files to be compiled
 SOURCES 	:= 	$(wildcard src/*.cpp)
-INCLUDES 	:= 	$(wildcard include/*.h)
+INCLUDES 	:= 	$(wildcard include/*.h) #not used
 OBJECTS		:= 	$(SOURCES:src/%.cpp=obj/%.o)
 
 bin/$(TARGET): $(OBJECTS)
