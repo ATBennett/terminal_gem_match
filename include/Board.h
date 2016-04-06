@@ -1,3 +1,5 @@
+//This class manages everything on the board
+
 #include "BasicGems.h"
 #include <vector>
 
@@ -14,6 +16,8 @@ class Board
         void fallBoard();
         void printExtras();
         void createSpecial(std::vector<std::pair<int,int> >);
+
+        //Not implemented yet
         void matchL(int,int);
         void match4H(int,int);
         void match4V(int,int);
