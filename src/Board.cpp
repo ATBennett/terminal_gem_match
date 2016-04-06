@@ -1,6 +1,8 @@
 #include <iostream>
 #include <ncurses.h>
 #include <unistd.h>
+//Implementation of the Board class
+
 #include <algorithm>
 #include "../include/Board.h"
 
@@ -9,6 +11,7 @@
 
 Board::Board(int width, int height){
     srand(time(NULL));
+    //Populates the board with random gems
     for(int i = 0; i < height; i++)
     {
         for(int j = 0; j < width; j++)
@@ -24,6 +27,7 @@ Board::Board(int width, int height){
     turns = 0;
     cx = 0;
     cy = 0;
+    //Initialises the colors for ncurses (may move this)
     init_pair(COLOR_BLACK,COLOR_BLACK,COLOR_BLACK);
     init_pair(COLOR_BLUE,COLOR_BLACK,COLOR_BLUE);
     init_pair(COLOR_CYAN,COLOR_BLACK,COLOR_CYAN);
@@ -38,6 +42,7 @@ Board::~Board(){
     //dtor
 }
 
+//Creates a new random gem and returns a pointer to it
 Gem* Board::RandGem(){
     int randNum = rand() % 7;
     switch(randNum)
@@ -53,6 +58,7 @@ Gem* Board::RandGem(){
     }
 }
 
+//Loops through and tells each gem to print itself onto the board
 void Board::printBoard(){
     for(int i = 0;i < boardHeight;i ++)
     {
@@ -102,15 +108,19 @@ int Board::getTurns(){
     return turns;
 }
 
+//Returns a vector of pairs that give coordinates of gems that have been matched
 std::vector<std::pair<int,int> > Board::matched(){
     std::vector<std::pair<int,int> > GemLocs;
+    //Loops through the entire board top down
     for(int i = 0; i<boardHeight; i++){
         for(int j = 0; j<boardWidth; j++){
-            if(j < boardWidth - 2 && GemBoard[j][i] != NULL){
+
+            //Horizontal matches
+            if(j < boardWidth - 2 && GemBoard[j][i] != NULL){   //Makes sure to ignore gems too close to the right edge to match
                 bool match = true;
                 int matchLength = 1;
-                while(match && j+matchLength < boardWidth){
-                    if(GemBoard[j+matchLength][i] != NULL){
+                while(match && j+matchLength < boardWidth){     //Makes sure not to go out of bounds
+                    if(GemBoard[j+matchLength][i] != NULL){     //Avoids null pointers
                         if(GemBoard[j][i]->getColor() == GemBoard[j+matchLength][i]->getColor()) matchLength++;
                         else match = false;
                     }
@@ -118,24 +128,26 @@ std::vector<std::pair<int,int> > Board::matched(){
                 }
 
                 if(matchLength >= 3){
-                    for(int k = 0; k<matchLength; k++){
+                    for(int k = 0; k<matchLength; k++){ //From leftmost gem in a horizontal match, loops through
                             GemLocs.push_back(std::make_pair(j+k,i));
                     }
                 }
             }
 
-            if(i < boardHeight - 2 && GemBoard[j][i] != NULL){
+            //Verticle matches
+            if(i < boardHeight - 2 && GemBoard[j][i] != NULL){  //Makes sure to ignore gems too close to the bottom edge to match
                 int matchLength = 1;
                 bool match = true;
-                while(match && i+matchLength < boardHeight){
-                    if(GemBoard[j][i+matchLength] != NULL){
+                while(match && i+matchLength < boardHeight){    //Makes sure not to go out of bounds
+                    if(GemBoard[j][i+matchLength] != NULL){     //Avoids null pointers
                         if(GemBoard[j][i]->getColor() == GemBoard[j][i+matchLength]->getColor()) matchLength++;
                         else match = false;
                     }
                     else match = false;
                 }
+
                 if(matchLength >= 3){
-                    for(int k = 0; k<matchLength; k++){
+                    for(int k = 0; k<matchLength; k++){ //From topmost gem in a verticle match, loops through
                         GemLocs.push_back(std::make_pair(j,i+k));
                     }
                 }
@@ -144,11 +156,14 @@ std::vector<std::pair<int,int> > Board::matched(){
         }
     }
 
+    //Removes duplicates
     std::sort(GemLocs.begin(),GemLocs.end());
     GemLocs.erase(std::unique (GemLocs.begin(), GemLocs.end()), GemLocs.end());
+
     return GemLocs;
 }
 
+//Quickly swaps all matched gems for randomly generated ones
 void Board::quickRemoveMatched(std::vector<std::pair<int,int> > GemLocs){
     for(unsigned int i = 0; i < GemLocs.size(); i++){
         int x = GemLocs[i].first;
@@ -159,6 +174,8 @@ void Board::quickRemoveMatched(std::vector<std::pair<int,int> > GemLocs){
     }
 }
 
+//Swaps the position of 2 Gem pointers
+//Returns false if this was not possible
 bool Board::swapGems(std::pair<int,int> location, char direction){
     std::pair<int,int> dVector;
     Gem* GemBuffer;
@@ -201,6 +218,8 @@ std::pair<int,int> Board::getCursor(){
     return std::make_pair(cx,cy);
 }
 
+//Finds the matches larger than 3 and runs the corresponding function
+//WIP
 void Board::createSpecial(std::vector<std::pair<int,int> > GemLocs){
     for(unsigned int i = 0; i < GemLocs.size(); i++){
         bool doNothingH = false;
@@ -238,9 +257,12 @@ void Board::createSpecial(std::vector<std::pair<int,int> > GemLocs){
     return;
 }
 
+//Takes a vector of pairs that contain the location of all the gems to be removed
+//Removes them with flair
 void Board::fancyRemoveMatched(std::vector<std::pair<int,int> > GemLocs){
     clear();
     printBoard();
+    //Prints first shrink
     for(unsigned int i = 0; i < GemLocs.size(); i++){
         int x = GemLocs[i].first;
         int y = GemLocs[i].second;
@@ -249,6 +271,7 @@ void Board::fancyRemoveMatched(std::vector<std::pair<int,int> > GemLocs){
     }
     refresh();
     usleep(speed*25000);
+    //Prints second shrink
     for(unsigned int i = 0; i < GemLocs.size(); i++){
         int x = GemLocs[i].first;
         int y = GemLocs[i].second;
@@ -259,23 +282,26 @@ void Board::fancyRemoveMatched(std::vector<std::pair<int,int> > GemLocs){
     usleep(speed*25000);
     float rawScore = 0;
     float multiplier = 0;
+    //Removes matched gems and adds onto the score
     for(unsigned int i = 0; i < GemLocs.size(); i++){
         int x = GemLocs[i].first;
         int y = GemLocs[i].second;
         rawScore += GemBoard[x][y]->getScore();
         multiplier += 0.33333333;
-        delete GemBoard[x][y];
-        GemBoard[x][y] = NULL;
+        delete GemBoard[x][y];  //Makes sure the object is deleted
+        GemBoard[x][y] = NULL;  //Sets the pointer to null
     }
     score = score + (rawScore * multiplier);
     fallBoard();
     return;
 }
 
+//Makes the gems fall into blank spaces below them
 void Board::fallBoard(){
     bool falling = true;
     while(falling){
         falling = false;
+        //Loops through the board from bottom up, and sets any gems that need to fall, falling
         for(int i = boardHeight - 1; i > 0; i--){
             for(int j = 0; j < boardWidth; j++){
                 if(GemBoard[j][i]==NULL){
@@ -287,6 +313,7 @@ void Board::fallBoard(){
                 }
             }
         }
+        //Plays the falling animation by lots of loops
         for(int k = 1; k < GemSize; k++){
             clear();
             for(int i = boardHeight - 1; i >= 0; i--){
@@ -304,10 +331,11 @@ void Board::fallBoard(){
             refresh();
             usleep(speed*25000);
         }
-        for(int i = boardHeight - 1; i > 0; i--){
+        //Loops through the board from the bottom and shifts gems around in the Gem pointer matrix
+        for(int i = boardHeight - 1; i > 0; i--){ //Doesn't include top row of gems
             for(int j = 0; j < boardWidth; j++){
                 if(GemBoard[j][i] == NULL){
-                    if(GemBoard[j][i-1] != NULL && !GemBoard[j][i-1]->getIfNew()){
+                    if(GemBoard[j][i-1] != NULL && !GemBoard[j][i-1]->getIfNew()){ //Checks if gem above is present and not new
                         GemBoard[j][i] = GemBoard[j][i-1];
                         GemBoard[j][i]->setFalling(false);
                         GemBoard[j][i-1] = NULL;
@@ -315,31 +343,33 @@ void Board::fallBoard(){
                 }
                 else{
                     GemBoard[j][i]->setFalling(false);
-                    GemBoard[j][i]->setOld();
+                    GemBoard[j][i]->setOld(); //If a gem isn't on the top row, makes sure it is set to old
                 }
             }
         }
+        // Loops through the top row
         for(int j = 0; j < boardWidth; j++){
             if(GemBoard[j][0] != NULL){
                 GemBoard[j][0]->setFalling(false);
                 GemBoard[j][0]->setOld();
             }
             else{
-                GemBoard[j][0] = RandGem();
-                falling = true;
+                GemBoard[j][0] = RandGem(); // If a gem is not present this creates a new one
+                falling = true;             // sets it to falling (not sure why this is here)
             }
         }
         clear();
         printBoard();
         refresh();
-        usleep(speed*50000);
+        usleep(speed*25000);
     }
     return;
 }
 
+//Prints all the extra bits around the board (May seperate)
 void Board::printExtras(){
     attron(COLOR_PAIR(COLOR_BLACK));
-    if(highlight) mvprintw(cy*GemSize+2,cx*2*GemSize,"++++++");
+    if(highlight) mvprintw(cy*GemSize+2,cx*2*GemSize,"++++++"); //Highlight changes the cursor
     else mvprintw(cy*GemSize+2,cx*2*GemSize,"======");
     attroff(COLOR_PAIR(COLOR_BLACK));
     mvprintw(10,boardWidth*2*GemSize + 4,"Score: %.0f",score);
@@ -352,8 +382,10 @@ void Board::printExtras(){
     return;
 }
 
+//At the moment prints the gems falling then the score
+//Currently broken
 void Board::printEnd(){
-    printBoard();
+    printBoard();   //Not sure why this is here
     usleep(speed*25000);
     for(int i = 0; i < boardHeight; i++){
         clear();
@@ -389,9 +421,8 @@ void Board::printEnd(){
     return;
 }
 
-void Board::matchL(int x, int y){
-
-}
+// Not implemented yet
+void Board::matchL(int x, int y){}
 void Board::match4H(int x, int y){}
 void Board::match4V(int x, int y){}
 void Board::match5H(int x, int y){}
