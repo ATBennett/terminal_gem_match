@@ -388,31 +388,24 @@ void Board::printEnd(){
     printBoard();   //Not sure why this is here
     usleep(speed*25000);
     for(int i = 0; i < boardHeight; i++){
-        clear();
-        for(int y = 0; y < boardHeight; y++){
-            for(int x = 0; x < boardWidth; x++){
-                if(i+y < boardHeight){
-                    attron(COLOR_PAIR(GemBoard[x][y]->getColor()));
-                    mvprintw((i*2)+y*2+1,x*4,"    ");
-                    mvprintw((i*2)+y*2+2,x*4,"    ");
-                    attroff(COLOR_PAIR(GemBoard[x][y]->getColor()));
+        for(int j = 0; j < GemSize; j++){
+            int topLoc = i*GemSize + j;
+            clear();
+            for(int y = 0; y < boardHeight - i; y++){
+                for(int x = 0; x < boardWidth; x++){
+                    GemBoard[x][y]->printGem(x*2*GemSize,y*GemSize+topLoc);
                 }
             }
-        }
-        refresh();
-        usleep(speed*25000);
-        clear();
-        for(int y = 0; y < boardHeight; y++){
-            for(int x = 0; x < boardWidth; x++){
-                if(i+y < boardHeight){
-                    attron(COLOR_PAIR(GemBoard[x][y]->getColor()));
-                    mvprintw((i*2)+y*2+2,x*4,"    ");
-                    mvprintw((i*2)+y*2+3,x*4,"    ");
-                    attroff(COLOR_PAIR(GemBoard[x][y]->getColor()));
+            attron(COLOR_PAIR(COLOR_BLACK));
+            for(int k = 0; k < j; k++){
+                for(int l = 0; l < boardWidth*GemSize*2; l++){
+                    mvprintw(boardHeight*GemSize+k,l," ");
                 }
             }
+            attroff(COLOR_PAIR(COLOR_BLACK));
+            refresh();
+            usleep(speed*25000);
         }
-        refresh();
     }
     clear();
     mvprintw(0,0,"Your score: %.0f",score);
