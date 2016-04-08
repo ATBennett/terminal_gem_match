@@ -1,4 +1,4 @@
-//Gem superclass 
+//Gem superclass
 
 #ifndef GEM_H
 #define GEM_H
@@ -14,9 +14,9 @@ class Gem
         virtual ~Gem();
 
         void printVoid(int,int);
-        virtual void printGem(int,int);     //Always overwriten
-        virtual void printShrink1(int,int); //Always overwriten
-        virtual void printShrink2(int,int); //Always overwriten
+        virtual void printGem(int,int);
+        virtual void printShrink1(int,int);
+        virtual void printShrink2(int,int);
 
         int getColor();
         int getScore();

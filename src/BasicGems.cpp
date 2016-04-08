@@ -15,24 +15,28 @@ RedGem::~RedGem(){
 }
 
 void RedGem::printGem(int xloc,int yloc){
-    attron(COLOR_PAIR(color));
-    if(yloc >= 0) mvprintw(yloc,xloc,"/    \\");
-    if(yloc + 1 >= 0) mvprintw(yloc+1,xloc,"|    |");
-    if(yloc + 2 >= 0) mvprintw(yloc+2,xloc,"\\    /");
-    attroff(COLOR_PAIR(color));
+    attron(COLOR_PAIR(COLOR_RED));
+    if(yloc >= 0){
+        mvaddch(yloc, xloc,ACS_ULCORNER);
+        addch(ACS_HLINE);
+        addch(ACS_HLINE);
+        addch(ACS_HLINE);
+        addch(ACS_URCORNER);
+    }
+    if(yloc + 1 >= 0){
+        mvaddch(yloc+1,xloc,ACS_VLINE);
+        printw("   ");
+        addch(ACS_VLINE);
+    }
+    if(yloc + 2 >= 0){
+        mvaddch(yloc+2,xloc,ACS_LLCORNER);
+        addch(ACS_HLINE);
+        addch(ACS_HLINE);
+        addch(ACS_HLINE);
+        addch(ACS_LRCORNER);
+    }
+    attroff(COLOR_PAIR(COLOR_RED));
 }
-void RedGem::printShrink1(int xloc,int yloc){
-    attron(COLOR_PAIR(color));
-    mvprintw(yloc,xloc+2,"  ");
-    mvprintw(yloc+1,xloc,"      ");
-    mvprintw(yloc+2,xloc+2,"  ");
-    attroff(COLOR_PAIR(color));
-}
-void RedGem::printShrink2(int xloc,int yloc){
-    attron(COLOR_PAIR(color));
-    mvprintw(yloc+1,xloc+2,"  ");
-    attroff(COLOR_PAIR(color));
-}  
 
 GreenGem::GreenGem()
 : Gem(){
@@ -46,23 +50,27 @@ GreenGem::~GreenGem(){
 }
 
 void GreenGem::printGem(int xloc,int yloc){
-    attron(COLOR_PAIR(color));
-    if(yloc >= 0) mvprintw(yloc,xloc,"/    \\");
-    if(yloc + 1 >= 0) mvprintw(yloc+1,xloc,"|    |");
-    if(yloc + 2 >= 0) mvprintw(yloc+2,xloc,"\\    /");
-    attroff(COLOR_PAIR(color));
-}
-void GreenGem::printShrink1(int xloc,int yloc){
-    attron(COLOR_PAIR(color));
-    mvprintw(yloc,xloc+2,"  ");
-    mvprintw(yloc+1,xloc,"      ");
-    mvprintw(yloc+2,xloc+2,"  ");
-    attroff(COLOR_PAIR(color));
-}
-void GreenGem::printShrink2(int xloc,int yloc){
-    attron(COLOR_PAIR(color));
-    mvprintw(yloc+1,xloc+2,"  ");
-    attroff(COLOR_PAIR(color));
+    attron(COLOR_PAIR(COLOR_GREEN));
+    if(yloc >= 0){
+        mvaddch(yloc, xloc,'/');
+        addch(A_ALTCHARSET | 111);
+        addch(A_ALTCHARSET | 111);
+        addch(A_ALTCHARSET | 111);
+        addch('\\');
+    }
+    if(yloc + 1 >= 0){
+        mvaddch(yloc+1,xloc,ACS_VLINE);
+        printw("   ");
+        addch(ACS_VLINE);
+    }
+    if(yloc + 2 >= 0){
+        mvaddch(yloc+2,xloc,'\\');
+        addch(A_ALTCHARSET | 115);
+        addch(A_ALTCHARSET | 115);
+        addch(A_ALTCHARSET | 115);
+        addch('/');
+    }
+    attroff(COLOR_PAIR(COLOR_GREEN));
 }
 
 YellowGem::YellowGem()
@@ -77,23 +85,27 @@ YellowGem::~YellowGem(){
 }
 
 void YellowGem::printGem(int xloc,int yloc){
-    attron(COLOR_PAIR(color));
-    if(yloc >= 0) mvprintw(yloc,xloc,"/    \\");
-    if(yloc + 1 >= 0) mvprintw(yloc+1,xloc,"|    |");
-    if(yloc + 2 >= 0) mvprintw(yloc+2,xloc,"\\    /");
-    attroff(COLOR_PAIR(color));
-}
-void YellowGem::printShrink1(int xloc,int yloc){
-    attron(COLOR_PAIR(color));
-    mvprintw(yloc,xloc+2,"  ");
-    mvprintw(yloc+1,xloc,"      ");
-    mvprintw(yloc+2,xloc+2,"  ");
-    attroff(COLOR_PAIR(color));
-}
-void YellowGem::printShrink2(int xloc,int yloc){
-    attron(COLOR_PAIR(color));
-    mvprintw(yloc+1,xloc+2,"  ");
-    attroff(COLOR_PAIR(color));
+    attron(COLOR_PAIR(COLOR_YELLOW));
+    if(yloc >= 0){
+        mvaddch(yloc, xloc,' ');
+        addch('/');
+        addch('^');
+        addch('\\');
+        addch(' ');
+    }
+    if(yloc + 1 >= 0){
+        mvaddch(yloc+1,xloc,'(');
+        printw("   ");
+        addch(')');
+    }
+    if(yloc + 2 >= 0){
+        mvaddch(yloc+2, xloc,' ');
+        addch('\\');
+        addch('v');
+        addch('/');
+        addch(' ');
+    }
+    attroff(COLOR_PAIR(COLOR_YELLOW));
 }
 
 BlueGem::BlueGem()
@@ -108,23 +120,27 @@ BlueGem::~BlueGem(){
 }
 
 void BlueGem::printGem(int xloc,int yloc){
-    attron(COLOR_PAIR(color));
-    if(yloc >= 0) mvprintw(yloc,xloc,"/    \\");
-    if(yloc + 1 >= 0) mvprintw(yloc+1,xloc,"|    |");
-    if(yloc + 2 >= 0) mvprintw(yloc+2,xloc,"\\    /");
-    attroff(COLOR_PAIR(color));
-}
-void BlueGem::printShrink1(int xloc,int yloc){
-    attron(COLOR_PAIR(color));
-    mvprintw(yloc,xloc+2,"  ");
-    mvprintw(yloc+1,xloc,"      ");
-    mvprintw(yloc+2,xloc+2,"  ");
-    attroff(COLOR_PAIR(color));
-}
-void BlueGem::printShrink2(int xloc,int yloc){
-    attron(COLOR_PAIR(color));
-    mvprintw(yloc+1,xloc+2,"  ");
-    attroff(COLOR_PAIR(color));
+    attron(COLOR_PAIR(COLOR_BLUE));
+    if(yloc >= 0){
+        mvaddch(yloc, xloc,'/');
+        addch(A_ALTCHARSET | 111);
+        addch(A_ALTCHARSET | 111);
+        addch(A_ALTCHARSET | 111);
+        addch('\\');
+    }
+    if(yloc + 1 >= 0){
+        mvaddch(yloc+1,xloc,'\\');
+        printw("   ");
+        addch('/');
+    }
+    if(yloc + 2 >= 0){
+        mvaddch(yloc+2, xloc,' ');
+        addch('\\');
+        addch('v');
+        addch('/');
+        addch(' ');
+    }
+    attroff(COLOR_PAIR(COLOR_BLUE));
 }
 
 MagentaGem::MagentaGem()
@@ -139,23 +155,21 @@ MagentaGem::~MagentaGem(){
 }
 
 void MagentaGem::printGem(int xloc,int yloc){
-    attron(COLOR_PAIR(color));
-    if(yloc >= 0) mvprintw(yloc,xloc,"/    \\");
-    if(yloc + 1 >= 0) mvprintw(yloc+1,xloc,"|    |");
-    if(yloc + 2 >= 0) mvprintw(yloc+2,xloc,"\\    /");
-    attroff(COLOR_PAIR(color));
-}
-void MagentaGem::printShrink1(int xloc,int yloc){
-    attron(COLOR_PAIR(color));
-    mvprintw(yloc,xloc+2,"  ");
-    mvprintw(yloc+1,xloc,"      ");
-    mvprintw(yloc+2,xloc+2,"  ");
-    attroff(COLOR_PAIR(color));
-}
-void MagentaGem::printShrink2(int xloc,int yloc){
-    attron(COLOR_PAIR(color));
-    mvprintw(yloc+1,xloc+2,"  ");
-    attroff(COLOR_PAIR(color));
+    attron(COLOR_PAIR(COLOR_MAGENTA));
+    if(yloc >= 0){
+        mvprintw(yloc, xloc," /^\\ ");
+    }
+    if(yloc + 1 >= 0){
+        mvprintw(yloc+1,xloc,"/   \\");
+    }
+    if(yloc + 2 >= 0){
+        mvaddch(yloc+2,xloc,'\\');
+        addch(A_ALTCHARSET | 115);
+        addch(A_ALTCHARSET | 115);
+        addch(A_ALTCHARSET | 115);
+        addch('/');
+    }
+    attroff(COLOR_PAIR(COLOR_MAGENTA));
 }
 
 CyanGem::CyanGem()
@@ -170,23 +184,27 @@ CyanGem::~CyanGem(){
 }
 
 void CyanGem::printGem(int xloc,int yloc){
-    attron(COLOR_PAIR(color));
-    if(yloc >= 0) mvprintw(yloc,xloc,"/    \\");
-    if(yloc + 1 >= 0) mvprintw(yloc+1,xloc,"|    |");
-    if(yloc + 2 >= 0) mvprintw(yloc+2,xloc,"\\    /");
-    attroff(COLOR_PAIR(color));
-}
-void CyanGem::printShrink1(int xloc,int yloc){
-    attron(COLOR_PAIR(color));
-    mvprintw(yloc,xloc+2,"  ");
-    mvprintw(yloc+1,xloc,"      ");
-    mvprintw(yloc+2,xloc+2,"  ");
-    attroff(COLOR_PAIR(color));
-}
-void CyanGem::printShrink2(int xloc,int yloc){
-    attron(COLOR_PAIR(color));
-    mvprintw(yloc+1,xloc+2,"  ");
-    attroff(COLOR_PAIR(color));
+    attron(COLOR_PAIR(COLOR_CYAN));
+    if(yloc >= 0){
+        mvaddch(yloc, xloc,' ');
+        addch('/');
+        addch('^');
+        addch('\\');
+        addch(' ');
+    }
+    if(yloc + 1 >= 0){
+        mvaddch(yloc+1,xloc,ACS_VLINE);
+        printw("   ");
+        addch(ACS_VLINE);
+    }
+    if(yloc + 2 >= 0){
+        mvaddch(yloc+2, xloc,' ');
+        addch('\\');
+        addch('v');
+        addch('/');
+        addch(' ');
+    }
+    attroff(COLOR_PAIR(COLOR_CYAN));
 }
 
 WhiteGem::WhiteGem()
@@ -201,21 +219,25 @@ WhiteGem::~WhiteGem(){
 }
 
 void WhiteGem::printGem(int xloc,int yloc){
-    attron(COLOR_PAIR(color));
-    if(yloc >= 0) mvprintw(yloc,xloc,"/    \\");
-    if(yloc + 1 >= 0) mvprintw(yloc+1,xloc,"|    |");
-    if(yloc + 2 >= 0) mvprintw(yloc+2,xloc,"\\    /");
-    attroff(COLOR_PAIR(color));
-}
-void WhiteGem::printShrink1(int xloc,int yloc){
-    attron(COLOR_PAIR(color));
-    mvprintw(yloc,xloc+2,"  ");
-    mvprintw(yloc+1,xloc,"      ");
-    mvprintw(yloc+2,xloc+2,"  ");
-    attroff(COLOR_PAIR(color));
-}
-void WhiteGem::printShrink2(int xloc,int yloc){
-    attron(COLOR_PAIR(color));
-    mvprintw(yloc+1,xloc+2,"  ");
-    attroff(COLOR_PAIR(color));
+    attron(COLOR_PAIR(COLOR_WHITE));
+    if(yloc >= 0){
+        mvaddch(yloc, xloc,' ');
+        addch('/');
+        addch(ACS_HLINE);
+        addch('\\');
+        addch(' ');
+    }
+    if(yloc + 1 >= 0){
+        mvaddch(yloc+1,xloc,'(');
+        printw("   ");
+        addch(')');
+    }
+    if(yloc + 2 >= 0){
+        mvaddch(yloc+2, xloc,' ');
+        addch('\\');
+        addch(ACS_HLINE);
+        addch('/');
+        addch(' ');
+    }
+    attroff(COLOR_PAIR(COLOR_WHITE));
 }
