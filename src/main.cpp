@@ -65,7 +65,7 @@ int main()
                         MainBoard.fancyRemoveMatched(MainBoard.matched());
                     }
                 }
-                else MainBoard.swapGems(MainBoard.getCursor(),dir); //If there are no matches, swap the gems back 
+                else MainBoard.swapGems(MainBoard.getCursor(),dir); //If there are no matches, swap the gems back
             }
         }
     }

@@ -6,8 +6,9 @@
 #include <algorithm>
 #include "../include/Board.h"
 
-#define GemSize 3
-#define speed 2
+#define GemHeight 3
+#define GemWidth 5
+#define speed 3
 
 Board::Board(int width, int height){
     srand(time(NULL));
@@ -29,7 +30,7 @@ Board::Board(int width, int height){
     cy = 0;
     //Initialises the colors for ncurses (may move this)
     init_pair(COLOR_BLACK,COLOR_BLACK,COLOR_BLACK);
-    init_pair(COLOR_BLUE,COLOR_BLACK,COLOR_BLUE);
+    init_pair(COLOR_BLUE,COLOR_WHITE,COLOR_BLUE);
     init_pair(COLOR_CYAN,COLOR_BLACK,COLOR_CYAN);
     init_pair(COLOR_GREEN,COLOR_BLACK,COLOR_GREEN);
     init_pair(COLOR_MAGENTA,COLOR_BLACK,COLOR_MAGENTA);
@@ -65,7 +66,7 @@ void Board::printBoard(){
         for(int j = 0; j < boardWidth; j++)
         {
             if(GemBoard[j][i] != NULL){
-                if(!GemBoard[j][i]->getIfNew()) GemBoard[j][i]->printGem(j*GemSize*2,i*GemSize);
+                if(!GemBoard[j][i]->getIfNew()) GemBoard[j][i]->printGem(j*GemWidth,i*GemHeight);
             }
         }
     }
@@ -179,6 +180,8 @@ void Board::quickRemoveMatched(std::vector<std::pair<int,int> > GemLocs){
 bool Board::swapGems(std::pair<int,int> location, char direction){
     std::pair<int,int> dVector;
     Gem* GemBuffer;
+    int firstx = location.first;
+    int firsty = location.second;
     if(direction == 'U'){
         if(location.second <= 0) return false;
         else{
@@ -208,9 +211,25 @@ bool Board::swapGems(std::pair<int,int> location, char direction){
         }
     }
     else return false;
-    GemBuffer = GemBoard[location.first + dVector.first][location.second + dVector.second];
-    GemBoard[location.first + dVector.first][location.second + dVector.second] = GemBoard[location.first][location.second];
-    GemBoard[location.first][location.second] = GemBuffer;
+    int secondx = firstx + dVector.first;
+    int secondy = firsty + dVector.second;
+    int loopTime = (GemHeight * std::abs(dVector.second)) + (GemWidth * std::abs(dVector.first));
+    int sleepTime = (speed*75000)/loopTime;
+    //Swap animation
+    for(int i = 1; i <= loopTime; i++){
+        int moveX = i*dVector.first;
+        int moveY = i*dVector.second;
+        GemBoard[firstx][firsty]->printVoid(firstx*GemWidth,firsty*GemHeight);
+        GemBoard[secondx][secondy]->printVoid(secondx*GemWidth,secondy*GemHeight);
+        GemBoard[secondx][secondy]->printGem(secondx*GemWidth-moveX,secondy*GemHeight-moveY);
+        GemBoard[firstx][firsty]->printGem(firstx*GemWidth+moveX,firsty*GemHeight+moveY);
+        refresh();
+        usleep(sleepTime);
+    }
+
+    GemBuffer = GemBoard[secondx][secondy];
+    GemBoard[secondx][secondy] = GemBoard[firstx][firsty];
+    GemBoard[firstx][firsty] = GemBuffer;
     return true;
 }
 
@@ -266,20 +285,20 @@ void Board::fancyRemoveMatched(std::vector<std::pair<int,int> > GemLocs){
     for(unsigned int i = 0; i < GemLocs.size(); i++){
         int x = GemLocs[i].first;
         int y = GemLocs[i].second;
-        GemBoard[x][y]->printVoid(x*GemSize*2,y*GemSize);
-        GemBoard[x][y]->printShrink1(x*GemSize*2,y*GemSize);
+        GemBoard[x][y]->printVoid(x*GemWidth,y*GemHeight);
+        GemBoard[x][y]->printShrink1(x*GemWidth,y*GemHeight);
     }
     refresh();
-    usleep(speed*25000);
+    usleep(speed*40000);
     //Prints second shrink
     for(unsigned int i = 0; i < GemLocs.size(); i++){
         int x = GemLocs[i].first;
         int y = GemLocs[i].second;
-        GemBoard[x][y]->printVoid(x*GemSize*2,y*GemSize);
-        GemBoard[x][y]->printShrink2(x*GemSize*2,y*GemSize);
+        GemBoard[x][y]->printVoid(x*GemWidth,y*GemHeight);
+        GemBoard[x][y]->printShrink2(x*GemWidth,y*GemHeight);
     }
     refresh();
-    usleep(speed*25000);
+    usleep(speed*40000);
     float rawScore = 0;
     float multiplier = 0;
     //Removes matched gems and adds onto the score
@@ -314,16 +333,16 @@ void Board::fallBoard(){
             }
         }
         //Plays the falling animation by lots of loops
-        for(int k = 1; k < GemSize; k++){
+        for(int k = 1; k < GemHeight; k++){
             clear();
             for(int i = boardHeight - 1; i >= 0; i--){
                 for(int j = 0; j < boardWidth; j++){
                     if(GemBoard[j][i]!=NULL){
-                        if(GemBoard[j][i]->getFalling() && !GemBoard[j][i]->getIfNew()) GemBoard[j][i]->printGem(j*2*GemSize,i*GemSize+k);
+                        if(GemBoard[j][i]->getFalling() && !GemBoard[j][i]->getIfNew()) GemBoard[j][i]->printGem(j*GemWidth,i*GemHeight+k);
                         else if(GemBoard[j][i]->getIfNew()){
-                            GemBoard[j][i]->printGem(j*2*GemSize,i*GemSize+k - 3);
+                            GemBoard[j][i]->printGem(j*GemWidth,i*GemHeight+k - 3);
                         }
-                        else GemBoard[j][i]->printGem(j*2*GemSize,i*GemSize);
+                        else GemBoard[j][i]->printGem(j*GemWidth,i*GemHeight);
                     }
                 }
             }
@@ -369,42 +388,42 @@ void Board::fallBoard(){
 //Prints all the extra bits around the board (May seperate)
 void Board::printExtras(){
     attron(COLOR_PAIR(COLOR_BLACK));
-    if(highlight) mvprintw(cy*GemSize+2,cx*2*GemSize,"++++++"); //Highlight changes the cursor
-    else mvprintw(cy*GemSize+2,cx*2*GemSize,"======");
+    if(highlight) mvprintw(cy*GemHeight+2,cx*GemWidth,"+++++"); //Highlight changes the cursor
+    else mvprintw(cy*GemHeight+2,cx*GemWidth,"=====");
     attroff(COLOR_PAIR(COLOR_BLACK));
-    mvprintw(10,boardWidth*2*GemSize + 4,"Score: %.0f",score);
-    mvprintw(11,boardWidth*2*GemSize + 4,"Turns Remaining: %d",turns);
-    mvprintw(1,boardWidth*2*GemSize + 4,"Controls: ");
-    mvprintw(3,boardWidth*2*GemSize + 4,"Arrow keys: move cursor");
-    mvprintw(5,boardWidth*2*GemSize + 4,"Space bar: select Gem");
-    mvprintw(7,boardWidth*2*GemSize + 4,"You must make a match");
-    mvprintw(8,boardWidth*2*GemSize + 4,"for a move to be valid");
+    mvprintw(10,boardWidth*GemWidth + 4,"Score: %.0f",score);
+    mvprintw(11,boardWidth*GemWidth + 4,"Turns Remaining: %d",turns);
+    mvprintw(1,boardWidth*GemWidth + 4,"Controls: ");
+    mvprintw(3,boardWidth*GemWidth + 4,"Arrow keys: move cursor");
+    mvprintw(5,boardWidth*GemWidth + 4,"Space bar: select Gem");
+    mvprintw(7,boardWidth*GemWidth + 4,"You must make a match");
+    mvprintw(8,boardWidth*GemWidth + 4,"for a move to be valid");
     return;
 }
 
 //At the moment prints the gems falling then the score
 //Currently broken
 void Board::printEnd(){
-    printBoard();   //Not sure why this is here
     usleep(speed*25000);
     for(int i = 0; i < boardHeight; i++){
-        for(int j = 0; j < GemSize; j++){
-            int topLoc = i*GemSize + j;
+        for(int j = 0; j < GemHeight; j++){
+            int topLoc = i*GemHeight + j;
             clear();
             for(int y = 0; y < boardHeight - i; y++){
                 for(int x = 0; x < boardWidth; x++){
-                    GemBoard[x][y]->printGem(x*2*GemSize,y*GemSize+topLoc);
+                    GemBoard[x][y]->printGem(x*GemWidth,y*GemHeight+topLoc);
                 }
             }
             attron(COLOR_PAIR(COLOR_BLACK));
             for(int k = 0; k < j; k++){
-                for(int l = 0; l < boardWidth*GemSize*2; l++){
-                    mvprintw(boardHeight*GemSize+k,l," ");
+                for(int l = 0; l < boardWidth*GemWidth; l++){
+                    mvprintw(boardHeight*GemHeight+k,l," ");
                 }
             }
+            mvprintw(boardHeight*GemHeight-1,boardWidth*GemWidth,"          "); //Removes some weird stuff at the bottom when in a small window
             attroff(COLOR_PAIR(COLOR_BLACK));
             refresh();
-            usleep(speed*25000);
+            usleep(speed*12500);
         }
     }
     clear();
