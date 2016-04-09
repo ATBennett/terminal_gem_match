@@ -18,13 +18,14 @@ class Gem
         virtual void printShrink1(int,int);
         virtual void printShrink2(int,int);
 
-        int getColor();
-        int getScore();
-        char getType();
-        bool getFalling();
-        void setFalling(bool);
-        bool getIfNew();        //returns value of newGem
-        void setOld();          //sets newGem to false
+        //gets and sets
+        int getColor() { return color; }
+        int getScore() { return score; }
+        char getType() { return type; }
+        bool getFalling() {return falling; }
+        void setFalling(bool val) { falling = val; }
+        bool getNew() { return newGem; }        //returns value of newGem
+        void setOld() { newGem = false; }          //sets newGem to false
     protected:
         int color;
         int score;

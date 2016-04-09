@@ -1,6 +1,10 @@
 #include <ncurses.h>
 #include <string>
-#include "../include/Board.h"
+#include "../include/PlayingBoard.h"
+
+#define GemHeight 3
+#define GemWidth 5
+#define speed 3
 
 using namespace std;
 
@@ -19,20 +23,12 @@ int main()
 	start_color();
 	curs_set(0);
 
-    Board MainBoard(8,8);   //Creates an 8x8 board
-    MainBoard.setTurns(30);
-    MainBoard.printBoard();
-    vector<pair<int,int> > MatchedGems = MainBoard.matched(); //checks for any already matched gems
-    while(!MatchedGems.empty()) //Keeps going until there are no more matches
-    {
-        MainBoard.quickRemoveMatched(MatchedGems);
-        MatchedGems = MainBoard.matched();
-    }
+    PlayingBoard MainBoard;   //Creates the board
 
     //Main Gameplay loop
     while(MainBoard.getTurns()>0){
         clear();
-        MainBoard.printBoard();
+        MainBoard.print();
         refresh();
         int temp = toupper(getch());
         if(temp == KEY_UP) MainBoard.mvCursorV(-1);
@@ -42,7 +38,7 @@ int main()
         else if(temp == ' '){ //If space is pressed enters gem swapping mode
             clear();
             MainBoard.setHighlight(true);
-            MainBoard.printBoard();
+            MainBoard.print();
             refresh();
             int temp2 = '0';
             temp2 = toupper(getch());
@@ -55,20 +51,9 @@ int main()
                 default : dir = 'X'; break; //if an invalid key is pressed set dir to 'X' to avoid breaking the swapGems function
             }
             MainBoard.setHighlight(false);
-            if(MainBoard.swapGems(MainBoard.getCursor(),dir)){
-                clear();
-                MainBoard.printBoard();
-                refresh();
-                if(!MainBoard.matched().empty()){
-                    MainBoard.setTurns(MainBoard.getTurns() - 1);
-                    while(!MainBoard.matched().empty()){ //Loops until there are no more matches
-                        MainBoard.fancyRemoveMatched(MainBoard.matched());
-                    }
-                }
-                else MainBoard.swapGems(MainBoard.getCursor(),dir); //If there are no matches, swap the gems back
-            }
+            MainBoard.swapGem(dir);
         }
     }
-    MainBoard.printEnd();
+    MainBoard.printEnding();
     endwin();
 }

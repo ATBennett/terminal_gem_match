@@ -15,35 +15,6 @@ Gem::~Gem(){
     //dtor
 }
 
-char Gem::getType(){
-    return type;
-}
-
-int Gem::getColor(){
-    return color;
-}
-
-int Gem::getScore(){
-    return score;
-}
-
-void Gem::setFalling(bool nFalling){
-    falling = nFalling;
-    return;
-}
-
-bool Gem::getFalling(){
-    return falling;
-}
-
-bool Gem::getIfNew(){
-    return newGem;
-}
-
-void Gem::setOld(){
-    newGem = false;
-    return;
-}
 // Prints a Gem sized blank space at x,y
 void Gem::printVoid(int xloc, int yloc){
     attron(COLOR_PAIR(COLOR_BLACK));
