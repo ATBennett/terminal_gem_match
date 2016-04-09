@@ -1,4 +1,4 @@
-#include "PlayingBoard.h"
+#include "../include/PlayingBoard.h"
 #include <ncurses.h>
 
 PlayingBoard::PlayingBoard()
