@@ -17,8 +17,8 @@ void checkWindowSize(int minX, int minY){
     while(WindowSizeX < minX || WindowSizeY < minY){
         clear();
         mvprintw(0,0,"Please increase window size,");
-        mvprintw(1,0,"Current Width: %d, Minimum Width: %d", WindowSizeX, minX);
-        mvprintw(2,0,"Current Height: %d, Minimum Height: %d", WindowSizeY, minY);
+        if( WindowSizeX < minX ) mvprintw(1,0,"Current Width: %d, Minimum Width: %d", WindowSizeX, minX);
+        if( WindowSizeY < minY ) mvprintw(2,0,"Current Height: %d, Minimum Height: %d", WindowSizeY, minY);
         refresh();
         usleep(100000);
         getmaxyx( stdscr, WindowSizeY, WindowSizeX);
@@ -27,6 +27,10 @@ void checkWindowSize(int minX, int minY){
 
 int main()
 {
+    //Calculating required terminal size
+    int minX = GemWidth*BoardWidth + 27;
+    int minY = GemHeight*BoardHeight;
+
     //ncurses initilisation
     initscr();
     noecho();
@@ -39,11 +43,12 @@ int main()
 	}
 	start_color();
 	curs_set(0);
+
     PlayingBoard MainBoard;   //Creates the board
 
     //Main Gameplay loop
     while(MainBoard.getTurns()>0){
-        checkWindowSize(67, 24);
+        checkWindowSize(minX, minY);
         clear();
         MainBoard.print();
         refresh();
