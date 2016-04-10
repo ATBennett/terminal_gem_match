@@ -1,6 +1,7 @@
 //Implementations of the 7 basic gems with seperate print functions
 
 #include "../include/BasicGems.h"
+#include "../include/definitions.h"
 #include <ncurses.h>
 
 RedGem::RedGem()
@@ -14,28 +15,29 @@ RedGem::~RedGem(){
     //dtor
 }
 
-void RedGem::printGem(int xloc,int yloc){
-    attron(COLOR_PAIR(COLOR_RED));
-    if(yloc >= 0){
-        mvaddch(yloc, xloc,ACS_ULCORNER);
-        addch(ACS_HLINE);
-        addch(ACS_HLINE);
-        addch(ACS_HLINE);
-        addch(ACS_URCORNER);
+void RedGem::printGem(int xloc,int yloc, WINDOW *window1){
+    int maxY = GemHeight*BoardHeight;
+    wattron( window1, COLOR_PAIR(COLOR_RED));
+    if(yloc >= 0 && yloc < maxY){
+        mvwaddch(window1, yloc, xloc,ACS_ULCORNER);
+        waddch( window1, ACS_HLINE);
+        waddch( window1, ACS_HLINE);
+        waddch( window1, ACS_HLINE);
+        waddch( window1, ACS_URCORNER);
     }
-    if(yloc + 1 >= 0){
-        mvaddch(yloc+1,xloc,ACS_VLINE);
-        printw("   ");
-        addch(ACS_VLINE);
+    if(yloc + 1 >= 0 && yloc + 1 < maxY){
+        mvwaddch(window1, yloc+1,xloc,ACS_VLINE);
+        wprintw( window1, "   ");
+        waddch( window1, ACS_VLINE);
     }
-    if(yloc + 2 >= 0){
-        mvaddch(yloc+2,xloc,ACS_LLCORNER);
-        addch(ACS_HLINE);
-        addch(ACS_HLINE);
-        addch(ACS_HLINE);
-        addch(ACS_LRCORNER);
+    if(yloc + 2 >= 0 && yloc + 2 < maxY){
+        mvwaddch(window1, yloc+2,xloc,ACS_LLCORNER);
+        waddch( window1, ACS_HLINE);
+        waddch( window1, ACS_HLINE);
+        waddch( window1, ACS_HLINE);
+        waddch( window1, ACS_LRCORNER);
     }
-    attroff(COLOR_PAIR(COLOR_RED));
+    wattroff( window1, COLOR_PAIR(COLOR_RED));
 }
 
 GreenGem::GreenGem()
@@ -49,28 +51,29 @@ GreenGem::~GreenGem(){
     //dtor
 }
 
-void GreenGem::printGem(int xloc,int yloc){
-    attron(COLOR_PAIR(COLOR_GREEN));
-    if(yloc >= 0){
-        mvaddch(yloc, xloc,'/');
-        addch(A_ALTCHARSET | 111);
-        addch(A_ALTCHARSET | 111);
-        addch(A_ALTCHARSET | 111);
-        addch('\\');
+void GreenGem::printGem(int xloc,int yloc, WINDOW *window1){
+    int maxY = GemHeight*BoardHeight;
+    wattron( window1, COLOR_PAIR(COLOR_GREEN));
+    if(yloc >= 0 && yloc < maxY){
+        mvwaddch(window1, yloc, xloc,'/');
+        waddch( window1, A_ALTCHARSET | 111);
+        waddch( window1, A_ALTCHARSET | 111);
+        waddch( window1, A_ALTCHARSET | 111);
+        waddch( window1, '\\');
     }
-    if(yloc + 1 >= 0){
-        mvaddch(yloc+1,xloc,ACS_VLINE);
-        printw("   ");
-        addch(ACS_VLINE);
+    if(yloc + 1 >= 0 && yloc + 1 < maxY){
+        mvwaddch(window1, yloc+1,xloc,ACS_VLINE);
+        wprintw( window1, "   ");
+        waddch( window1, ACS_VLINE);
     }
-    if(yloc + 2 >= 0){
-        mvaddch(yloc+2,xloc,'\\');
-        addch(A_ALTCHARSET | 115);
-        addch(A_ALTCHARSET | 115);
-        addch(A_ALTCHARSET | 115);
-        addch('/');
+    if(yloc + 2 >= 0 && yloc + 2 < maxY){
+        mvwaddch(window1, yloc+2,xloc,'\\');
+        waddch( window1, A_ALTCHARSET | 115);
+        waddch( window1, A_ALTCHARSET | 115);
+        waddch( window1, A_ALTCHARSET | 115);
+        waddch( window1, '/');
     }
-    attroff(COLOR_PAIR(COLOR_GREEN));
+    wattroff( window1, COLOR_PAIR(COLOR_GREEN));
 }
 
 YellowGem::YellowGem()
@@ -84,28 +87,29 @@ YellowGem::~YellowGem(){
     //dtor
 }
 
-void YellowGem::printGem(int xloc,int yloc){
-    attron(COLOR_PAIR(COLOR_YELLOW));
-    if(yloc >= 0){
-        mvaddch(yloc, xloc,' ');
-        addch('/');
-        addch('^');
-        addch('\\');
-        addch(' ');
+void YellowGem::printGem(int xloc,int yloc, WINDOW *window1){
+    int maxY = GemHeight*BoardHeight;
+    wattron( window1, COLOR_PAIR(COLOR_YELLOW));
+    if(yloc >= 0 && yloc < maxY){
+        mvwaddch(window1, yloc, xloc,' ');
+        waddch( window1, '/');
+        waddch( window1, '^');
+        waddch( window1, '\\');
+        waddch( window1, ' ');
     }
-    if(yloc + 1 >= 0){
-        mvaddch(yloc+1,xloc,'(');
-        printw("   ");
-        addch(')');
+    if(yloc + 1 >= 0 && yloc + 1 < maxY){
+        mvwaddch(window1, yloc+1,xloc,'(');
+        wprintw( window1, "   ");
+        waddch( window1, ')');
     }
-    if(yloc + 2 >= 0){
-        mvaddch(yloc+2, xloc,' ');
-        addch('\\');
-        addch('v');
-        addch('/');
-        addch(' ');
+    if(yloc + 2 >= 0 && yloc + 2 < maxY){
+        mvwaddch(window1, yloc+2, xloc,' ');
+        waddch( window1, '\\');
+        waddch( window1, 'v');
+        waddch( window1, '/');
+        waddch( window1, ' ');
     }
-    attroff(COLOR_PAIR(COLOR_YELLOW));
+    wattroff( window1, COLOR_PAIR(COLOR_YELLOW));
 }
 
 BlueGem::BlueGem()
@@ -119,28 +123,29 @@ BlueGem::~BlueGem(){
     //dtor
 }
 
-void BlueGem::printGem(int xloc,int yloc){
-    attron(COLOR_PAIR(COLOR_BLUE));
-    if(yloc >= 0){
-        mvaddch(yloc, xloc,'/');
-        addch(A_ALTCHARSET | 111);
-        addch(A_ALTCHARSET | 111);
-        addch(A_ALTCHARSET | 111);
-        addch('\\');
+void BlueGem::printGem(int xloc,int yloc, WINDOW *window1){
+    int maxY = GemHeight*BoardHeight;
+    wattron( window1, COLOR_PAIR(COLOR_BLUE));
+    if(yloc >= 0 && yloc < maxY){
+        mvwaddch(window1, yloc, xloc,'/');
+        waddch( window1, A_ALTCHARSET | 111);
+        waddch( window1, A_ALTCHARSET | 111);
+        waddch( window1, A_ALTCHARSET | 111);
+        waddch( window1, '\\');
     }
-    if(yloc + 1 >= 0){
-        mvaddch(yloc+1,xloc,'\\');
-        printw("   ");
-        addch('/');
+    if(yloc + 1 >= 0 && yloc + 1 < maxY){
+        mvwaddch(window1, yloc+1,xloc,'\\');
+        wprintw( window1, "   ");
+        waddch( window1, '/');
     }
-    if(yloc + 2 >= 0){
-        mvaddch(yloc+2, xloc,' ');
-        addch('\\');
-        addch('v');
-        addch('/');
-        addch(' ');
+    if(yloc + 2 >= 0 && yloc + 2 < maxY){
+        mvwaddch(window1, yloc+2, xloc,' ');
+        waddch( window1, '\\');
+        waddch( window1, 'v');
+        waddch( window1, '/');
+        waddch( window1, ' ');
     }
-    attroff(COLOR_PAIR(COLOR_BLUE));
+    wattroff( window1, COLOR_PAIR(COLOR_BLUE));
 }
 
 MagentaGem::MagentaGem()
@@ -154,22 +159,23 @@ MagentaGem::~MagentaGem(){
     //dtor
 }
 
-void MagentaGem::printGem(int xloc,int yloc){
-    attron(COLOR_PAIR(COLOR_MAGENTA));
-    if(yloc >= 0){
-        mvprintw(yloc, xloc," /^\\ ");
+void MagentaGem::printGem(int xloc,int yloc, WINDOW *window1){
+    int maxY = GemHeight*BoardHeight;
+    wattron( window1, COLOR_PAIR(COLOR_MAGENTA));
+    if(yloc >= 0 && yloc < maxY){
+        mvwprintw( window1, yloc, xloc," /^\\ ");
     }
-    if(yloc + 1 >= 0){
-        mvprintw(yloc+1,xloc,"/   \\");
+    if(yloc + 1 >= 0 && yloc + 1 < maxY){
+        mvwprintw( window1, yloc+1,xloc,"/   \\");
     }
-    if(yloc + 2 >= 0){
-        mvaddch(yloc+2,xloc,'\\');
-        addch(A_ALTCHARSET | 115);
-        addch(A_ALTCHARSET | 115);
-        addch(A_ALTCHARSET | 115);
-        addch('/');
+    if(yloc + 2 >= 0 && yloc + 2 < maxY){
+        mvwaddch(window1, yloc+2,xloc,'\\');
+        waddch( window1, A_ALTCHARSET | 115);
+        waddch( window1, A_ALTCHARSET | 115);
+        waddch( window1, A_ALTCHARSET | 115);
+        waddch( window1, '/');
     }
-    attroff(COLOR_PAIR(COLOR_MAGENTA));
+    wattroff( window1, COLOR_PAIR(COLOR_MAGENTA));
 }
 
 CyanGem::CyanGem()
@@ -183,28 +189,29 @@ CyanGem::~CyanGem(){
     //dtor
 }
 
-void CyanGem::printGem(int xloc,int yloc){
-    attron(COLOR_PAIR(COLOR_CYAN));
-    if(yloc >= 0){
-        mvaddch(yloc, xloc,' ');
-        addch('/');
-        addch('^');
-        addch('\\');
-        addch(' ');
+void CyanGem::printGem(int xloc,int yloc, WINDOW *window1){
+    int maxY = GemHeight*BoardHeight;
+    wattron( window1, COLOR_PAIR(COLOR_CYAN));
+    if(yloc >= 0 && yloc < maxY){
+        mvwaddch(window1, yloc, xloc,' ');
+        waddch( window1, '/');
+        waddch( window1, '^');
+        waddch( window1, '\\');
+        waddch( window1, ' ');
     }
-    if(yloc + 1 >= 0){
-        mvaddch(yloc+1,xloc,ACS_VLINE);
-        printw("   ");
-        addch(ACS_VLINE);
+    if(yloc + 1 >= 0 && yloc + 1 < maxY){
+        mvwaddch(window1, yloc+1,xloc,ACS_VLINE);
+        wprintw( window1, "   ");
+        waddch( window1, ACS_VLINE);
     }
-    if(yloc + 2 >= 0){
-        mvaddch(yloc+2, xloc,' ');
-        addch('\\');
-        addch('v');
-        addch('/');
-        addch(' ');
+    if(yloc + 2 >= 0 && yloc + 2 < maxY){
+        mvwaddch(window1, yloc+2, xloc,' ');
+        waddch( window1, '\\');
+        waddch( window1, 'v');
+        waddch( window1, '/');
+        waddch( window1, ' ');
     }
-    attroff(COLOR_PAIR(COLOR_CYAN));
+    wattroff( window1, COLOR_PAIR(COLOR_CYAN));
 }
 
 WhiteGem::WhiteGem()
@@ -218,26 +225,27 @@ WhiteGem::~WhiteGem(){
     //dtor
 }
 
-void WhiteGem::printGem(int xloc,int yloc){
-    attron(COLOR_PAIR(COLOR_WHITE));
-    if(yloc >= 0){
-        mvaddch(yloc, xloc,' ');
-        addch('/');
-        addch(ACS_HLINE);
-        addch('\\');
-        addch(' ');
+void WhiteGem::printGem(int xloc,int yloc, WINDOW *window1){
+    int maxY = GemHeight*BoardHeight;
+    wattron( window1, COLOR_PAIR(COLOR_WHITE));
+    if(yloc >= 0 && yloc < maxY){
+        mvwaddch(window1, yloc, xloc,' ');
+        waddch( window1, '/');
+        waddch( window1, ACS_HLINE);
+        waddch( window1, '\\');
+        waddch( window1, ' ');
     }
-    if(yloc + 1 >= 0){
-        mvaddch(yloc+1,xloc,'(');
-        printw("   ");
-        addch(')');
+    if(yloc + 1 >= 0 && yloc + 1 < maxY){
+        mvwaddch(window1, yloc+1,xloc,'(');
+        wprintw( window1, "   ");
+        waddch( window1, ')');
     }
-    if(yloc + 2 >= 0){
-        mvaddch(yloc+2, xloc,' ');
-        addch('\\');
-        addch(ACS_HLINE);
-        addch('/');
-        addch(' ');
+    if(yloc + 2 >= 0 && yloc + 2 < maxY){
+        mvwaddch(window1, yloc+2, xloc,' ');
+        waddch( window1, '\\');
+        waddch( window1, ACS_HLINE);
+        waddch( window1, '/');
+        waddch( window1, ' ');
     }
-    attroff(COLOR_PAIR(COLOR_WHITE));
+    wattroff( window1, COLOR_PAIR(COLOR_WHITE));
 }
