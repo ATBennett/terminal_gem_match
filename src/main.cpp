@@ -1,5 +1,6 @@
 #include <ncurses.h>
 #include <string>
+#include <unistd.h>
 #include "../include/PlayingBoard.h"
 
 #define GemHeight 3
@@ -7,6 +8,22 @@
 #define speed 3
 
 using namespace std;
+
+//makes sure the terminal window is larger than minX and minY, prints message and waits if not
+void checkWindowSize(int minX, int minY){
+    int WindowSizeX;
+    int WindowSizeY;
+	getmaxyx( stdscr, WindowSizeY, WindowSizeX);
+    while(WindowSizeX < minX || WindowSizeY < minY){
+        clear();
+        mvprintw(0,0,"Please increase window size,");
+        mvprintw(1,0,"Current Width: %d, Minimum Width: %d", WindowSizeX, minX);
+        mvprintw(2,0,"Current Height: %d, Minimum Height: %d", WindowSizeY, minY);
+        refresh();
+        usleep(100000);
+        getmaxyx( stdscr, WindowSizeY, WindowSizeX);
+    }
+}
 
 int main()
 {
@@ -22,11 +39,11 @@ int main()
 	}
 	start_color();
 	curs_set(0);
-
     PlayingBoard MainBoard;   //Creates the board
 
     //Main Gameplay loop
     while(MainBoard.getTurns()>0){
+        checkWindowSize(67, 24);
         clear();
         MainBoard.print();
         refresh();
