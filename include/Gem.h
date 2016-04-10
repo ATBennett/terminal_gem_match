@@ -2,6 +2,7 @@
 
 #ifndef GEM_H
 #define GEM_H
+#include <ncurses.h>
 
 
 class Gem
@@ -13,10 +14,10 @@ class Gem
         Gem();
         virtual ~Gem();
 
-        void printVoid(int,int);
-        virtual void printGem(int,int);
-        virtual void printShrink1(int,int);
-        virtual void printShrink2(int,int);
+        void printVoid(int,int,WINDOW*);
+        virtual void printGem(int,int,WINDOW*);
+        virtual void printShrink1(int,int,WINDOW*);
+        virtual void printShrink2(int,int,WINDOW*);
 
         //gets and sets
         int getColor() { return color; }

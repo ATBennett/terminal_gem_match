@@ -6,7 +6,7 @@
 #include <algorithm>
 #include "../include/GemGrid.h"
 
-GemGrid::GemGrid(unsigned int width, unsigned int height, unsigned int xloc, unsigned int yloc){
+GemGrid::GemGrid(unsigned int width, unsigned int height, WINDOW *screen1){
     srand(time(NULL));
     //Populates the Gem matrix with random gems
     for(unsigned int i = 0; i < height; i++)
@@ -19,10 +19,10 @@ GemGrid::GemGrid(unsigned int width, unsigned int height, unsigned int xloc, uns
     }
     gridHeight = height;
     gridWidth = width;
-    locationX = xloc;
-    locationY = yloc;
+    window1 = screen1;
 
     //Initialises the colors for ncurses (may move this)
+
     init_pair(COLOR_BLACK,COLOR_BLACK,COLOR_BLACK);
     init_pair(COLOR_BLUE,COLOR_WHITE,COLOR_BLUE);
     init_pair(COLOR_CYAN,COLOR_BLACK,COLOR_CYAN);
@@ -60,20 +60,10 @@ void GemGrid::printGrid(){
         for(int j = 0; j < gridWidth; j++)
         {
             if(GemMatrix[j][i] != NULL){
-                if(!GemMatrix[j][i]->getNew()) GemMatrix[j][i]->printGem(j*GemWidth + locationX,i*GemHeight + locationY);
+                if(!GemMatrix[j][i]->getNew()) GemMatrix[j][i]->printGem(j*GemWidth,i*GemHeight,window1);
             }
         }
     }
-}
-
-void GemGrid::printClearGrid(){
-    attron(COLOR_PAIR(COLOR_BLACK));
-    for(int i = 0; i < gridHeight*GemHeight; i++){
-        for(int j = 0; j < gridWidth*GemWidth; j++){
-            mvaddch(i+locationY,j+locationX,' ');
-        }
-    }
-    attroff(COLOR_PAIR(COLOR_BLACK));
 }
 
 //Returns a vector of pairs that give coordinates of gems that have been matched
@@ -186,11 +176,11 @@ bool GemGrid::swapGems(std::pair<int,int> location, char direction){
     for(int i = 1; i <= loopTime; i++){
         int moveX = i*dVector.first;
         int moveY = i*dVector.second;
-        GemMatrix[firstx][firsty]->printVoid(firstx*GemWidth + locationX,firsty*GemHeight + locationY);
-        GemMatrix[secondx][secondy]->printVoid(secondx*GemWidth + locationX,secondy*GemHeight + locationY);
-        GemMatrix[secondx][secondy]->printGem(secondx*GemWidth-moveX + locationX,secondy*GemHeight-moveY + locationY);
-        GemMatrix[firstx][firsty]->printGem(firstx*GemWidth+moveX+locationX,firsty*GemHeight+moveY+locationY);
-        refresh();
+        GemMatrix[firstx][firsty]->printVoid(firstx*GemWidth,firsty*GemHeight, window1);
+        GemMatrix[secondx][secondy]->printVoid(secondx*GemWidth,secondy*GemHeight, window1);
+        GemMatrix[secondx][secondy]->printGem(secondx*GemWidth-moveX,secondy*GemHeight-moveY, window1);
+        GemMatrix[firstx][firsty]->printGem(firstx*GemWidth+moveX,firsty*GemHeight+moveY, window1);
+        wrefresh(window1);
         usleep(sleepTime);
     }
 
@@ -247,20 +237,20 @@ float GemGrid::fancyRemoveMatched(std::vector<std::pair<int,int> > GemLocs){
     for(unsigned int i = 0; i < GemLocs.size(); i++){
         int x = GemLocs[i].first;
         int y = GemLocs[i].second;
-        GemMatrix[x][y]->printVoid(x*GemWidth + locationX,y*GemHeight + locationY);
-        GemMatrix[x][y]->printShrink1(x*GemWidth + locationX,y*GemHeight + locationY);
+        GemMatrix[x][y]->printVoid( x*GemWidth, y*GemHeight, window1);
+        GemMatrix[x][y]->printShrink1( x*GemWidth, y*GemHeight, window1);
     }
-    refresh();
-    usleep(Speed*40000);
+    wrefresh(window1);
+    usleep(Speed*30000);
     //Prints second shrink
     for(unsigned int i = 0; i < GemLocs.size(); i++){
         int x = GemLocs[i].first;
         int y = GemLocs[i].second;
-        GemMatrix[x][y]->printVoid(x*GemWidth + locationX,y*GemHeight + locationY);
-        GemMatrix[x][y]->printShrink2(x*GemWidth + locationX,y*GemHeight + locationY);
+        GemMatrix[x][y]->printVoid(x*GemWidth, y*GemHeight, window1);
+        GemMatrix[x][y]->printShrink2(x*GemWidth, y*GemHeight, window1);
     }
-    refresh();
-    usleep(Speed*40000);
+    wrefresh(window1);
+    usleep(Speed*30000);
     float rawScore = 0;
     float multiplier = 0;
     //Removes matched gems and adds onto the score
@@ -295,21 +285,21 @@ void GemGrid::fallGems(){
         }
         //Plays the falling animation by lots of loops
         for(int k = 1; k < GemHeight; k++){
-            printClearGrid();
+            wclear(window1);
             for(int i = gridHeight - 1; i >= 0; i--){
                 for(int j = 0; j < gridWidth; j++){
                     if(GemMatrix[j][i]!=NULL){
                         if(GemMatrix[j][i]->getFalling() && !GemMatrix[j][i]->getNew()){
-                            GemMatrix[j][i]->printGem(j*GemWidth+locationX,i*GemHeight+k+locationY);
+                            GemMatrix[j][i]->printGem( j*GemWidth, i*GemHeight+k, window1);
                         }
                         else if(GemMatrix[j][i]->getNew()){
-                            GemMatrix[j][i]->printGem(j*GemWidth + locationX,i*GemHeight+k - 3 + locationY);
+                            GemMatrix[j][i]->printGem( j*GemWidth, i*GemHeight+k - 3, window1);
                         }
-                        else GemMatrix[j][i]->printGem(j*GemWidth + locationX,i*GemHeight + locationY);
+                        else GemMatrix[j][i]->printGem(j*GemWidth,i*GemHeight, window1);
                     }
                 }
             }
-            refresh();
+            wrefresh(window1);
             usleep(Speed*25000);
         }
         //Loops through the matrix from the bottom and shifts gems around in the Gem pointer matrix
@@ -339,9 +329,9 @@ void GemGrid::fallGems(){
                 falling = true;             // sets it to falling (not sure why this is here)
             }
         }
-        printClearGrid();
+        wclear(window1);
         printGrid();
-        refresh();
+        wrefresh(window1);
         usleep(Speed*25000);
     }
     return;
@@ -354,21 +344,18 @@ void GemGrid::printEnd(){
     for(int i = 0; i < gridHeight; i++){
         for(int j = 0; j < GemHeight; j++){
             int topLoc = i*GemHeight + j;
-            printClearGrid();
+            wclear(window1);
             for(int y = 0; y < gridHeight - i; y++){
                 for(int x = 0; x < gridWidth; x++){
-                    GemMatrix[x][y]->printGem(x*GemWidth + locationX,y*GemHeight + topLoc + locationY);
+                    GemMatrix[x][y]->printGem(x*GemWidth,y*GemHeight + topLoc, window1);
                 }
             }
-            attron(COLOR_PAIR(COLOR_BLACK));
-            mvprintw(gridHeight*GemHeight -1 + locationY,gridWidth*GemWidth + locationX,"          "); //Removes some weird stuff at the bottom when in a small window
-            attroff(COLOR_PAIR(COLOR_BLACK));
-            refresh();
-            usleep(Speed*12500);
+            wrefresh( window1);
+            usleep( Speed*12500);
         }
     }
-    printClearGrid();
-    refresh();
+    wclear(window1);
+    wrefresh(window1);
     return;
 }
 
