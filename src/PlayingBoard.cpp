@@ -60,8 +60,8 @@ void PlayingBoard::swapGem(char dir){
 
 void PlayingBoard::print(){
 
-    //wclear(gridWindow);
-    //wclear(statsWindow);
+    wclear(gridWindow);
+    wclear(statsWindow);
 
     GemGrid1.printGrid();
 
