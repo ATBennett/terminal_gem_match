@@ -28,7 +28,7 @@ PlayingBoard::~PlayingBoard()
 }
 
 void PlayingBoard::printEnding(){
-    GemGrid1.printEnd();
+    GemGrid1.fallAll();
     clear();
     mvprintw(1,1,"Your Score: %.0f",score);
     refresh();

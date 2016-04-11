@@ -17,10 +17,11 @@ Gem::~Gem(){
 
 // Prints a Gem sized blank space at x,y
 void Gem::printVoid(int xloc, int yloc, WINDOW *window1){
+    int maxY = GemHeight*BoardHeight;
     wattron(window1, COLOR_PAIR(COLOR_BLACK));
-    mvwprintw(window1, yloc,xloc,"     ");
-    mvwprintw(window1,yloc+1,xloc,"     ");
-    mvwprintw(window1,yloc+2,xloc,"     ");
+    if(yloc >= 0 && yloc < maxY) mvwprintw(window1, yloc,xloc,"     ");
+    if(yloc + 1 >= 0 && yloc+1 < maxY) mvwprintw(window1,yloc+1,xloc,"     ");
+    if(yloc + 2 >= 0 && yloc+2 < maxY) mvwprintw(window1,yloc+2,xloc,"     ");
     wattroff(window1, COLOR_PAIR(COLOR_BLACK));
 }
 // Prints a smaller version of the gem at x,y

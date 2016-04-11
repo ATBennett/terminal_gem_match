@@ -32,12 +32,13 @@ class GemGrid
     public:
         GemGrid(unsigned int, unsigned int, WINDOW*);
         virtual ~GemGrid();
+
         void printGrid();
         std::vector<std::pair<int,int> > matched();
         float fancyRemoveMatched(std::vector<std::pair<int,int> >);
         void quickRemoveMatched(std::vector<std::pair<int,int> >);
         bool swapGems(std::pair<int,int>,char);
-        void printEnd();
+        void fallAll();
 
         //getters and setters
         WINDOW* getWindow() { return window1; }

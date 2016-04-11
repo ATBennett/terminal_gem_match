@@ -337,26 +337,68 @@ void GemGrid::fallGems(){
     return;
 }
 
-//At the moment prints the gems falling then the score
-//Currently broken
-void GemGrid::printEnd(){
-    usleep(Speed*25000);
-    for(int i = 0; i < gridHeight; i++){
-        for(int j = 0; j < GemHeight; j++){
-            int topLoc = i*GemHeight + j;
-            wclear(window1);
-            for(int y = 0; y < gridHeight - i; y++){
+//Prints all the gems falling off the screen in a fancy animation
+void GemGrid::fallAll(){
+    for( int y = gridHeight - 1; y >= 0; y-- ){ //Falls the gems until there are spaces between them all
+        //Plays the falling animation
+        for(int h = 0; h < GemHeight; h++){
+            for(int bY = gridHeight - 1; bY >= y; bY-- ) { //Counts up from bottom to Y
                 for(int x = 0; x < gridWidth; x++){
-                    GemMatrix[x][y]->printGem(x*GemWidth,y*GemHeight + topLoc, window1);
+                    if(GemMatrix[x][bY]!=NULL){
+                        GemMatrix[x][bY]->printVoid(x*GemWidth,bY*GemHeight+h,window1);
+                        GemMatrix[x][bY]->printGem(x*GemWidth,bY*GemHeight+h + 1,window1);
+                    }
                 }
             }
-            wrefresh( window1);
-            usleep( Speed*12500);
+            wrefresh(window1);
+            usleep(Speed*15000);
+        }
+        //Moves the gems below y down one
+        for(int bY = gridHeight - 1; bY >= y; bY-- ) { //Counts up from bottom to Y
+            for(int x = 0; x < gridWidth; x++){
+                if(GemMatrix[x][bY]!=NULL){
+                    if(bY < gridHeight){
+                        GemMatrix[x][bY+1] = GemMatrix[x][bY];
+                        GemMatrix[x][bY] = NULL;
+                    }
+                    else{
+                        delete GemMatrix[x][bY];
+                        GemMatrix[x][bY] = NULL;
+                    }
+                }
+            }
         }
     }
-    wclear(window1);
-    wrefresh(window1);
-    return;
+    for(int i = 1; i < gridHeight; i++){ // Keep falling until all the gems are off the board
+        //plays the falling animation
+        for(int h = 0; h < GemHeight; h++){ //plays the falling animation
+            for(int y = gridHeight - 1; y >= 0; y-- ) {
+                for(int x = 0; x < gridWidth; x++){
+                    if(GemMatrix[x][y]!=NULL){
+                        GemMatrix[x][y]->printVoid(x*GemWidth,y*GemHeight+h,window1);
+                        GemMatrix[x][y]->printGem(x*GemWidth,y*GemHeight+h + 1,window1);
+                    }
+                }
+            }
+            wrefresh(window1);
+            usleep(Speed*15000);
+        }
+        //Moves all the gems down one
+        for(int y = gridHeight - 1; y >= 0; y-- ) {
+            for(int x = 0; x < gridWidth; x++){
+                if(GemMatrix[x][y]!=NULL){
+                    if(y < gridHeight){
+                        GemMatrix[x][y+1] = GemMatrix[x][y];
+                        GemMatrix[x][y] = NULL;
+                    }
+                    else{
+                        delete GemMatrix[x][y];
+                        GemMatrix[x][y] = NULL;
+                    }
+                }
+            }
+        }
+    }
 }
 
 // Not implemented yet
