@@ -1,5 +1,5 @@
-*.o
-bin/terminal_gem_match
+bin/
+obj/
 *.layout
 *.depend
 *.cbp
