@@ -2,10 +2,7 @@
 #include <string>
 #include <unistd.h>
 #include "../include/PlayingBoard.h"
-
-#define GemHeight 3
-#define GemWidth 5
-#define speed 3
+#include "../include/definitions.h"
 
 using namespace std;
 
