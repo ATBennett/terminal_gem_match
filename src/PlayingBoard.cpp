@@ -11,12 +11,10 @@ PlayingBoard::PlayingBoard()
     score = 0;
     highlight = false;
 
-    while(!GemGrid1.matched().empty()){
-        GemGrid1.quickRemoveMatched(GemGrid1.matched());
-    }
-
     gridWindow = GemGrid1.getWindow();
     statsWindow = newwin(GemHeight*BoardHeight, 27, 0, GemWidth*BoardWidth + 3);
+    backgroundWindow = newwin(GemHeight*BoardHeight + 2,GemWidth*BoardWidth + 2,0,0);
+    printExtras();
     wrefresh(gridWindow);
     wrefresh(statsWindow);
 
@@ -58,13 +56,16 @@ void PlayingBoard::swapGem(char dir){
     }
 }
 
-void PlayingBoard::print(){
+void PlayingBoard::initialise(){
+    printExtras();
+    GemGrid1.createRandomGrid();
+    GemGrid1.fallOntoBoard();
+}
 
-    wclear(gridWindow);
+void PlayingBoard::printExtras(){
+
     wclear(statsWindow);
-
     GemGrid1.printGrid();
-
     //Printing the cursor
     wattron( gridWindow, COLOR_PAIR(COLOR_BLACK));
     if(highlight) mvwprintw( gridWindow, cy*GemHeight+2,cx*GemWidth,"+++++"); //Highlight changes the cursor
@@ -75,20 +76,31 @@ void PlayingBoard::print(){
     mvwprintw( statsWindow, 1, 1,"Controls: ");
     mvwprintw( statsWindow, 3, 1,"Arrow keys: move cursor");
     mvwprintw( statsWindow, 5, 1,"Space bar: select Gem");
-    mvwprintw( statsWindow, 7, 1,"You must make a match");
-    mvwprintw( statsWindow, 8, 1,"for a move to be valid");
-    mvwprintw( statsWindow, 10, 1,"Score: %.0f",score);
-    mvwprintw( statsWindow, 11, 1,"Turns Remaining: %d",turns);
+    mvwprintw( statsWindow, 7, 1,"X: Reset board");
+    mvwprintw( statsWindow, 8, 1,"(Costs 2 turns)");
+    mvwprintw( statsWindow, 10, 1,"You must make a match");
+    mvwprintw( statsWindow, 11, 1,"for a move to be valid");
+    mvwprintw( statsWindow, 13, 1,"Score: %.0f",score);
+    mvwprintw( statsWindow, 14, 1,"Turns Remaining: %d",turns);
 
-    //Creates a window to draw around the Gem Grid for a border
-    WINDOW *backgroundWindow = newwin(GemHeight*BoardHeight + 2,GemWidth*BoardWidth + 2,0,0);
     wborder(backgroundWindow,0,0,0,0,0,0,0,0);
     wrefresh(backgroundWindow);
-    delwin(backgroundWindow);
 
     wrefresh(gridWindow);
 
     wrefresh(statsWindow);
+}
+
+void PlayingBoard::resetGems(){
+    if(turns > 2){
+        GemGrid1.fallAll();
+        GemGrid1.createRandomGrid();
+        GemGrid1.fallOntoBoard();
+        turns = turns - 2;
+    }
+    else{
+        printEnding();
+    }
 }
 
 void PlayingBoard::resizeW(){

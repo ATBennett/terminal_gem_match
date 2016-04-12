@@ -14,7 +14,7 @@ class GemGrid
         Gem *GemMatrix[100][100];
 
         Gem* RandGem();
-        void fallGems();
+        void fallGems(); //Causes gems to fall down by 1
         void createSpecial(std::vector<std::pair<int,int> >);
 
         //Not implemented yet
@@ -33,9 +33,11 @@ class GemGrid
         GemGrid(unsigned int, unsigned int, WINDOW*);
         virtual ~GemGrid();
 
+        void createRandomGrid();
+        void fallOntoBoard();
         void printGrid();
         std::vector<std::pair<int,int> > matched();
-        float fancyRemoveMatched(std::vector<std::pair<int,int> >);
+        float fancyRemoveMatched(std::vector<std::pair<int,int> >); //Can only be run on the main grid
         void quickRemoveMatched(std::vector<std::pair<int,int> >);
         bool swapGems(std::pair<int,int>,char);
         void fallAll();

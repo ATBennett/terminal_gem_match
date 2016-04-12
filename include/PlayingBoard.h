@@ -13,6 +13,7 @@ class PlayingBoard
 
         WINDOW *statsWindow;
         WINDOW *gridWindow;
+        WINDOW *backgroundWindow;
 
         int turns;
         float score;
@@ -24,7 +25,9 @@ class PlayingBoard
         PlayingBoard();
         virtual ~PlayingBoard();
 
-        void print();
+        void printExtras();
+        void initialise();
+        void resetGems();
         void mvCursorV(int);
         void mvCursorH(int);
         void swapGem(char);

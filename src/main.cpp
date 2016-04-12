@@ -46,21 +46,24 @@ int main()
 	curs_set(0);
     refresh();
 
+    checkWindowSize(minX, minY);
     PlayingBoard MainBoard;   //Creates the board
+    MainBoard.initialise();
 
     //Main Gameplay loop
     while(MainBoard.getTurns()>0){
         if(!checkWindowSize(minX, minY)) MainBoard.resizeW();
-        MainBoard.print();
+        MainBoard.printExtras();
         refresh();
         int temp = toupper(getch());
         if(temp == KEY_UP) MainBoard.mvCursorV(-1);
         else if(temp == KEY_DOWN) MainBoard.mvCursorV(1);
         else if(temp == KEY_LEFT) MainBoard.mvCursorH(-1);
         else if(temp == KEY_RIGHT) MainBoard.mvCursorH(1);
+        else if(temp == 'X') MainBoard.resetGems();
         else if(temp == ' '){ //If space is pressed enters gem swapping mode
             MainBoard.setHighlight(true);
-            MainBoard.print();
+            MainBoard.printExtras();
             int temp2 = ERR;
             temp2 = toupper(getch());
             char dir;

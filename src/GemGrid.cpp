@@ -8,15 +8,6 @@
 
 GemGrid::GemGrid(unsigned int width, unsigned int height, WINDOW *screen1){
     srand(time(NULL));
-    //Populates the Gem matrix with random gems
-    for(unsigned int i = 0; i < height; i++)
-    {
-        for(unsigned int j = 0; j < width; j++)
-        {
-            GemMatrix[j][i]=RandGem();
-            GemMatrix[j][i]->setOld();
-        }
-    }
     gridHeight = height;
     gridWidth = width;
     window1 = screen1;
@@ -35,6 +26,38 @@ GemGrid::GemGrid(unsigned int width, unsigned int height, WINDOW *screen1){
 
 GemGrid::~GemGrid(){
     //dtor
+}
+
+void GemGrid::createRandomGrid(){
+    for(int i = 0; i < gridHeight; i++)
+    {
+        for(int j = 0; j < gridWidth; j++)
+        {
+            GemMatrix[j][i]=RandGem();
+        }
+    }
+    while(!matched().empty()){
+        quickRemoveMatched(matched());
+    }
+}
+
+//Animation to make gems appear as if they are falling onto the board
+void GemGrid::fallOntoBoard(){
+    Gem *GemBuffer[100][100];
+    for(int y = 0; y < gridHeight; y++){
+        for(int x = 0; x < gridWidth; x++){
+            GemBuffer[x][y]=GemMatrix[x][y];
+            GemBuffer[x][y]->setNew(true);
+            GemMatrix[x][y]=NULL;
+        }
+    }
+    for(int bY = gridHeight - 1; bY >= 0; bY--){ //loops backwards through the buffer matrix
+        for(int x = 0; x < gridWidth; x++){
+            GemMatrix[x][0]=GemBuffer[x][bY];
+        }
+        fallGems();
+        if(bY != 0) fallGems();
+    }
 }
 
 //Creates a new random gem and returns a pointer to it
@@ -128,7 +151,6 @@ void GemGrid::quickRemoveMatched(std::vector<std::pair<int,int> > GemLocs){
         int y = GemLocs[i].second;
         delete GemMatrix[x][y];
         GemMatrix[x][y] = RandGem();
-        GemMatrix[x][y]->setOld();
     }
 }
 
@@ -170,24 +192,27 @@ bool GemGrid::swapGems(std::pair<int,int> location, char direction){
     else return false;
     int secondx = firstx + dVector.first;
     int secondy = firsty + dVector.second;
-    int loopTime = (GemHeight * std::abs(dVector.second)) + (GemWidth * std::abs(dVector.first));
-    int sleepTime = (Speed*75000)/loopTime;
-    //Swap animation
-    for(int i = 1; i <= loopTime; i++){
-        int moveX = i*dVector.first;
-        int moveY = i*dVector.second;
-        GemMatrix[firstx][firsty]->printVoid(firstx*GemWidth,firsty*GemHeight, window1);
-        GemMatrix[secondx][secondy]->printVoid(secondx*GemWidth,secondy*GemHeight, window1);
-        GemMatrix[secondx][secondy]->printGem(secondx*GemWidth-moveX,secondy*GemHeight-moveY, window1);
-        GemMatrix[firstx][firsty]->printGem(firstx*GemWidth+moveX,firsty*GemHeight+moveY, window1);
-        wrefresh(window1);
-        usleep(sleepTime);
-    }
+    if(GemMatrix[firstx][firsty] != NULL && GemMatrix[secondx][secondy]!= NULL){
+        int loopTime = (GemHeight * std::abs(dVector.second)) + (GemWidth * std::abs(dVector.first));
+        int sleepTime = (Speed*75000)/loopTime;
+        //Swap animation
+        for(int i = 1; i <= loopTime; i++){
+            int moveX = i*dVector.first;
+            int moveY = i*dVector.second;
+            GemMatrix[firstx][firsty]->printVoid(firstx*GemWidth,firsty*GemHeight, window1);
+            GemMatrix[secondx][secondy]->printVoid(secondx*GemWidth,secondy*GemHeight, window1);
+            GemMatrix[secondx][secondy]->printGem(secondx*GemWidth-moveX,secondy*GemHeight-moveY, window1);
+            GemMatrix[firstx][firsty]->printGem(firstx*GemWidth+moveX,firsty*GemHeight+moveY, window1);
+            wrefresh(window1);
+            usleep(sleepTime);
+        }
 
-    GemBuffer = GemMatrix[secondx][secondy];
-    GemMatrix[secondx][secondy] = GemMatrix[firstx][firsty];
-    GemMatrix[firstx][firsty] = GemBuffer;
-    return true;
+        GemBuffer = GemMatrix[secondx][secondy];
+        GemMatrix[secondx][secondy] = GemMatrix[firstx][firsty];
+        GemMatrix[firstx][firsty] = GemBuffer;
+        return true;
+    }
+    else return false;
 }
 
 //Finds the matches larger than 3 and runs the corresponding function
@@ -251,6 +276,14 @@ float GemGrid::fancyRemoveMatched(std::vector<std::pair<int,int> > GemLocs){
     }
     wrefresh(window1);
     usleep(Speed*30000);
+    //Prints a void where a gem used to be
+    for(unsigned int i = 0; i < GemLocs.size(); i++){
+        int x = GemLocs[i].first;
+        int y = GemLocs[i].second;
+        GemMatrix[x][y]->printVoid(x*GemWidth, y*GemHeight, window1);
+    }
+    wrefresh(window1);
+    usleep(Speed*30000);
     float rawScore = 0;
     float multiplier = 0;
     //Removes matched gems and adds onto the score
@@ -262,79 +295,82 @@ float GemGrid::fancyRemoveMatched(std::vector<std::pair<int,int> > GemLocs){
         delete GemMatrix[x][y];  //Makes sure the object is deleted
         GemMatrix[x][y] = NULL;  //Sets the pointer to null
     }
-    fallGems();
+
+    //Falls gems down and adds new random ones at the top
+    bool falling = true;
+    while(falling){
+        falling = false;
+        fallGems();
+        for(int x = 0; x < gridWidth; x++){
+            if( GemMatrix[x][0] == NULL ) {
+                falling = true;
+                GemMatrix[x][0] = RandGem();
+            }
+        }
+        if(falling) fallGems();
+    }
     return rawScore * multiplier;
 }
 
 //Makes the gems fall into blank spaces below them
 void GemGrid::fallGems(){
-    bool falling = true;
-    while(falling){
-        falling = false;
-        //Loops through the matrix from bottom up, and sets any gems that need to fall, falling
-        for(int i = gridHeight - 1; i > 0; i--){
-            for(int j = 0; j < gridWidth; j++){
-                if(GemMatrix[j][i]==NULL){
-                    falling = true;
-                    if(GemMatrix[j][i-1]!=NULL) GemMatrix[j][i-1]->setFalling(true);
-                }
-                else if(GemMatrix[j][i]->getFalling()&&GemMatrix[j][i-1]!=NULL){
-                    GemMatrix[j][i-1]->setFalling(true);
-                }
-            }
-        }
-        //Plays the falling animation by lots of loops
-        for(int k = 1; k < GemHeight; k++){
-            wclear(window1);
-            for(int i = gridHeight - 1; i >= 0; i--){
-                for(int j = 0; j < gridWidth; j++){
-                    if(GemMatrix[j][i]!=NULL){
-                        if(GemMatrix[j][i]->getFalling() && !GemMatrix[j][i]->getNew()){
-                            GemMatrix[j][i]->printGem( j*GemWidth, i*GemHeight+k, window1);
-                        }
-                        else if(GemMatrix[j][i]->getNew()){
-                            GemMatrix[j][i]->printGem( j*GemWidth, i*GemHeight+k - 3, window1);
-                        }
-                        else GemMatrix[j][i]->printGem(j*GemWidth,i*GemHeight, window1);
-                    }
-                }
-            }
-            wrefresh(window1);
-            usleep(Speed*25000);
-        }
-        //Loops through the matrix from the bottom and shifts gems around in the Gem pointer matrix
-        for(int i = gridHeight - 1; i > 0; i--){ //Doesn't include top row of gems
-            for(int j = 0; j < gridWidth; j++){
-                if(GemMatrix[j][i] == NULL){
-                    if(GemMatrix[j][i-1] != NULL && !GemMatrix[j][i-1]->getNew()){ //Checks if gem above is present and not new
-                        GemMatrix[j][i] = GemMatrix[j][i-1];
-                        GemMatrix[j][i]->setFalling(false);
-                        GemMatrix[j][i-1] = NULL;
-                    }
-                }
-                else{
-                    GemMatrix[j][i]->setFalling(false);
-                    GemMatrix[j][i]->setOld(); //If a gem isn't on the top row, makes sure it is set to old
-                }
-            }
-        }
-        // Loops through the top row
+    //Loops through the matrix from bottom up, and sets any gems that need to fall, falling
+    for(int i = gridHeight - 1; i > 0; i--){
         for(int j = 0; j < gridWidth; j++){
-            if(GemMatrix[j][0] != NULL){
-                GemMatrix[j][0]->setFalling(false);
-                GemMatrix[j][0]->setOld();
+            if(GemMatrix[j][i]==NULL){
+                if(GemMatrix[j][i-1]!=NULL) GemMatrix[j][i-1]->setFalling(true);
+            }
+            else if(GemMatrix[j][i]->getFalling()){
+                if(GemMatrix[j][i-1]!=NULL) GemMatrix[j][i-1]->setFalling(true);
+            }
+        }
+    }
+    //Plays the falling animation by lots of loops
+    bool falling = false;
+    for(int k = 1; k <= GemHeight; k++){
+        for(int i = gridHeight - 1; i >= 0; i--){
+            for(int j = 0; j < gridWidth; j++){
+                if(GemMatrix[j][i]!=NULL){
+                    if(GemMatrix[j][i]->getFalling() && !GemMatrix[j][i]->getNew()){
+                        GemMatrix[j][i]->printVoid( j*GemWidth, i*GemHeight, window1);
+                        GemMatrix[j][i]->printGem( j*GemWidth, i*GemHeight+k, window1);
+                        falling = true;
+                    }
+                    else if(GemMatrix[j][i]->getNew()){
+                        GemMatrix[j][i]->printVoid( j*GemWidth, i*GemHeight, window1);
+                        GemMatrix[j][i]->printGem( j*GemWidth, i*GemHeight+k - 3, window1);
+                        falling = true;
+                    }
+                    else GemMatrix[j][i]->printGem(j*GemWidth,i*GemHeight, window1);
+                }
+            }
+        }
+        wrefresh(window1);
+        if(falling) usleep(Speed*20000);
+    }
+    //Loops through the matrix from the bottom and shifts gems around in the Gem matrix
+    for(int i = gridHeight - 1; i > 0; i--){ //Doesn't include top row of gems
+        for(int j = 0; j < gridWidth; j++){
+            if(GemMatrix[j][i] == NULL){
+                if(GemMatrix[j][i-1] != NULL && !GemMatrix[j][i-1]->getNew()){ //Checks if gem above is present and not new
+                    GemMatrix[j][i] = GemMatrix[j][i-1];
+                    GemMatrix[j][i]->setFalling(false);
+                    GemMatrix[j][i-1] = NULL;
+                }
             }
             else{
-                GemMatrix[j][0] = RandGem(); // If a gem is not present this creates a new one
-                falling = true;             // sets it to falling (not sure why this is here)
+                GemMatrix[j][i]->setFalling(false);
+                GemMatrix[j][i]->setNew(false); //If a gem isn't on the top row, makes sure it is set to old
             }
         }
-        wclear(window1);
-        printGrid();
-        wrefresh(window1);
-        usleep(Speed*25000);
     }
-    return;
+    // Loops through the top row
+    for(int j = 0; j < gridWidth; j++){
+        if(GemMatrix[j][0] != NULL){
+            GemMatrix[j][0]->setFalling(false);
+            GemMatrix[j][0]->setNew(false);
+        }
+    }
 }
 
 //Prints all the gems falling off the screen in a fancy animation
@@ -371,7 +407,7 @@ void GemGrid::fallAll(){
     }
     for(int i = 1; i < gridHeight; i++){ // Keep falling until all the gems are off the board
         //plays the falling animation
-        for(int h = 0; h < GemHeight; h++){ //plays the falling animation
+        for(int h = 0; h < GemHeight; h++){
             for(int y = gridHeight - 1; y >= 0; y-- ) {
                 for(int x = 0; x < gridWidth; x++){
                     if(GemMatrix[x][y]!=NULL){
