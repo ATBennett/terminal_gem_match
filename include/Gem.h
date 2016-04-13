@@ -16,8 +16,8 @@ class Gem
 
         void printVoid(int,int,WINDOW*);
         virtual void printGem(int,int,WINDOW*);
-        virtual void printShrink1(int,int,WINDOW*);
-        virtual void printShrink2(int,int,WINDOW*);
+        void printShrink1(int,int,WINDOW*);
+        void printShrink2(int,int,WINDOW*);
 
         //gets and sets
         int getColor() { return color; }
@@ -26,7 +26,7 @@ class Gem
         bool getFalling() {return falling; }
         void setFalling(bool val) { falling = val; }
         bool getNew() { return newGem; }        //returns value of newGem
-        void setOld() { newGem = false; }          //sets newGem to false
+        void setNew(bool var) { newGem = var; }          //sets newGem to false
     protected:
         int color;
         int score;
