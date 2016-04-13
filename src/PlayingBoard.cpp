@@ -12,7 +12,7 @@ PlayingBoard::PlayingBoard()
     highlight = false;
 
     gridWindow = GemGrid1.getWindow();
-    statsWindow = newwin(GemHeight*BoardHeight, 27, 0, GemWidth*BoardWidth + 3);
+    statsWindow = newwin(GemHeight*BoardHeight, 24, 0, GemWidth*BoardWidth + 3);
     backgroundWindow = newwin(GemHeight*BoardHeight + 2,GemWidth*BoardWidth + 2,0,0);
     printExtras();
     wrefresh(gridWindow);
@@ -49,14 +49,17 @@ void PlayingBoard::swapGem(char dir){
     GemGrid1.swapGems(std::make_pair(cx,cy),dir);
     if(GemGrid1.matched().empty()) GemGrid1.swapGems(std::make_pair(cx,cy),dir);
     else{
+        turns--;
+        printExtras();
         while(!GemGrid1.matched().empty()){
             score = score + GemGrid1.fancyRemoveMatched(GemGrid1.matched());
         }
-        turns--;
     }
 }
 
 void PlayingBoard::initialise(){
+    wborder(backgroundWindow,0,0,0,0,0,0,0,0);
+    wrefresh(backgroundWindow);
     printExtras();
     GemGrid1.createRandomGrid();
     GemGrid1.fallOntoBoard();
@@ -66,7 +69,8 @@ void PlayingBoard::printExtras(){
 
     wclear(statsWindow);
     GemGrid1.printGrid();
-    //Printing the cursor
+
+    //Printing the cursor into the gridwindow
     wattron( gridWindow, COLOR_PAIR(COLOR_BLACK));
     if(highlight) mvwprintw( gridWindow, cy*GemHeight+2,cx*GemWidth,"+++++"); //Highlight changes the cursor
     else mvwprintw( gridWindow, cy*GemHeight+2,cx*GemWidth,"=====");
@@ -83,11 +87,7 @@ void PlayingBoard::printExtras(){
     mvwprintw( statsWindow, 13, 1,"Score: %.0f",score);
     mvwprintw( statsWindow, 14, 1,"Turns Remaining: %d",turns);
 
-    wborder(backgroundWindow,0,0,0,0,0,0,0,0);
-    wrefresh(backgroundWindow);
-
     wrefresh(gridWindow);
-
     wrefresh(statsWindow);
 }
 
@@ -104,5 +104,12 @@ void PlayingBoard::resetGems(){
 }
 
 void PlayingBoard::resizeW(){
+    clear();
+    refresh();
     wresize(gridWindow,GemHeight*BoardHeight, GemWidth*BoardWidth);
+    wresize(backgroundWindow,GemHeight*BoardHeight+2, GemWidth*BoardWidth+2);
+    wresize(statsWindow, GemHeight*BoardHeight, 24);
+    wborder(backgroundWindow,0,0,0,0,0,0,0,0);
+    wrefresh(backgroundWindow);
+    printExtras();
 }

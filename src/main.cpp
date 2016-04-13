@@ -12,16 +12,20 @@ bool checkWindowSize(int minX, int minY){
     int WindowSizeY;
 	getmaxyx( stdscr, WindowSizeY, WindowSizeX);
 	bool output = true;
+	WINDOW *error_win = newwin(5,42, WindowSizeY/2 - 3, WindowSizeX/2 - 21);
     while(WindowSizeX < minX || WindowSizeY < minY){
+        wclear(error_win);
+        wborder(error_win,0,0,0,0,0,0,0,0);
         output = false;
-        clear();
-        mvprintw(0,0,"Please increase window size,");
-        if( WindowSizeX < minX ) mvprintw(1,0,"Current Width: %d, Minimum Width: %d", WindowSizeX, minX);
-        if( WindowSizeY < minY ) mvprintw(2,0,"Current Height: %d, Minimum Height: %d", WindowSizeY, minY);
-        refresh();
+        mvwprintw(error_win,1,1,"Please increase window size,");
+        if( WindowSizeX < minX ) mvwprintw(error_win,2,1,"Current Width: %d, Minimum Width: %d", WindowSizeX, minX);
+        if( WindowSizeY < minY ) mvwprintw(error_win,3,1,"Current Height: %d, Minimum Height: %d", WindowSizeY, minY);
+        wrefresh(error_win);
         usleep(100000);
         getmaxyx( stdscr, WindowSizeY, WindowSizeX);
+        wclear(error_win);
     }
+    delwin(error_win);
     return output;
 }
 
@@ -30,6 +34,8 @@ int main()
     //Calculating required terminal size
     int minX = GemWidth*BoardWidth + 27;
     int minY = GemHeight*BoardHeight + 2;
+    int lastX, lastY, curX, curY;
+    getmaxyx( stdscr, curY, curX);
 
     //ncurses initilisation
     initscr();
@@ -46,22 +52,39 @@ int main()
 	curs_set(0);
     refresh();
 
-    checkWindowSize(minX, minY);
-    PlayingBoard MainBoard;   //Creates the board
+    //Makes sure the window is the right size before initialization
+    if(!checkWindowSize(minX, minY)){
+        clear();
+        refresh();
+    }
+    getmaxyx(stdscr, lastX,lastY);
+
+    //Initialises the board
+    PlayingBoard MainBoard;
     MainBoard.initialise();
 
     //Main Gameplay loop
     while(MainBoard.getTurns()>0){
-        if(!checkWindowSize(minX, minY)) MainBoard.resizeW();
+
+        //Detects changes in window size
+        getmaxyx(stdscr, curX,curY);
+        if(curX != lastX || curY != lastY){
+            checkWindowSize(minX,minY);
+            MainBoard.resizeW();
+            getmaxyx(stdscr, lastX,lastY);
+        }
+
         MainBoard.printExtras();
-        refresh();
+
+        //Input detection
         int temp = toupper(getch());
         if(temp == KEY_UP) MainBoard.mvCursorV(-1);
         else if(temp == KEY_DOWN) MainBoard.mvCursorV(1);
         else if(temp == KEY_LEFT) MainBoard.mvCursorH(-1);
         else if(temp == KEY_RIGHT) MainBoard.mvCursorH(1);
         else if(temp == 'X') MainBoard.resetGems();
-        else if(temp == ' '){ //If space is pressed enters gem swapping mode
+        else if(temp == ' '){
+            //If space is pressed enters gem swapping mode
             MainBoard.setHighlight(true);
             MainBoard.printExtras();
             int temp2 = ERR;
