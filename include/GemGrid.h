@@ -11,6 +11,7 @@
 class GemGrid
 {
     private:
+        //2D matrix of gems x,y
         Gem *Gem_Matrix[100][100];
 
         Gem* randGem();
