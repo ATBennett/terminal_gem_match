@@ -20,7 +20,6 @@ class GemGrid
         void createSpecial(std::vector<std::pair<int,int> >);
 
         //Not implemented yet.
-        void matchL(int,int);
         void match4H(int,int);
         void match4V(int,int);
         void match5H(int,int);

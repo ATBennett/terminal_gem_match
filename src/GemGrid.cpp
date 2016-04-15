@@ -303,16 +303,15 @@ void GemGrid::createSpecial(std::vector<std::pair<int,int> > gem_locs)
         }
         if(!do_nothing_h)
         {
-            if(match_h == 3 && match_v == 3) matchL(curr_x,curr_y);
-            else if(match_h == 4) match4H(curr_x,curr_y);
+            if(match_h == 4) match4H(curr_x,curr_y);
             else if(match_h == 5) match5H(curr_x,curr_y);
             else if(match_h == 6) match6H(curr_x,curr_y);
         }
         if(!do_nothing_v)
         {
             if(match_v == 4) match4V(curr_x, curr_y);
-            if(match_v == 5) match5V(curr_x, curr_y);
-            if(match_v == 6) match6V(curr_x, curr_y);
+            else if(match_v == 5) match5V(curr_x, curr_y);
+            else if(match_v == 6) match6V(curr_x, curr_y);
         }
     }
     return;
@@ -576,9 +575,6 @@ void GemGrid::fallAll()
 }
 
 // Not implemented yet
-void GemGrid::matchL(int x, int y)
-{
-}
 void GemGrid::match4H(int x, int y)
 {
 }
