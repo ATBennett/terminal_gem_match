@@ -3,20 +3,20 @@
 #include <ncurses.h>
 
 PlayingBoard::PlayingBoard()
-: GemGrid1(BoardWidth,BoardHeight, newwin(GemHeight*BoardHeight,GemWidth*BoardWidth,1,1))
+: Gem_Grid(BOARD_WIDTH,BOARD_HEIGHT, newwin(GEM_HEIGHT*BOARD_HEIGHT,GEM_WIDTH*BOARD_WIDTH,1,1))
 {
-    cx = 0;
-    cy = 0;
-    turns = GameTurns;
+    cursor_pos.first = 0;
+    cursor_pos.second = 0;
+    turns = GAME_TURNS;
     score = 0;
     highlight = false;
 
-    gridWindow = GemGrid1.getWindow();
-    statsWindow = newwin(GemHeight*BoardHeight, 24, 0, GemWidth*BoardWidth + 3);
-    backgroundWindow = newwin(GemHeight*BoardHeight + 2,GemWidth*BoardWidth + 2,0,0);
+    Grid_Window = Gem_Grid.getWindow();
+    Stats_Window = newwin(GEM_HEIGHT*BOARD_HEIGHT, 24, 0, GEM_WIDTH*BOARD_WIDTH + 3);
+    Background_Window = newwin(GEM_HEIGHT*BOARD_HEIGHT + 2,GEM_WIDTH*BOARD_WIDTH + 2,0,0);
     printExtras();
-    wrefresh(gridWindow);
-    wrefresh(statsWindow);
+    wrefresh(Grid_Window);
+    wrefresh(Stats_Window);
 
 }
 
@@ -25,91 +25,105 @@ PlayingBoard::~PlayingBoard()
     //dtor
 }
 
-void PlayingBoard::printEnding(){
-    GemGrid1.fallAll();
+void PlayingBoard::printEnding()
+{
+    Gem_Grid.fallAll();
     clear();
     mvprintw(1,1,"Your Score: %.0f",score);
     refresh();
     usleep(5000000);
 }
 
-void PlayingBoard::mvCursorH(int val){
-    if(cx + val < BoardWidth && cx + val >= 0){
-        cx = cx+val;
+void PlayingBoard::mvCursorH(int val)
+{
+    if(cursor_pos.first + val < BOARD_WIDTH && cursor_pos.first + val >= 0)
+    {
+        cursor_pos.first = cursor_pos.first+val;
     }
 }
 
-void PlayingBoard::mvCursorV(int val){
-    if(cy + val < BoardHeight && cy + val >= 0){
-        cy = cy+val;
+void PlayingBoard::mvCursorV(int val)
+{
+    if(cursor_pos.second + val < BOARD_HEIGHT && cursor_pos.second + val >= 0)
+    {
+        cursor_pos.second = cursor_pos.second+val;
     }
 }
 
-void PlayingBoard::swapGem(char dir){
-    GemGrid1.swapGems(std::make_pair(cx,cy),dir);
-    if(GemGrid1.matched().empty()) GemGrid1.swapGems(std::make_pair(cx,cy),dir);
-    else{
+void PlayingBoard::swapGem(char dir)
+{
+    Gem_Grid.swapGems(std::make_pair(cursor_pos.first,cursor_pos.second),dir);
+    if(Gem_Grid.matched().empty()) Gem_Grid.swapGems(std::make_pair(cursor_pos.first,cursor_pos.second),dir);
+    else
+    {
         turns--;
         printExtras();
-        while(!GemGrid1.matched().empty()){
-            score = score + GemGrid1.fancyRemoveMatched(GemGrid1.matched());
+        while(!Gem_Grid.matched().empty())
+        {
+            score = score + Gem_Grid.fancyRemoveMatched(Gem_Grid.matched());
         }
     }
 }
 
-void PlayingBoard::initialise(){
-    wborder(backgroundWindow,0,0,0,0,0,0,0,0);
-    wrefresh(backgroundWindow);
+void PlayingBoard::initialise()
+{
+    wborder(Background_Window,0,0,0,0,0,0,0,0);
+    wrefresh(Background_Window);
     printExtras();
-    GemGrid1.createRandomGrid();
-    GemGrid1.fallOntoBoard();
+    Gem_Grid.createRandomGrid();
+    Gem_Grid.fallOntoBoard();
 }
 
-void PlayingBoard::printExtras(){
+void PlayingBoard::printExtras()
+{
 
-    wclear(statsWindow);
-    GemGrid1.printGrid();
+    wclear(Stats_Window);
+    Gem_Grid.printGrid();
 
-    //Printing the cursor into the gridwindow
-    wattron( gridWindow, COLOR_PAIR(COLOR_BLACK));
-    if(highlight) mvwprintw( gridWindow, cy*GemHeight+2,cx*GemWidth,"+++++"); //Highlight changes the cursor
-    else mvwprintw( gridWindow, cy*GemHeight+2,cx*GemWidth,"=====");
-    wattroff( gridWindow, COLOR_PAIR(COLOR_BLACK));
+    //Printing the cursor into the Grid_Window.
+    wattron( Grid_Window, COLOR_PAIR(COLOR_BLACK));
+    if(highlight) mvwprintw( Grid_Window, cursor_pos.second*GEM_HEIGHT+2,cursor_pos.first*GEM_WIDTH,"+++++"); //Highlight changes the cursor
+    else mvwprintw( Grid_Window, cursor_pos.second*GEM_HEIGHT+2,cursor_pos.first*GEM_WIDTH,"=====");
+    wattroff( Grid_Window, COLOR_PAIR(COLOR_BLACK));
 
-    //Printing extra info
-    mvwprintw( statsWindow, 1, 1,"Controls: ");
-    mvwprintw( statsWindow, 3, 1,"Arrow keys: move cursor");
-    mvwprintw( statsWindow, 5, 1,"Space bar: select Gem");
-    mvwprintw( statsWindow, 7, 1,"X: Reset board");
-    mvwprintw( statsWindow, 8, 1,"(Costs 2 turns)");
-    mvwprintw( statsWindow, 10, 1,"You must make a match");
-    mvwprintw( statsWindow, 11, 1,"for a move to be valid");
-    mvwprintw( statsWindow, 13, 1,"Score: %.0f",score);
-    mvwprintw( statsWindow, 14, 1,"Turns Remaining: %d",turns);
+    //Printing extra info.
+    mvwprintw( Stats_Window, 1, 1,"Controls: ");
+    mvwprintw( Stats_Window, 3, 1,"Arrow keys: move cursor");
+    mvwprintw( Stats_Window, 5, 1,"Space bar: select Gem");
+    mvwprintw( Stats_Window, 7, 1,"X: Reset board");
+    mvwprintw( Stats_Window, 8, 1,"(Costs 2 turns)");
+    mvwprintw( Stats_Window, 10, 1,"You must make a match");
+    mvwprintw( Stats_Window, 11, 1,"for a move to be valid");
+    mvwprintw( Stats_Window, 13, 1,"Score: %.0f",score);
+    mvwprintw( Stats_Window, 14, 1,"Turns Remaining: %d",turns);
 
-    wrefresh(gridWindow);
-    wrefresh(statsWindow);
+    wrefresh(Grid_Window);
+    wrefresh(Stats_Window);
 }
 
-void PlayingBoard::resetGems(){
-    if(turns > 2){
-        GemGrid1.fallAll();
-        GemGrid1.createRandomGrid();
-        GemGrid1.fallOntoBoard();
+void PlayingBoard::resetGems()
+{
+    if(turns > 2)
+    {
+        Gem_Grid.fallAll();
+        Gem_Grid.createRandomGrid();
+        Gem_Grid.fallOntoBoard();
         turns = turns - 2;
     }
-    else{
+    else
+    {
         printEnding();
     }
 }
 
-void PlayingBoard::resizeW(){
+void PlayingBoard::resizeW()
+{
     clear();
     refresh();
-    wresize(gridWindow,GemHeight*BoardHeight, GemWidth*BoardWidth);
-    wresize(backgroundWindow,GemHeight*BoardHeight+2, GemWidth*BoardWidth+2);
-    wresize(statsWindow, GemHeight*BoardHeight, 24);
-    wborder(backgroundWindow,0,0,0,0,0,0,0,0);
-    wrefresh(backgroundWindow);
+    wresize(Grid_Window,GEM_HEIGHT*BOARD_HEIGHT, GEM_WIDTH*BOARD_WIDTH);
+    wresize(Background_Window,GEM_HEIGHT*BOARD_HEIGHT+2, GEM_WIDTH*BOARD_WIDTH+2);
+    wresize(Stats_Window, GEM_HEIGHT*BOARD_HEIGHT, 24);
+    wborder(Background_Window,0,0,0,0,0,0,0,0);
+    wrefresh(Background_Window);
     printExtras();
 }

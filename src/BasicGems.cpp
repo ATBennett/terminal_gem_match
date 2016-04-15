@@ -1,37 +1,43 @@
-//Implementations of the 7 basic gems with seperate print functions
+//Implementations of the 7 basic gems with seperate print functions.
 
 #include "../include/BasicGems.h"
 #include "../include/definitions.h"
 #include <ncurses.h>
 
 RedGem::RedGem()
-: Gem(){
+: Gem()
+{
     color = COLOR_RED;
     score = 5;
     type = 'B';
 }
 
-RedGem::~RedGem(){
+RedGem::~RedGem()
+{
     //dtor
 }
 
-void RedGem::printGem(int xloc,int yloc, WINDOW *window1){
-    int maxY = GemHeight*BoardHeight;
+void RedGem::printGem(int x_loc,int y_loc, WINDOW *window1)
+{
+    int max_y = GEM_HEIGHT*BOARD_HEIGHT;
     wattron( window1, COLOR_PAIR(COLOR_RED));
-    if(yloc >= 0 && yloc < maxY){
-        mvwaddch(window1, yloc, xloc,ACS_ULCORNER);
+    if(y_loc >= 0 && y_loc < max_y)
+    {
+        mvwaddch(window1, y_loc, x_loc,ACS_ULCORNER);
         waddch( window1, ACS_HLINE);
         waddch( window1, ACS_HLINE);
         waddch( window1, ACS_HLINE);
         waddch( window1, ACS_URCORNER);
     }
-    if(yloc + 1 >= 0 && yloc + 1 < maxY){
-        mvwaddch(window1, yloc+1,xloc,ACS_VLINE);
+    if(y_loc + 1 >= 0 && y_loc + 1 < max_y)
+    {
+        mvwaddch(window1, y_loc+1,x_loc,ACS_VLINE);
         wprintw( window1, "   ");
         waddch( window1, ACS_VLINE);
     }
-    if(yloc + 2 >= 0 && yloc + 2 < maxY){
-        mvwaddch(window1, yloc+2,xloc,ACS_LLCORNER);
+    if(y_loc + 2 >= 0 && y_loc + 2 < max_y)
+    {
+        mvwaddch(window1, y_loc+2,x_loc,ACS_LLCORNER);
         waddch( window1, ACS_HLINE);
         waddch( window1, ACS_HLINE);
         waddch( window1, ACS_HLINE);
@@ -41,33 +47,39 @@ void RedGem::printGem(int xloc,int yloc, WINDOW *window1){
 }
 
 GreenGem::GreenGem()
-: Gem(){
+: Gem()
+{
     color = COLOR_GREEN;
     score = 5;
     type = 'B';
 }
 
-GreenGem::~GreenGem(){
+GreenGem::~GreenGem()
+{
     //dtor
 }
 
-void GreenGem::printGem(int xloc,int yloc, WINDOW *window1){
-    int maxY = GemHeight*BoardHeight;
+void GreenGem::printGem(int x_loc,int y_loc, WINDOW *window1)
+{
+    int max_y = GEM_HEIGHT*BOARD_HEIGHT;
     wattron( window1, COLOR_PAIR(COLOR_GREEN));
-    if(yloc >= 0 && yloc < maxY){
-        mvwaddch(window1, yloc, xloc,'/');
+    if(y_loc >= 0 && y_loc < max_y)
+    {
+        mvwaddch(window1, y_loc, x_loc,'/');
         waddch( window1, A_ALTCHARSET | 111);
         waddch( window1, A_ALTCHARSET | 111);
         waddch( window1, A_ALTCHARSET | 111);
         waddch( window1, '\\');
     }
-    if(yloc + 1 >= 0 && yloc + 1 < maxY){
-        mvwaddch(window1, yloc+1,xloc,ACS_VLINE);
+    if(y_loc + 1 >= 0 && y_loc + 1 < max_y)
+    {
+        mvwaddch(window1, y_loc+1,x_loc,ACS_VLINE);
         wprintw( window1, "   ");
         waddch( window1, ACS_VLINE);
     }
-    if(yloc + 2 >= 0 && yloc + 2 < maxY){
-        mvwaddch(window1, yloc+2,xloc,'\\');
+    if(y_loc + 2 >= 0 && y_loc + 2 < max_y)
+    {
+        mvwaddch(window1, y_loc+2,x_loc,'\\');
         waddch( window1, A_ALTCHARSET | 115);
         waddch( window1, A_ALTCHARSET | 115);
         waddch( window1, A_ALTCHARSET | 115);
@@ -77,33 +89,39 @@ void GreenGem::printGem(int xloc,int yloc, WINDOW *window1){
 }
 
 YellowGem::YellowGem()
-: Gem(){
+: Gem()
+{
     color = COLOR_YELLOW;
     score = 5;
     type = 'B';
 }
 
-YellowGem::~YellowGem(){
+YellowGem::~YellowGem()
+{
     //dtor
 }
 
-void YellowGem::printGem(int xloc,int yloc, WINDOW *window1){
-    int maxY = GemHeight*BoardHeight;
+void YellowGem::printGem(int x_loc,int y_loc, WINDOW *window1)
+{
+    int max_y = GEM_HEIGHT*BOARD_HEIGHT;
     wattron( window1, COLOR_PAIR(COLOR_YELLOW));
-    if(yloc >= 0 && yloc < maxY){
-        mvwaddch(window1, yloc, xloc,' ');
+    if(y_loc >= 0 && y_loc < max_y)
+    {
+        mvwaddch(window1, y_loc, x_loc,' ');
         waddch( window1, '/');
         waddch( window1, '^');
         waddch( window1, '\\');
         waddch( window1, ' ');
     }
-    if(yloc + 1 >= 0 && yloc + 1 < maxY){
-        mvwaddch(window1, yloc+1,xloc,'(');
+    if(y_loc + 1 >= 0 && y_loc + 1 < max_y)
+    {
+        mvwaddch(window1, y_loc+1,x_loc,'(');
         wprintw( window1, "   ");
         waddch( window1, ')');
     }
-    if(yloc + 2 >= 0 && yloc + 2 < maxY){
-        mvwaddch(window1, yloc+2, xloc,' ');
+    if(y_loc + 2 >= 0 && y_loc + 2 < max_y)
+    {
+        mvwaddch(window1, y_loc+2, x_loc,' ');
         waddch( window1, '\\');
         waddch( window1, 'v');
         waddch( window1, '/');
@@ -113,33 +131,39 @@ void YellowGem::printGem(int xloc,int yloc, WINDOW *window1){
 }
 
 BlueGem::BlueGem()
-: Gem(){
+: Gem()
+{
     color = COLOR_BLUE;
     score = 5;
     type = 'B';
 }
 
-BlueGem::~BlueGem(){
+BlueGem::~BlueGem()
+{
     //dtor
 }
 
-void BlueGem::printGem(int xloc,int yloc, WINDOW *window1){
-    int maxY = GemHeight*BoardHeight;
+void BlueGem::printGem(int x_loc,int y_loc, WINDOW *window1)
+{
+    int max_y = GEM_HEIGHT*BOARD_HEIGHT;
     wattron( window1, COLOR_PAIR(COLOR_BLUE));
-    if(yloc >= 0 && yloc < maxY){
-        mvwaddch(window1, yloc, xloc,'/');
+    if(y_loc >= 0 && y_loc < max_y)
+    {
+        mvwaddch(window1, y_loc, x_loc,'/');
         waddch( window1, A_ALTCHARSET | 111);
         waddch( window1, A_ALTCHARSET | 111);
         waddch( window1, A_ALTCHARSET | 111);
         waddch( window1, '\\');
     }
-    if(yloc + 1 >= 0 && yloc + 1 < maxY){
-        mvwaddch(window1, yloc+1,xloc,'\\');
+    if(y_loc + 1 >= 0 && y_loc + 1 < max_y)
+    {
+        mvwaddch(window1, y_loc+1,x_loc,'\\');
         wprintw( window1, "   ");
         waddch( window1, '/');
     }
-    if(yloc + 2 >= 0 && yloc + 2 < maxY){
-        mvwaddch(window1, yloc+2, xloc,' ');
+    if(y_loc + 2 >= 0 && y_loc + 2 < max_y)
+    {
+        mvwaddch(window1, y_loc+2, x_loc,' ');
         waddch( window1, '\\');
         waddch( window1, 'v');
         waddch( window1, '/');
@@ -149,27 +173,33 @@ void BlueGem::printGem(int xloc,int yloc, WINDOW *window1){
 }
 
 MagentaGem::MagentaGem()
-: Gem(){
+: Gem()
+{
     color = COLOR_MAGENTA;
     score = 5;
     type = 'B';
 }
 
-MagentaGem::~MagentaGem(){
+MagentaGem::~MagentaGem()
+{
     //dtor
 }
 
-void MagentaGem::printGem(int xloc,int yloc, WINDOW *window1){
-    int maxY = GemHeight*BoardHeight;
+void MagentaGem::printGem(int x_loc,int y_loc, WINDOW *window1)
+{
+    int max_y = GEM_HEIGHT*BOARD_HEIGHT;
     wattron( window1, COLOR_PAIR(COLOR_MAGENTA));
-    if(yloc >= 0 && yloc < maxY){
-        mvwprintw( window1, yloc, xloc," /^\\ ");
+    if(y_loc >= 0 && y_loc < max_y)
+    {
+        mvwprintw( window1, y_loc, x_loc," /^\\ ");
     }
-    if(yloc + 1 >= 0 && yloc + 1 < maxY){
-        mvwprintw( window1, yloc+1,xloc,"/   \\");
+    if(y_loc + 1 >= 0 && y_loc + 1 < max_y)
+    {
+        mvwprintw( window1, y_loc+1,x_loc,"/   \\");
     }
-    if(yloc + 2 >= 0 && yloc + 2 < maxY){
-        mvwaddch(window1, yloc+2,xloc,'\\');
+    if(y_loc + 2 >= 0 && y_loc + 2 < max_y)
+    {
+        mvwaddch(window1, y_loc+2,x_loc,'\\');
         waddch( window1, A_ALTCHARSET | 115);
         waddch( window1, A_ALTCHARSET | 115);
         waddch( window1, A_ALTCHARSET | 115);
@@ -179,33 +209,39 @@ void MagentaGem::printGem(int xloc,int yloc, WINDOW *window1){
 }
 
 CyanGem::CyanGem()
-: Gem(){
+: Gem()
+{
     color = COLOR_CYAN;
     score = 5;
     type = 'B';
 }
 
-CyanGem::~CyanGem(){
+CyanGem::~CyanGem()
+{
     //dtor
 }
 
-void CyanGem::printGem(int xloc,int yloc, WINDOW *window1){
-    int maxY = GemHeight*BoardHeight;
+void CyanGem::printGem(int x_loc,int y_loc, WINDOW *window1)
+{
+    int max_y = GEM_HEIGHT*BOARD_HEIGHT;
     wattron( window1, COLOR_PAIR(COLOR_CYAN));
-    if(yloc >= 0 && yloc < maxY){
-        mvwaddch(window1, yloc, xloc,' ');
+    if(y_loc >= 0 && y_loc < max_y)
+    {
+        mvwaddch(window1, y_loc, x_loc,' ');
         waddch( window1, '/');
         waddch( window1, '^');
         waddch( window1, '\\');
         waddch( window1, ' ');
     }
-    if(yloc + 1 >= 0 && yloc + 1 < maxY){
-        mvwaddch(window1, yloc+1,xloc,ACS_VLINE);
+    if(y_loc + 1 >= 0 && y_loc + 1 < max_y)
+    {
+        mvwaddch(window1, y_loc+1,x_loc,ACS_VLINE);
         wprintw( window1, "   ");
         waddch( window1, ACS_VLINE);
     }
-    if(yloc + 2 >= 0 && yloc + 2 < maxY){
-        mvwaddch(window1, yloc+2, xloc,' ');
+    if(y_loc + 2 >= 0 && y_loc + 2 < max_y)
+    {
+        mvwaddch(window1, y_loc+2, x_loc,' ');
         waddch( window1, '\\');
         waddch( window1, 'v');
         waddch( window1, '/');
@@ -215,33 +251,39 @@ void CyanGem::printGem(int xloc,int yloc, WINDOW *window1){
 }
 
 WhiteGem::WhiteGem()
-: Gem(){
+: Gem()
+{
     color = COLOR_WHITE;
     score = 5;
     type = 'B';
 }
 
-WhiteGem::~WhiteGem(){
+WhiteGem::~WhiteGem()
+{
     //dtor
 }
 
-void WhiteGem::printGem(int xloc,int yloc, WINDOW *window1){
-    int maxY = GemHeight*BoardHeight;
+void WhiteGem::printGem(int x_loc,int y_loc, WINDOW *window1)
+{
+    int max_y = GEM_HEIGHT*BOARD_HEIGHT;
     wattron( window1, COLOR_PAIR(COLOR_WHITE));
-    if(yloc >= 0 && yloc < maxY){
-        mvwaddch(window1, yloc, xloc,' ');
+    if(y_loc >= 0 && y_loc < max_y)
+    {
+        mvwaddch(window1, y_loc, x_loc,' ');
         waddch( window1, '/');
         waddch( window1, ACS_HLINE);
         waddch( window1, '\\');
         waddch( window1, ' ');
     }
-    if(yloc + 1 >= 0 && yloc + 1 < maxY){
-        mvwaddch(window1, yloc+1,xloc,'(');
+    if(y_loc + 1 >= 0 && y_loc + 1 < max_y)
+    {
+        mvwaddch(window1, y_loc+1,x_loc,'(');
         wprintw( window1, "   ");
         waddch( window1, ')');
     }
-    if(yloc + 2 >= 0 && yloc + 2 < maxY){
-        mvwaddch(window1, yloc+2, xloc,' ');
+    if(y_loc + 2 >= 0 && y_loc + 2 < max_y)
+    {
+        mvwaddch(window1, y_loc+2, x_loc,' ');
         waddch( window1, '\\');
         waddch( window1, ACS_HLINE);
         waddch( window1, '/');

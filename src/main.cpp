@@ -6,45 +6,47 @@
 
 using namespace std;
 
-//makes sure the terminal window is larger than minX and minY, prints message and waits if not
-bool checkWindowSize(int minX, int minY){
-    int WindowSizeX;
-    int WindowSizeY;
-	getmaxyx( stdscr, WindowSizeY, WindowSizeX);
+//Makes sure the terminal window is larger than min_x and min_y, prints message and waits if not.
+//Returns false if it needed to wait for a screen resize
+bool checkWindowSize(int min_x, int min_y){
+    int window_size_x;
+    int window_size_y;
+	getmaxyx( stdscr, window_size_y, window_size_x);
 	bool output = true;
-	WINDOW *error_win = newwin(5,42, WindowSizeY/2 - 3, WindowSizeX/2 - 21);
-    while(WindowSizeX < minX || WindowSizeY < minY){
-        wclear(error_win);
-        wborder(error_win,0,0,0,0,0,0,0,0);
-        output = false;
-        mvwprintw(error_win,1,1,"Please increase window size,");
-        if( WindowSizeX < minX ) mvwprintw(error_win,2,1,"Current Width: %d, Minimum Width: %d", WindowSizeX, minX);
-        if( WindowSizeY < minY ) mvwprintw(error_win,3,1,"Current Height: %d, Minimum Height: %d", WindowSizeY, minY);
-        wrefresh(error_win);
+	WINDOW *errorWin = newwin(5,42, window_size_y/2 - 3, window_size_x/2 - 21);
+    while(window_size_x < min_x || window_size_y < min_y)
+    {
+        wborder(errorWin,0,0,0,0,0,0,0,0);
+        mvwprintw(errorWin,1,1,"Please increase window size,");
+        if( window_size_x < min_x ) mvwprintw(errorWin,2,1,"Current Width: %d, Minimum Width: %d", window_size_x, min_x);
+        if( window_size_y < min_y ) mvwprintw(errorWin,3,1,"Current Height: %d, Minimum Height: %d", window_size_y, min_y);
+        wrefresh(errorWin);
         usleep(100000);
-        getmaxyx( stdscr, WindowSizeY, WindowSizeX);
-        wclear(error_win);
+        getmaxyx( stdscr, window_size_y, window_size_x);
+        wclear(errorWin);
+        output = false;
     }
-    delwin(error_win);
+    delwin(errorWin);
     return output;
 }
 
 int main()
 {
-    //Calculating required terminal size
-    int minX = GemWidth*BoardWidth + 27;
-    int minY = GemHeight*BoardHeight + 2;
-    int lastX, lastY, curX, curY;
-    getmaxyx( stdscr, curY, curX);
+    //Calculating required terminal size.
+    int min_x = GEM_WIDTH*BOARD_WIDTH + 27;
+    int min_y = GEM_HEIGHT*BOARD_HEIGHT + 2;
+    int last_x, last_y, curr_x, curr_y;
+    getmaxyx( stdscr, curr_y, curr_x);
 
-    //ncurses initilisation
+    //Ncurses initilisation.
     initscr();
     noecho();
     cbreak();
     keypad(stdscr,TRUE);
 
     if(has_colors() == FALSE)
-	{	endwin();
+	{
+        endwin();
 		printf("Your terminal does not support color\n");
 		return(1);
 	}
@@ -52,55 +54,83 @@ int main()
 	curs_set(0);
     refresh();
 
-    //Makes sure the window is the right size before initialization
-    if(!checkWindowSize(minX, minY)){
+    //Makes sure the window is the right size before initialization.
+    if(!checkWindowSize(min_x, min_y))
+    {
         clear();
         refresh();
     }
-    getmaxyx(stdscr, lastX,lastY);
+    getmaxyx(stdscr, last_x,last_y);
 
-    //Initialises the board
-    PlayingBoard MainBoard;
-    MainBoard.initialise();
+    //Initialises the board.
+    PlayingBoard Main_Board;
+    Main_Board.initialise();
 
-    //Main Gameplay loop
-    while(MainBoard.getTurns()>0){
+    //Main Gameplay loop.
+    while(Main_Board.getTurns()>0)
+    {
 
-        //Detects changes in window size
-        getmaxyx(stdscr, curX,curY);
-        if(curX != lastX || curY != lastY){
-            checkWindowSize(minX,minY);
-            MainBoard.resizeW();
-            getmaxyx(stdscr, lastX,lastY);
+        //Detects changes in window size.
+        getmaxyx(stdscr, curr_x,curr_y);
+        if(curr_x != last_x || curr_y != last_y)
+        {
+            checkWindowSize(min_x,min_y);
+            Main_Board.resizeW();
+            getmaxyx(stdscr, last_x,last_y);
         }
 
-        MainBoard.printExtras();
+        Main_Board.printExtras();
 
-        //Input detection
+        //Input detection.
         int temp = toupper(getch());
-        if(temp == KEY_UP) MainBoard.mvCursorV(-1);
-        else if(temp == KEY_DOWN) MainBoard.mvCursorV(1);
-        else if(temp == KEY_LEFT) MainBoard.mvCursorH(-1);
-        else if(temp == KEY_RIGHT) MainBoard.mvCursorH(1);
-        else if(temp == 'X') MainBoard.resetGems();
-        else if(temp == ' '){
-            //If space is pressed enters gem swapping mode
-            MainBoard.setHighlight(true);
-            MainBoard.printExtras();
-            int temp2 = ERR;
-            temp2 = toupper(getch());
-            char dir;
-            switch(temp2){
-                case KEY_UP : dir = 'U'; break;
-                case KEY_DOWN : dir = 'D'; break;
-                case KEY_LEFT : dir = 'L'; break;
-                case KEY_RIGHT : dir = 'R'; break;
-                default : dir = 'X'; break; //if an invalid key is pressed set dir to 'X' to avoid breaking the swapGems function
+        switch(temp)
+        {
+            case KEY_UP :
+                Main_Board.mvCursorV(-1);
+                break;
+
+            case KEY_DOWN :
+                Main_Board.mvCursorV(1);
+                break;
+
+            case KEY_LEFT :
+                Main_Board.mvCursorH(-1);
+                break;
+
+            case KEY_RIGHT :
+                Main_Board.mvCursorH(1);
+                break;
+
+            case 'X' :
+                Main_Board.resetGems();
+                break;
+
+            case ' ' :
+            {
+                //If space is pressed enters gem swapping mode.
+                Main_Board.setHighlight(true);
+                Main_Board.printExtras();
+                int temp2 = toupper(getch());
+                char dir;
+                switch(temp2)
+                {
+                    case KEY_UP : dir = 'U'; break;
+                    case KEY_DOWN : dir = 'D'; break;
+                    case KEY_LEFT : dir = 'L'; break;
+                    case KEY_RIGHT : dir = 'R'; break;
+                    //If an invalid key is pressed set dir to 'X' to avoid breaking the swapGems function.
+                    default : dir = 'X'; break;
+                }
+                Main_Board.setHighlight(false);
+                Main_Board.swapGem(dir);
+                break;
             }
-            MainBoard.setHighlight(false);
-            MainBoard.swapGem(dir);
+
+            default :
+                break;
         }
     }
-    MainBoard.printEnding();
+    //After turns has reached 0, it exits the while loop and prints the ending then closes the game
+    Main_Board.printEnding();
     endwin();
 }
