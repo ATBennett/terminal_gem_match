@@ -58,9 +58,13 @@ void PlayingBoard::swapGem(char dir)
     {
         turns--;
         printExtras();
-        while(!Gem_Grid.matched().empty())
+        std::vector<std::pair<int,int> > matched = Gem_Grid.matched();
+        std::vector<std::pair<int,int> > killedGems;
+        while(!matched.empty())
         {
-            score = score + Gem_Grid.fancyRemoveMatched(Gem_Grid.matched());
+            killedGems = Gem_Grid.getKilledGems(matched);
+            score = score + Gem_Grid.fancyRemoveGems(killedGems);
+            matched = Gem_Grid.matched();
         }
     }
 }
