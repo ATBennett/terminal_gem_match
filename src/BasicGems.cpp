@@ -9,6 +9,7 @@ RedGem::RedGem()
 {
     color = COLOR_RED;
     score = 5;
+    multiplier = 0.333333;
     type = 'B';
 }
 
@@ -51,6 +52,7 @@ GreenGem::GreenGem()
 {
     color = COLOR_GREEN;
     score = 5;
+    multiplier = 0.333333;
     type = 'B';
 }
 
@@ -93,6 +95,7 @@ YellowGem::YellowGem()
 {
     color = COLOR_YELLOW;
     score = 5;
+    multiplier = 0.333333;
     type = 'B';
 }
 
@@ -135,6 +138,7 @@ BlueGem::BlueGem()
 {
     color = COLOR_BLUE;
     score = 5;
+    multiplier = 0.333333;
     type = 'B';
 }
 
@@ -177,6 +181,7 @@ MagentaGem::MagentaGem()
 {
     color = COLOR_MAGENTA;
     score = 5;
+    multiplier = 0.333333;
     type = 'B';
 }
 
@@ -213,6 +218,7 @@ CyanGem::CyanGem()
 {
     color = COLOR_CYAN;
     score = 5;
+    multiplier = 0.333333;
     type = 'B';
 }
 
@@ -255,6 +261,7 @@ WhiteGem::WhiteGem()
 {
     color = COLOR_WHITE;
     score = 5;
+    multiplier = 0.333333;
     type = 'B';
 }
 

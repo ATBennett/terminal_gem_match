@@ -318,36 +318,48 @@ void GemGrid::createSpecial(std::vector<std::pair<int,int> > gem_locs)
     return;
 }
 
-//Takes a vector of pairs that contain the location of all the gems to be removed/
-//Removes them with flair/
+//Takes a vector of pairs that contain the location of all the gems to be removed.
+//Removes them with flair.
 float GemGrid::fancyRemoveMatched(std::vector<std::pair<int,int> > gem_locs)
 {
-    printGrid();
-    //Prints first shrink.
+    //Getting all the gems to be removed via the kill coords function of a gem.
+    std::vector<std::pair<int,int> > gem_kill_locs;
+    std::vector<std::pair<int,int> > temp;
     for(unsigned int i = 0; i < gem_locs.size(); i++)
     {
         int x = gem_locs[i].first;
         int y = gem_locs[i].second;
+        temp = Gem_Matrix[x][y]->getKillCoords(x,y);
+        gem_kill_locs.insert(gem_kill_locs.end(), temp.begin(), temp.end()); //Inserts temp onto the end of the kill locations
+    }
+    //Removes duplicates.
+    std::sort(gem_kill_locs.begin(),gem_kill_locs.end());
+    gem_kill_locs.erase(std::unique (gem_kill_locs.begin(), gem_kill_locs.end()), gem_kill_locs.end());
+    //Prints first shrink.
+    for(unsigned int i = 0; i < gem_kill_locs.size(); i++)
+    {
+        int x = gem_kill_locs[i].first;
+        int y = gem_kill_locs[i].second;
         Gem_Matrix[x][y]->printVoid( x*GEM_WIDTH, y*GEM_HEIGHT, Window_1);
         Gem_Matrix[x][y]->printShrink1( x*GEM_WIDTH, y*GEM_HEIGHT, Window_1);
     }
     wrefresh(Window_1);
     usleep(SPEED*30000);
     //Prints second shrink.
-    for(unsigned int i = 0; i < gem_locs.size(); i++)
+    for(unsigned int i = 0; i < gem_kill_locs.size(); i++)
     {
-        int x = gem_locs[i].first;
-        int y = gem_locs[i].second;
+        int x = gem_kill_locs[i].first;
+        int y = gem_kill_locs[i].second;
         Gem_Matrix[x][y]->printVoid(x*GEM_WIDTH, y*GEM_HEIGHT, Window_1);
         Gem_Matrix[x][y]->printShrink2(x*GEM_WIDTH, y*GEM_HEIGHT, Window_1);
     }
     wrefresh(Window_1);
     usleep(SPEED*30000);
     //Prints a void where a gem used to be.
-    for(unsigned int i = 0; i < gem_locs.size(); i++)
+    for(unsigned int i = 0; i < gem_kill_locs.size(); i++)
     {
-        int x = gem_locs[i].first;
-        int y = gem_locs[i].second;
+        int x = gem_kill_locs[i].first;
+        int y = gem_kill_locs[i].second;
         Gem_Matrix[x][y]->printVoid(x*GEM_WIDTH, y*GEM_HEIGHT, Window_1);
     }
     wrefresh(Window_1);
@@ -355,12 +367,12 @@ float GemGrid::fancyRemoveMatched(std::vector<std::pair<int,int> > gem_locs)
     float rawScore = 0;
     float multiplier = 0;
     //Removes matched gems and adds onto the score.
-    for(unsigned int i = 0; i < gem_locs.size(); i++)
+    for(unsigned int i = 0; i < gem_kill_locs.size(); i++)
     {
-        int x = gem_locs[i].first;
-        int y = gem_locs[i].second;
+        int x = gem_kill_locs[i].first;
+        int y = gem_kill_locs[i].second;
         rawScore += Gem_Matrix[x][y]->getScore();
-        multiplier += 0.33333333;
+        multiplier += Gem_Matrix[x][y]->getMultiplier();
         delete Gem_Matrix[x][y];  //Makes sure the object is deleted.
         Gem_Matrix[x][y] = NULL;  //Sets the pointer to null.
     }

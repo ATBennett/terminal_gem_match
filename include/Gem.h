@@ -4,6 +4,7 @@
 #define GEM_H
 
 #include <ncurses.h>
+#include <vector>
 
 
 class Gem
@@ -19,10 +20,12 @@ class Gem
         virtual void printGem(int,int,WINDOW*);
         void printShrink1(int,int,WINDOW*);
         void printShrink2(int,int,WINDOW*);
+        virtual std::vector<std::pair<int,int> > getKillCoords(int,int); //Returns the coordinates of all the gems to be removed from matching this gem
 
         //Getters and setters,
         int getColor() { return color; }
         int getScore() { return score; }
+        float getMultiplier() { return multiplier; }
         char getType() { return type; }
         bool getFalling() {return falling; }
         void setFalling(bool val) { falling = val; }
@@ -31,6 +34,7 @@ class Gem
     protected:
         int color;
         int score;
+        float multiplier;
         char type;              //'B' for basic 'X' for undeclared
 };
 
