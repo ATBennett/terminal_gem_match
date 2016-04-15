@@ -40,7 +40,7 @@ void GemGrid::createRandomGrid()
     }
     while(!matched().empty())
     {
-        quickRemoveMatched(matched());
+        quickRemoveGems(matched());
     }
 }
 
@@ -187,7 +187,7 @@ std::vector<std::pair<int,int> > GemGrid::matched()
 }
 
 //Quickly swaps all matched gems for randomly generated ones.
-void GemGrid::quickRemoveMatched(std::vector<std::pair<int,int> > gem_locs)
+void GemGrid::quickRemoveGems(std::vector<std::pair<int,int> > gem_locs)
 {
     for(unsigned int i = 0; i < gem_locs.size(); i++)
     {
@@ -303,26 +303,52 @@ void GemGrid::createSpecial(std::vector<std::pair<int,int> > gem_locs)
         }
         if(!do_nothing_h)
         {
-            if(match_h == 3 && match_v == 3) matchL(curr_x,curr_y);
-            else if(match_h == 4) match4H(curr_x,curr_y);
+            if(match_h == 4) match4H(curr_x,curr_y);
             else if(match_h == 5) match5H(curr_x,curr_y);
             else if(match_h == 6) match6H(curr_x,curr_y);
         }
         if(!do_nothing_v)
         {
             if(match_v == 4) match4V(curr_x, curr_y);
-            if(match_v == 5) match5V(curr_x, curr_y);
-            if(match_v == 6) match6V(curr_x, curr_y);
+            else if(match_v == 5) match5V(curr_x, curr_y);
+            else if(match_v == 6) match6V(curr_x, curr_y);
         }
     }
     return;
 }
 
-//Takes a vector of pairs that contain the location of all the gems to be removed/
-//Removes them with flair/
-float GemGrid::fancyRemoveMatched(std::vector<std::pair<int,int> > gem_locs)
+//Takes a vector of pairs that contain the location of all the gems to be removed.
+//Removes them with flair.
+std::vector<std::pair<int,int> > GemGrid::getKilledGems(std::vector<std::pair<int,int> > gem_locs)
 {
-    printGrid();
+    //Getting all the gems to be removed via the kill coords function of a gem.
+    std::vector<std::pair<int,int> > gem_kill_locs;
+    std::vector<std::pair<int,int> > temp;
+    for(unsigned int i = 0; i < gem_locs.size(); i++)
+    {
+        int x = gem_locs[i].first;
+        int y = gem_locs[i].second;
+        temp = Gem_Matrix[x][y]->getKillCoords(x,y);
+        gem_kill_locs.insert(gem_kill_locs.end(), temp.begin(), temp.end()); //Inserts temp onto the end of the kill locations.
+        temp.clear();
+    }
+    //Removes duplicates.
+    std::sort(gem_kill_locs.begin(),gem_kill_locs.end());
+    gem_kill_locs.erase(std::unique (gem_kill_locs.begin(), gem_kill_locs.end()), gem_kill_locs.end());
+
+    if(gem_kill_locs.size()!=gem_locs.size()) //If there are new gems to be killed, runs again recursively
+    {
+        gem_kill_locs = getKilledGems(gem_kill_locs);
+    }
+
+    return gem_kill_locs;
+}
+
+
+//Takes a vector of pairs that contain the location of all the gems to be removed.
+//Removes them with flair.
+float GemGrid::fancyRemoveGems(std::vector<std::pair<int,int> > gem_locs)
+{
     //Prints first shrink.
     for(unsigned int i = 0; i < gem_locs.size(); i++)
     {
@@ -360,7 +386,7 @@ float GemGrid::fancyRemoveMatched(std::vector<std::pair<int,int> > gem_locs)
         int x = gem_locs[i].first;
         int y = gem_locs[i].second;
         rawScore += Gem_Matrix[x][y]->getScore();
-        multiplier += 0.33333333;
+        multiplier += Gem_Matrix[x][y]->getMultiplier();
         delete Gem_Matrix[x][y];  //Makes sure the object is deleted.
         Gem_Matrix[x][y] = NULL;  //Sets the pointer to null.
     }
@@ -549,9 +575,6 @@ void GemGrid::fallAll()
 }
 
 // Not implemented yet
-void GemGrid::matchL(int x, int y)
-{
-}
 void GemGrid::match4H(int x, int y)
 {
 }

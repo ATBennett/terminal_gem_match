@@ -20,7 +20,6 @@ class GemGrid
         void createSpecial(std::vector<std::pair<int,int> >);
 
         //Not implemented yet.
-        void matchL(int,int);
         void match4H(int,int);
         void match4V(int,int);
         void match5H(int,int);
@@ -39,8 +38,9 @@ class GemGrid
         void fallOntoBoard();
         void printGrid();
         std::vector<std::pair<int,int> > matched();     //Returns a vector of coordinates
-        float fancyRemoveMatched(std::vector<std::pair<int,int> >);
-        void quickRemoveMatched(std::vector<std::pair<int,int> >);
+        std::vector<std::pair<int,int> > getKilledGems(std::vector<std::pair<int,int> >); // Recursively finds all the gems that have been killed
+        float fancyRemoveGems(std::vector<std::pair<int,int> >); //Returns the score from the removed gems
+        void quickRemoveGems(std::vector<std::pair<int,int> >);
         bool swapGems(std::pair<int,int>,char);
         void fallAll();
 
