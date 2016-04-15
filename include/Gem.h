@@ -1,7 +1,8 @@
-//Gem superclass
+//Gem superclass.
 
 #ifndef GEM_H
 #define GEM_H
+
 #include <ncurses.h>
 
 
@@ -9,7 +10,7 @@ class Gem
 {
     private:
         bool falling;
-        bool newGem;    //set to true on creation
+        bool new_gem;    //Set to true on creation.
     public:
         Gem();
         virtual ~Gem();
@@ -19,14 +20,14 @@ class Gem
         void printShrink1(int,int,WINDOW*);
         void printShrink2(int,int,WINDOW*);
 
-        //gets and sets
+        //Getters and setters,
         int getColor() { return color; }
         int getScore() { return score; }
         char getType() { return type; }
         bool getFalling() {return falling; }
         void setFalling(bool val) { falling = val; }
-        bool getNew() { return newGem; }        //returns value of newGem
-        void setNew(bool var) { newGem = var; }          //sets newGem to false
+        bool getNew() { return new_gem; }
+        void setNew(bool var) { new_gem = var; }
     protected:
         int color;
         int score;

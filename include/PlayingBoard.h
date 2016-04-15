@@ -1,4 +1,4 @@
-//A masterclass to manage the gem grid and extra information
+//A masterclass to manage the gem grid and extra information.
 
 #ifndef PLAYINGBOARD_H
 #define PLAYINGBOARD_H
@@ -9,16 +9,15 @@
 class PlayingBoard
 {
     private:
-        GemGrid GemGrid1;
+        GemGrid Gem_Grid;
 
-        WINDOW *statsWindow;
-        WINDOW *gridWindow;
-        WINDOW *backgroundWindow;
+        WINDOW *Stats_Window;
+        WINDOW *Grid_Window;
+        WINDOW *Background_Window;
 
         int turns;
         float score;
-        int cx;     //Cursor X coordinate
-        int cy;     //Cursor Y coordinate
+        std::pair<int,int> cursor_pos; //cursor x,y
         bool highlight;
 
     public:
@@ -34,7 +33,7 @@ class PlayingBoard
         void printEnding();
         void resizeW();
 
-        //setters and getters
+        //Setters and getters.
         int getTurns() { return turns; }
         void setHighlight(bool val) { highlight = val; }
     protected:

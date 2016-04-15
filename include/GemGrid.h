@@ -1,4 +1,4 @@
-//This class manages everything on the GemGrid
+//This class manages everything on the GemGrid.
 
 #include "BasicGems.h"
 #include "definitions.h"
@@ -11,13 +11,14 @@
 class GemGrid
 {
     private:
-        Gem *GemMatrix[100][100];
+        Gem *Gem_Matrix[100][100];
 
-        Gem* RandGem();
-        void fallGems(); //Causes gems to fall down by 1
+        Gem* randGem();
+        //Causes gems to fall down by 1.
+        void fallGems();
         void createSpecial(std::vector<std::pair<int,int> >);
 
-        //Not implemented yet
+        //Not implemented yet.
         void matchL(int,int);
         void match4H(int,int);
         void match4V(int,int);
@@ -26,9 +27,9 @@ class GemGrid
         void match6H(int,int);
         void match6V(int,int);
 
-        WINDOW *window1;
-        int gridWidth;
-        int gridHeight;
+        WINDOW *Window_1;
+        int grid_width;
+        int grid_height;
     public:
         GemGrid(unsigned int, unsigned int, WINDOW*);
         virtual ~GemGrid();
@@ -36,14 +37,14 @@ class GemGrid
         void createRandomGrid();
         void fallOntoBoard();
         void printGrid();
-        std::vector<std::pair<int,int> > matched();
-        float fancyRemoveMatched(std::vector<std::pair<int,int> >); //Can only be run on the main grid
+        std::vector<std::pair<int,int> > matched();     //Returns a vector of coordinates
+        float fancyRemoveMatched(std::vector<std::pair<int,int> >);
         void quickRemoveMatched(std::vector<std::pair<int,int> >);
         bool swapGems(std::pair<int,int>,char);
         void fallAll();
 
-        //getters and setters
-        WINDOW* getWindow() { return window1; }
+        //Getters and setters,
+        WINDOW* getWindow() { return Window_1; }
 };
 
 #endif // GEMGRID_H
