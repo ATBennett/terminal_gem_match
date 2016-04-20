@@ -5,8 +5,8 @@
 PlayingBoard::PlayingBoard()
 : Gem_Grid(BOARD_WIDTH,BOARD_HEIGHT, newwin(GEM_HEIGHT*BOARD_HEIGHT,GEM_WIDTH*BOARD_WIDTH,1,1))
 {
-    cursor_pos.first = 0;
-    cursor_pos.second = 0;
+    cursor_x = 0;
+    cursor_y = 0;
     turns = GAME_TURNS;
     score = 0;
     highlight = false;
@@ -36,37 +36,30 @@ void PlayingBoard::printEnding()
 
 void PlayingBoard::mvCursorH(int val)
 {
-    if(cursor_pos.first + val < BOARD_WIDTH && cursor_pos.first + val >= 0)
+    if(cursor_x + val < BOARD_WIDTH && cursor_x + val >= 0)
     {
-        cursor_pos.first = cursor_pos.first+val;
+        cursor_x = cursor_x+val;
     }
 }
 
 void PlayingBoard::mvCursorV(int val)
 {
-    if(cursor_pos.second + val < BOARD_HEIGHT && cursor_pos.second + val >= 0)
+    if(cursor_y + val < BOARD_HEIGHT && cursor_y + val >= 0)
     {
-        cursor_pos.second = cursor_pos.second+val;
+        cursor_y = cursor_y+val;
     }
 }
 
 void PlayingBoard::swapGem(char dir)
 {
-    Gem_Grid.swapGems(std::make_pair(cursor_pos.first,cursor_pos.second),dir);
-    if(Gem_Grid.matched().empty()) Gem_Grid.swapGems(std::make_pair(cursor_pos.first,cursor_pos.second),dir);
-    else
+    float tmp = Gem_Grid.swapGems(cursor_x,cursor_y,dir);
+    if(DEBUGGING)
     {
-        turns--;
-        printExtras();
-        std::vector<std::pair<int,int> > matched = Gem_Grid.matched();
-        std::vector<std::pair<int,int> > killedGems;
-        while(!matched.empty())
-        {
-            killedGems = Gem_Grid.getKilledGems(matched);
-            score = score + Gem_Grid.fancyRemoveGems(killedGems);
-            matched = Gem_Grid.matched();
-        }
+        mvprintw(GEM_HEIGHT*BOARD_HEIGHT + 3,0,"                       ");
+        mvprintw(GEM_HEIGHT*BOARD_HEIGHT + 3,0,"swapGems returned: %f",tmp);
+        refresh();
     }
+    score += tmp;
 }
 
 void PlayingBoard::initialise()
@@ -86,8 +79,8 @@ void PlayingBoard::printExtras()
 
     //Printing the cursor into the Grid_Window.
     wattron( Grid_Window, COLOR_PAIR(COLOR_BLACK));
-    if(highlight) mvwprintw( Grid_Window, cursor_pos.second*GEM_HEIGHT+2,cursor_pos.first*GEM_WIDTH,"+++++"); //Highlight changes the cursor
-    else mvwprintw( Grid_Window, cursor_pos.second*GEM_HEIGHT+2,cursor_pos.first*GEM_WIDTH,"=====");
+    if(highlight) mvwprintw( Grid_Window, cursor_y*GEM_HEIGHT+2,cursor_x*GEM_WIDTH,"+++++"); //Highlight changes the cursor
+    else mvwprintw( Grid_Window, cursor_y*GEM_HEIGHT+2,cursor_x*GEM_WIDTH,"=====");
     wattroff( Grid_Window, COLOR_PAIR(COLOR_BLACK));
 
     //Printing extra info.

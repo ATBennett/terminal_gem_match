@@ -17,7 +17,8 @@ class PlayingBoard
 
         int turns;
         float score;
-        std::pair<int,int> cursor_pos; //cursor x,y
+        int cursor_x;
+        int cursor_y;
         bool highlight;
 
     public:
