@@ -14,5 +14,5 @@
 //Number of game turns.
 #define GAME_TURNS 30
 
-//How fast to play animations (1 is fastest).
+//How fast to play animations (1 is fastest, 0 is instant).
 #define SPEED 3

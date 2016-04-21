@@ -116,35 +116,150 @@ void GemGrid::printGrid(){
 std::vector<Match> GemGrid::getMatched()
 {
     std::vector<Match> matches;
-    std::vector<std::pair<int,int> > made_matches;
+    std::vector<std::pair<int,int> > made_matches_h;
+    std::vector<std::pair<int,int> > made_matches_v;
     //Loops through the entire matrix top down.
     for(int y = 0; y<grid_height; y++)
     {
         for(int x = 0; x<grid_width; x++)
         {
-            bool skip = false;
-            for(unsigned int i = 0; i < made_matches.size(); i++)
+            bool skip_h = false;
+            bool skip_v = false;
+            //Checking if a horizontal match has already been made that includes this gem.
+            for(unsigned int i = 0; i < made_matches_h.size(); i++)
             {
-                if(made_matches[i].first == x && made_matches[i].second == y)
-                    skip = true;
+                if(made_matches_h[i].first == x && made_matches_h[i].second == y)
+                    skip_h = true;
             }
-            if(!skip)
+            //Checking if a verticle match has already been made that includes this gem.
+            for(unsigned int i = 0; i < made_matches_v.size(); i++)
             {
-                std::vector<std::pair<int,int> > matches_x_y;
-                matches_x_y = matchXY(x,y);
-                matches.push_back(Match(matches_x_y));
-                made_matches.insert(made_matches.end(), matches_x_y.begin(), matches_x_y.end());
+                if(made_matches_v[i].first == x && made_matches_v[i].second == y)
+                    skip_v = true;
+            }
+            if(!skip_h)
+            {
+                std::vector<std::pair<int,int> > h_matches;
+                h_matches = matchH(x,y);
+                if(!h_matches.empty())
+                {
+                    matches.push_back(Match(h_matches));
+                    made_matches_h.insert(made_matches_h.end(), h_matches.begin(), h_matches.end());
+                }
+            }
+            if(!skip_v)
+            {
+                std::vector<std::pair<int,int> > v_matches;
+                v_matches = matchV(x,y);
+                if(!v_matches.empty())
+                {
+                    matches.push_back(Match(v_matches));
+                    made_matches_v.insert(made_matches_v.end(), v_matches.begin(), v_matches.end());
+                }
+            }
+        }
+    }
+
+    matches = intersectMatches(matches);
+    return matches;
+}
+
+//From leftmost position, checks for a horizontal match, returns locations of all matched gems
+std::vector<std::pair<int,int> > GemGrid::matchH(int x,int y)
+{
+    std::vector<std::pair<int,int> > matches_h;
+    if(x < grid_width && Gem_Matrix[x][y]!=NULL)
+    {
+        bool matching = true;
+        for(int new_x = x; new_x < grid_width && matching; new_x++)
+        {
+            if(Gem_Matrix[new_x][y] != NULL)
+            {
+                if(Gem_Matrix[x][y]->getColor() == Gem_Matrix[new_x][y]->getColor())
+                    matches_h.push_back(std::make_pair(new_x,y));
+                else
+                    matching = false;
+            }
+            else
+                matching = false;
+        }
+    }
+    //Makes sure to only return matches 3 or larger
+    if(matches_h.size() < 3)
+        matches_h.clear();
+
+    return matches_h;
+}
+
+//from topmost position, checks for a verticle match
+std::vector<std::pair<int,int> > GemGrid::matchV(int x,int y)
+{
+    std::vector<std::pair<int,int> > matches_v;
+    if(x < grid_height && Gem_Matrix[x][y]!=NULL)
+    {
+        bool matching = true;
+        for(int new_y = y; new_y < grid_width && matching; new_y++)
+        {
+            if(Gem_Matrix[x][new_y] != NULL)
+            {
+                if(Gem_Matrix[x][y]->getColor() == Gem_Matrix[x][new_y]->getColor())
+                    matches_v.push_back(std::make_pair(x,new_y));
+                else
+                    matching = false;
+            }
+            else
+                matching = false;
+        }
+    }
+    //Makes sure to only return matches 3 or larger
+    if(matches_v.size() < 3)
+        matches_v.clear();
+
+    return matches_v;
+}
+
+//Checks if any matches are intersecting, then joins them.
+//There is probably a much better way of doing this.
+std::vector<Match> GemGrid::intersectMatches(std::vector<Match> matches)
+{
+    bool found_intersect = true;
+    while(found_intersect)
+    {
+        found_intersect = false;
+        int num_matches = matches.size();
+        for(int i = 0; i < num_matches && !found_intersect; i++)
+        {
+            std::vector<std::pair<int,int> > first_match_locs = matches[i].getGemLocs();
+            for(int j = i+1; j < num_matches && !found_intersect; j++)
+            {
+                std::vector<std::pair<int,int> > second_match_locs = matches[j].getGemLocs();
+                for(unsigned int k = 0; k < first_match_locs.size() && !found_intersect; k++)
+                {
+                    std::pair<int,int> first_gem_loc = first_match_locs[k];
+                    for(unsigned int l = 0; l < second_match_locs.size() && !found_intersect; l++)
+                    {
+                        std::pair<int,int> second_gem_loc = second_match_locs[l];
+                        if(first_gem_loc == second_gem_loc)
+                            found_intersect = true;
+                    }
+                }
+                if(found_intersect)
+                {
+                    //Joins the intersecting match locations
+                    first_match_locs.insert(first_match_locs.end(),second_match_locs.begin(),second_match_locs.end());
+                    //Sorts and removes any repeated locations
+                    std::sort(first_match_locs.begin(), first_match_locs.end());
+                    //first_match_locs.erase(std::unique(first_match_locs.begin(), first_match_locs.end(), first_match_locs.end()));
+                    //Erase old matches
+                    matches.erase(matches.begin() + i);
+                    matches.erase(matches.begin() + j);
+                    //Add on new match
+                    matches.push_back(Match(first_match_locs));
+                }
             }
         }
     }
     return matches;
-}
-
-//from topmost or leftmost position, gets a match
-std::vector<std::pair<int,int> > GemGrid::matchXY(int x,int y)
-{
-    std::vector<std::pair<int,int> > matches_x_y;
-    return matches_x_y;
 }
 
 //Quickly swaps all matched gems for randomly generated ones.
@@ -152,6 +267,15 @@ void GemGrid::quickRemoveMatches(std::vector<Match> matches)
 {
     for( unsigned int i = 0; i < matches.size(); i++)
     {
+        std::vector<std::pair<int,int> > match_locs;
+        match_locs = matches[i].getGemLocs();
+        for(unsigned int j = 0; j < match_locs.size(); j++)
+        {
+            int x = match_locs[j].first;
+            int y = match_locs[j].second;
+            delete Gem_Matrix[x][y];
+            Gem_Matrix[x][y] = randGem();
+        }
     }
 }
 
@@ -234,22 +358,32 @@ float GemGrid::swapGems(int first_x, int first_y, char dir)
     {
         bool special_activated = false;
         for(unsigned int i = 0; i < matches.size(); i++)
-        {
             if(matches[i].getType() == 'S')
                 special_activated = true;
-        }
+
         if(special_activated)
-        {
             score += fireSpecials(matches);
-            fallGems();
-            matches = getMatched();
-        }
+
         else
-        {
             score += removeMatches(matches);
+
+        bool falling = true;
+        while(falling)
+        {
+            falling  = false;
             fallGems();
-            matches = getMatched();
+            for(int x = 0; x < grid_width; x++)
+            {
+                if(Gem_Matrix[x][0] == NULL)
+                {
+                    falling = true;
+                    Gem_Matrix[x][0] = randGem();
+                }
+            }
+            if(falling) fallGems();
         }
+
+        matches = getMatched();
         if(matches.empty())
             return score;
     }
@@ -312,7 +446,36 @@ float GemGrid::fireSpecials(std::vector<Match> matches)
 //Removes them with flair.
 float GemGrid::removeMatches(std::vector<Match> matches)
 {
-    return 0;
+    for(unsigned int i = 0; i < matches.size(); i++)
+    {
+        matches[i].printShrink1(Window_1,Gem_Matrix);
+    }
+    wrefresh(Window_1);
+    usleep(SPEED*30000);
+    for(unsigned int i = 0; i < matches.size(); i++)
+    {
+        matches[i].printShrink2(Window_1,Gem_Matrix);
+    }
+    wrefresh(Window_1);
+    usleep(SPEED*30000);
+    for(unsigned int i = 0; i < matches.size(); i++)
+    {
+        matches[i].printVoid(Window_1,Gem_Matrix);
+    }
+    wrefresh(Window_1);
+    usleep(SPEED*30000);
+    for(unsigned int i = 0; i < matches.size(); i++)
+    {
+        std::vector<std::pair<int,int> > gem_locs = matches[i].getGemLocs();
+        for(unsigned int j = 0; j < gem_locs.size(); j++)
+        {
+            int x = gem_locs[j].first;
+            int y = gem_locs[j].second;
+            delete Gem_Matrix[x][y];
+            Gem_Matrix[x][y] = NULL;
+        }
+    }
+    return matches.size();
 }
 
 //Makes the gems fall into blank spaces below them.

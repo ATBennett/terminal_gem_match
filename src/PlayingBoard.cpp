@@ -59,7 +59,11 @@ void PlayingBoard::swapGem(char dir)
         mvprintw(GEM_HEIGHT*BOARD_HEIGHT + 3,0,"swapGems returned: %f",tmp);
         refresh();
     }
-    score += tmp;
+    if( tmp != 0)
+    {
+        score += tmp;
+        turns--;
+    }
 }
 
 void PlayingBoard::initialise()
