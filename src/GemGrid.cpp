@@ -116,20 +116,43 @@ void GemGrid::printGrid(){
 std::vector<Match> GemGrid::getMatched()
 {
     std::vector<Match> matches;
+    std::vector<std::pair<int,int> > made_matches;
     //Loops through the entire matrix top down.
-    for(int i = 0; i<grid_height; i++)
+    for(int y = 0; y<grid_height; y++)
     {
-        for(int j = 0; j<grid_width; j++)
+        for(int x = 0; x<grid_width; x++)
         {
-
+            bool skip = false;
+            for(unsigned int i = 0; i < made_matches.size(); i++)
+            {
+                if(made_matches[i].first == x && made_matches[i].second == y)
+                    skip = true;
+            }
+            if(!skip)
+            {
+                std::vector<std::pair<int,int> > matches_x_y;
+                matches_x_y = matchXY(x,y);
+                matches.push_back(Match(matches_x_y));
+                made_matches.insert(made_matches.end(), matches_x_y.begin(), matches_x_y.end());
+            }
         }
     }
     return matches;
 }
 
+//from topmost or leftmost position, gets a match
+std::vector<std::pair<int,int> > GemGrid::matchXY(int x,int y)
+{
+    std::vector<std::pair<int,int> > matches_x_y;
+    return matches_x_y;
+}
+
 //Quickly swaps all matched gems for randomly generated ones.
 void GemGrid::quickRemoveMatches(std::vector<Match> matches)
 {
+    for( unsigned int i = 0; i < matches.size(); i++)
+    {
+    }
 }
 
 float GemGrid::swapGems(int first_x, int first_y, char dir)

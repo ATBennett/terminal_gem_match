@@ -20,6 +20,7 @@ class GemGrid
         void fallGems();
         int swapGemPosition(int,int,int,int);
         std::vector<Match> color_nuke(int,int,int,int);
+        std::vector<std::pair<int,int> > matchXY(int,int);
 
         WINDOW *Window_1;
         int grid_width;
