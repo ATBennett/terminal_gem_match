@@ -335,6 +335,10 @@ float GemGrid::swapGems(int first_x, int first_y, char dir)
         default:
             return 0;
     }
+
+    if(Gem_Matrix[first_x][first_y] == NULL || Gem_Matrix[second_x][second_y] == NULL)
+        return 0;
+
     std::vector<Match> matches;
     if(Gem_Matrix[first_x][first_y]->getType() == 'N')
     {
@@ -640,4 +644,14 @@ void GemGrid::fallAll()
             }
         }
     }
+}
+
+void GemGrid::printCursor(int x, int y, const char* cursor)
+{
+    mvwprintw(Window_1,y*GEM_HEIGHT+2,x*GEM_WIDTH,cursor);
+}
+
+void GemGrid::removeCursor(int x, int y)
+{
+    Gem_Matrix[x][y]->printGem(x*GEM_WIDTH,y*GEM_HEIGHT,Window_1);
 }

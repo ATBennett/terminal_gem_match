@@ -14,7 +14,6 @@ PlayingBoard::PlayingBoard()
     Grid_Window = Gem_Grid.getWindow();
     Stats_Window = newwin(GEM_HEIGHT*BOARD_HEIGHT, 24, 0, GEM_WIDTH*BOARD_WIDTH + 3);
     Background_Window = newwin(GEM_HEIGHT*BOARD_HEIGHT + 2,GEM_WIDTH*BOARD_WIDTH + 2,0,0);
-    printExtras();
     wrefresh(Grid_Window);
     wrefresh(Stats_Window);
 
@@ -38,7 +37,10 @@ void PlayingBoard::mvCursorH(int val)
 {
     if(cursor_x + val < BOARD_WIDTH && cursor_x + val >= 0)
     {
+        Gem_Grid.removeCursor(cursor_x,cursor_y);
         cursor_x = cursor_x+val;
+        Gem_Grid.printCursor(cursor_x,cursor_y,"=====");
+        wrefresh(Grid_Window);
     }
 }
 
@@ -46,7 +48,10 @@ void PlayingBoard::mvCursorV(int val)
 {
     if(cursor_y + val < BOARD_HEIGHT && cursor_y + val >= 0)
     {
+        Gem_Grid.removeCursor(cursor_x,cursor_y);
         cursor_y = cursor_y+val;
+        Gem_Grid.printCursor(cursor_x,cursor_y,"=====");
+        wrefresh(Grid_Window);
     }
 }
 
@@ -70,22 +75,36 @@ void PlayingBoard::initialise()
 {
     wborder(Background_Window,0,0,0,0,0,0,0,0);
     wrefresh(Background_Window);
-    printExtras();
+    printEverything();
     Gem_Grid.createRandomGrid();
     Gem_Grid.fallOntoBoard();
 }
 
-void PlayingBoard::printExtras()
+void PlayingBoard::updateExtras()
+{
+    //Printing the cursor into the Grid_Window.
+    if(highlight) Gem_Grid.printCursor(cursor_x,cursor_y,"+++++"); //Highlight changes the cursor
+    else Gem_Grid.printCursor(cursor_x,cursor_y,"=====");
+
+    //Printing extra info.
+    mvwprintw( Stats_Window, 13, 1,"Score:             ");
+    mvwprintw( Stats_Window, 14, 1,"Turns Remaining:             ");
+    mvwprintw( Stats_Window, 13, 1,"Score: %.0f",score);
+    mvwprintw( Stats_Window, 14, 1,"Turns Remaining: %d",turns);
+
+    wrefresh(Grid_Window);
+    wrefresh(Stats_Window);
+}
+
+void PlayingBoard::printEverything()
 {
 
     wclear(Stats_Window);
-    Gem_Grid.printGrid();
 
+    Gem_Grid.printGrid();
     //Printing the cursor into the Grid_Window.
-    wattron( Grid_Window, COLOR_PAIR(COLOR_BLACK));
-    if(highlight) mvwprintw( Grid_Window, cursor_y*GEM_HEIGHT+2,cursor_x*GEM_WIDTH,"+++++"); //Highlight changes the cursor
-    else mvwprintw( Grid_Window, cursor_y*GEM_HEIGHT+2,cursor_x*GEM_WIDTH,"=====");
-    wattroff( Grid_Window, COLOR_PAIR(COLOR_BLACK));
+    if(highlight) Gem_Grid.printCursor(cursor_x,cursor_y,"+++++"); //Highlight changes the cursor
+    else Gem_Grid.printCursor(cursor_x,cursor_y,"=====");
 
     //Printing extra info.
     mvwprintw( Stats_Window, 1, 1,"Controls: ");
@@ -126,5 +145,5 @@ void PlayingBoard::resizeW()
     wresize(Stats_Window, GEM_HEIGHT*BOARD_HEIGHT, 24);
     wborder(Background_Window,0,0,0,0,0,0,0,0);
     wrefresh(Background_Window);
-    printExtras();
+    printEverything();
 }

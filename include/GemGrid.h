@@ -4,6 +4,7 @@
 #include "definitions.h"
 #include "Match.h"
 #include <vector>
+#include <string>
 
 #ifndef GEMGRID_H
 #define GEMGRID_H
@@ -40,6 +41,8 @@ class GemGrid
         void quickRemoveMatches(std::vector<Match>);
         float swapGems(int,int,char);
         void fallAll();
+        void printCursor(int,int,const char*);
+        void removeCursor(int,int);
 
         //Getters and setters,
         WINDOW* getWindow() { return Window_1; }

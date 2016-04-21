@@ -25,7 +25,8 @@ class PlayingBoard
         PlayingBoard();
         virtual ~PlayingBoard();
 
-        void printExtras();
+        void updateExtras();
+        void printEverything();
         void initialise();
         void resetGems();
         void mvCursorV(int);

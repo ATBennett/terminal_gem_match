@@ -1,7 +1,7 @@
 //Definitions for game settings, in time I hope to phase this out with a menu ingame.
 
 //Prints extra stuff below the grid
-#define DEBUGGING true
+#define DEBUGGING false
 
 //Tells the program the size of the gems implemented in Gem.cpp and BasicGems.cpp.
 #define GEM_HEIGHT 3
