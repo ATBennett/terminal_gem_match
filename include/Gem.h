@@ -18,8 +18,7 @@ class Gem
 
         void printVoid(int,int,WINDOW*);
         virtual void printGem(int,int,WINDOW*);
-        void printShrink1(int,int,WINDOW*);
-        void printShrink2(int,int,WINDOW*);
+        void printShrink(int,int,int,WINDOW*);
         virtual std::vector<std::pair<int,int> > getKillCoords(int,int); //Returns the coordinates of all the gems to be removed from matching this gem
 
         //Getters and setters,

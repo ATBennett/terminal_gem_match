@@ -15,8 +15,8 @@ class GemGrid
     private:
         //2D matrix of gems x,y
         Gem *Gem_Matrix[100][100];
-
         Gem* randGem();
+
         //Causes gems to fall down by 1.
         void fallGems();
         int swapGemPosition(int,int,int,int);
@@ -36,7 +36,7 @@ class GemGrid
         void fallOntoBoard();
         void printGrid();
         std::vector<Match> getMatched();     //Returns a vector of coordinates
-        float fireSpecials(std::vector<Match>); // Recursively finds all the gems that have been killed
+        float fireSpecials(std::vector<Match>);
         float removeMatches(std::vector<Match>); //Returns the score from the removed gems
         void quickRemoveMatches(std::vector<Match>);
         float swapGems(int,int,char);

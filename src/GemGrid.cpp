@@ -267,15 +267,7 @@ void GemGrid::quickRemoveMatches(std::vector<Match> matches)
 {
     for( unsigned int i = 0; i < matches.size(); i++)
     {
-        std::vector<std::pair<int,int> > match_locs;
-        match_locs = matches[i].getGemLocs();
-        for(unsigned int j = 0; j < match_locs.size(); j++)
-        {
-            int x = match_locs[j].first;
-            int y = match_locs[j].second;
-            delete Gem_Matrix[x][y];
-            Gem_Matrix[x][y] = randGem();
-        }
+        matches[i].replaceWithRand(&Gem_Matrix);
     }
 }
 
@@ -363,10 +355,15 @@ float GemGrid::swapGems(int first_x, int first_y, char dir)
         bool special_activated = false;
         for(unsigned int i = 0; i < matches.size(); i++)
             if(matches[i].getType() == 'S')
+            {
                 special_activated = true;
+            }
 
         if(special_activated)
+        {
+            mvprintw(30,0,"Special activated");
             score += fireSpecials(matches);
+        }
 
         else
             score += removeMatches(matches);
@@ -442,7 +439,8 @@ std::vector<Match> GemGrid::color_nuke(int first_x,int first_y,int second_x,int 
 //Removes them with flair.
 float GemGrid::fireSpecials(std::vector<Match> matches)
 {
-    return 0;
+    float score  = removeMatches(matches);
+    return score;
 }
 
 
@@ -450,35 +448,31 @@ float GemGrid::fireSpecials(std::vector<Match> matches)
 //Removes them with flair.
 float GemGrid::removeMatches(std::vector<Match> matches)
 {
-    for(unsigned int i = 0; i < matches.size(); i++)
+    for(int num = 0; num < SHRINK_ANIM_LENGTH; num++)
     {
-        matches[i].printShrink1(Window_1,Gem_Matrix);
-    }
-    wrefresh(Window_1);
-    usleep(SPEED*30000);
-    for(unsigned int i = 0; i < matches.size(); i++)
-    {
-        matches[i].printShrink2(Window_1,Gem_Matrix);
-    }
-    wrefresh(Window_1);
-    usleep(SPEED*30000);
-    for(unsigned int i = 0; i < matches.size(); i++)
-    {
-        matches[i].printVoid(Window_1,Gem_Matrix);
-    }
-    wrefresh(Window_1);
-    usleep(SPEED*30000);
-    for(unsigned int i = 0; i < matches.size(); i++)
-    {
-        std::vector<std::pair<int,int> > gem_locs = matches[i].getGemLocs();
-        for(unsigned int j = 0; j < gem_locs.size(); j++)
+        for(unsigned int i = 0; i < matches.size(); i++)
         {
-            int x = gem_locs[j].first;
-            int y = gem_locs[j].second;
-            delete Gem_Matrix[x][y];
-            Gem_Matrix[x][y] = NULL;
+            if(matches[i].getType() == 'R')
+                matches[i].printShrink(num,Window_1,&Gem_Matrix);
+            else
+                matches[i].printAbsorb(num,Window_1,&Gem_Matrix);
         }
+        wrefresh(Window_1);
+        usleep((SPEED*60000)/SHRINK_ANIM_LENGTH);
     }
+    for(unsigned int i = 0; i < matches.size(); i++)
+    {
+        if(matches[i].getType() == 'R')
+            matches[i].deleteGems(&Gem_Matrix);
+        else
+            matches[i].replaceWithSpecial(&Gem_Matrix);
+    }
+    for(unsigned int i = 0; i < matches.size(); i++)
+    {
+        matches[i].printGems(Window_1,&Gem_Matrix);
+    }
+    wrefresh(Window_1);
+    usleep(SPEED*30000);
     return matches.size();
 }
 

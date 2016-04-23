@@ -29,22 +29,44 @@ void Gem::printVoid(int x_loc, int y_loc, WINDOW *window1)
     wattroff(window1, COLOR_PAIR(COLOR_BLACK));
 }
 //Prints a smaller version of the gem at x,y.
-void Gem::printShrink1(int x_loc,int y_loc, WINDOW *window1)
+void Gem::printShrink(int shrink,int x_loc,int y_loc, WINDOW *window1)
 {
-    wattron(window1, COLOR_PAIR(color));
-    mvwprintw(window1,y_loc,x_loc+2," ");
-    mvwprintw(window1,y_loc+1,x_loc+1,"   ");
-    mvwprintw(window1,y_loc+2,x_loc+2," ");
-    wattroff(window1, COLOR_PAIR(color));
+    if(shrink == 0)
+    {
+        wattron(window1, COLOR_PAIR(color));
+        mvwprintw(window1,y_loc,x_loc+1,"   ");
+        mvwprintw(window1,y_loc+1,x_loc,"     ");
+        mvwprintw(window1,y_loc+2,x_loc+1,"   ");
+        wattroff(window1, COLOR_PAIR(color));
+    }
+    else if(shrink == 1)
+    {
+        wattron(window1, COLOR_PAIR(color));
+        mvwprintw(window1,y_loc,x_loc+1,"   ");
+        mvwprintw(window1,y_loc+1,x_loc+1,"   ");
+        mvwprintw(window1,y_loc+2,x_loc+1,"   ");
+        wattroff(window1, COLOR_PAIR(color));
+    }
+    else if(shrink == 2)
+    {
+        wattron(window1, COLOR_PAIR(color));
+        mvwprintw(window1,y_loc,x_loc+2," ");
+        mvwprintw(window1,y_loc+1,x_loc+1,"   ");
+        mvwprintw(window1,y_loc+2,x_loc+2," ");
+        wattroff(window1, COLOR_PAIR(color));
+    }
+    else if(shrink == 3)
+    {
+        wattron(window1, COLOR_PAIR(color));
+        mvwprintw(window1,y_loc,x_loc+2,"");
+        mvwprintw(window1,y_loc+1,x_loc+2," ");
+        mvwprintw(window1,y_loc+2,x_loc+2,"");
+        wattroff(window1, COLOR_PAIR(color));
+    }
+    else
+        printVoid(x_loc, y_loc, window1);
 }
 
-//Prints an even smaller version of the gem at x,y.
-void Gem::printShrink2(int x_loc,int y_loc, WINDOW *window1)
-{
-    wattron(window1, COLOR_PAIR(color));
-    mvwprintw(window1, y_loc+1,x_loc+2," ");
-    wattroff(window1, COLOR_PAIR(color));
-}
 
 //By Default a gem prints it's color in a 6x3 square.
 void Gem::printGem(int x_loc,int y_loc, WINDOW *window1)
