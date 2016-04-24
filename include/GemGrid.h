@@ -36,7 +36,7 @@ class GemGrid
         void fallOntoBoard();
         void printGrid();
         std::vector<Match> getMatched();     //Returns a vector of coordinates
-        float fireSpecials(std::vector<Match>);
+        std::vector<Match> fireSpecials(std::vector<Match>);
         float removeMatches(std::vector<Match>); //Returns the score from the removed gems
         void quickRemoveMatches(std::vector<Match>);
         float swapGems(int,int,char);

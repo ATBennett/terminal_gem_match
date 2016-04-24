@@ -11,7 +11,6 @@ class Match
     private:
         std::vector<std::pair<int,int> > gem_locs;
         char type;
-        int num_gems;
         std::pair<int,int> start_loc;
 
         Gem* randGem();
@@ -19,6 +18,7 @@ class Match
     protected:
     public:
         Match(std::vector<std::pair<int,int> >);
+        Match(std::vector<std::pair<int,int> >, char);
         virtual ~Match();
 
         //Operations for a match to work on a grid via a pointer to the grid

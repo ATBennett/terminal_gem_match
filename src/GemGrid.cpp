@@ -352,21 +352,7 @@ float GemGrid::swapGems(int first_x, int first_y, char dir)
     float score = 0;
     while(true)
     {
-        bool special_activated = false;
-        for(unsigned int i = 0; i < matches.size(); i++)
-            if(matches[i].getType() == 'S')
-            {
-                special_activated = true;
-            }
-
-        if(special_activated)
-        {
-            mvprintw(30,0,"Special activated");
-            score += fireSpecials(matches);
-        }
-
-        else
-            score += removeMatches(matches);
+        score += removeMatches(matches);
 
         bool falling = true;
         while(falling)
@@ -437,10 +423,9 @@ std::vector<Match> GemGrid::color_nuke(int first_x,int first_y,int second_x,int 
 
 //Takes a vector of pairs that contain the location of all the gems to be removed.
 //Removes them with flair.
-float GemGrid::fireSpecials(std::vector<Match> matches)
+std::vector<Match> GemGrid::fireSpecials(std::vector<Match> matches)
 {
-    float score  = removeMatches(matches);
-    return score;
+    return matches;
 }
 
 
@@ -448,6 +433,18 @@ float GemGrid::fireSpecials(std::vector<Match> matches)
 //Removes them with flair.
 float GemGrid::removeMatches(std::vector<Match> matches)
 {
+    bool special_fired = false;
+    for(unsigned int i = 0; i < matches.size(); i++)
+    {
+        std::vector<std::pair<int,int> > gem_locs = matches[i].getGemLocs();
+        for(unsigned int j = 0; j < gem_locs.size(); j++)
+            if(Gem_Matrix[gem_locs[i].first][gem_locs[i].second]->getType() != 'B')
+                special_fired = true;
+    }
+
+    if(special_fired)
+        matches=fireSpecials(matches);
+
     for(int num = 0; num < SHRINK_ANIM_LENGTH; num++)
     {
         for(unsigned int i = 0; i < matches.size(); i++)

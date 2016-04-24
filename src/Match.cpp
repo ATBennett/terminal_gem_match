@@ -1,6 +1,7 @@
 #include "../include/Match.h"
 #include "../include/definitions.h"
 #include "../include/BasicGems.h"
+#include "../include/SpecialGems.h"
 
 #include <algorithm>
 
@@ -10,24 +11,39 @@ Match::Match(std::vector<std::pair<int,int> > gem_locs_in)
     type = 'R'; //Default value for 'Regular' match.
 
     if(gem_locs.size() > 3)
-        type = 'S'; //'S' for 'Special' match.
+        type = 'A'; //'A' for 'Absorbing' match.
 
     std::sort(gem_locs.begin(),gem_locs.end());
+    start_loc = gem_locs[0];
+
     for(unsigned int i = 1; i < gem_locs.size(); i++)
     {
         if(gem_locs[i] == gem_locs[i-1])
         {
-            type = 'I'; //'I' for 'Intersecting' match.
             start_loc = gem_locs[i];
             gem_locs.erase(gem_locs.begin() + i);
             break;
         }
     }
+}
 
-    num_gems = gem_locs.size();
+Match::Match(std::vector<std::pair<int,int> > gem_locs_in, char type_in)
+{
+    gem_locs = gem_locs_in;
+    type = type_in; //Default value for 'Regular' match.
 
-    if(type != 'I')
-        start_loc = gem_locs[0];
+    std::sort(gem_locs.begin(),gem_locs.end());
+    start_loc = gem_locs[0];
+
+    for(unsigned int i = 1; i < gem_locs.size(); i++)
+    {
+        if(gem_locs[i] == gem_locs[i-1])
+        {
+            start_loc = gem_locs[i];
+            gem_locs.erase(gem_locs.begin() + i);
+            break;
+        }
+    }
 }
 
 Match::~Match()

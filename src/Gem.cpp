@@ -31,40 +31,44 @@ void Gem::printVoid(int x_loc, int y_loc, WINDOW *window1)
 //Prints a smaller version of the gem at x,y.
 void Gem::printShrink(int shrink,int x_loc,int y_loc, WINDOW *window1)
 {
-    if(shrink == 0)
+    switch(shrink)
     {
-        wattron(window1, COLOR_PAIR(color));
-        mvwprintw(window1,y_loc,x_loc+1,"   ");
-        mvwprintw(window1,y_loc+1,x_loc,"     ");
-        mvwprintw(window1,y_loc+2,x_loc+1,"   ");
-        wattroff(window1, COLOR_PAIR(color));
+        case 0 :
+            wattron(window1, COLOR_PAIR(color));
+            mvwprintw(window1,y_loc,x_loc+1,"   ");
+            mvwprintw(window1,y_loc+1,x_loc,"     ");
+            mvwprintw(window1,y_loc+2,x_loc+1,"   ");
+            wattroff(window1, COLOR_PAIR(color));
+            break;
+
+        case 1 :
+            wattron(window1, COLOR_PAIR(color));
+            mvwprintw(window1,y_loc,x_loc+1,"   ");
+            mvwprintw(window1,y_loc+1,x_loc+1,"   ");
+            mvwprintw(window1,y_loc+2,x_loc+1,"   ");
+            wattroff(window1, COLOR_PAIR(color));
+            break;
+
+        case 2 :
+            wattron(window1, COLOR_PAIR(color));
+            mvwprintw(window1,y_loc,x_loc+2," ");
+            mvwprintw(window1,y_loc+1,x_loc+1,"   ");
+            mvwprintw(window1,y_loc+2,x_loc+2," ");
+            wattroff(window1, COLOR_PAIR(color));
+            break;
+
+        case 3 :
+            wattron(window1, COLOR_PAIR(color));
+            mvwprintw(window1,y_loc,x_loc+2,"");
+            mvwprintw(window1,y_loc+1,x_loc+2," ");
+            mvwprintw(window1,y_loc+2,x_loc+2,"");
+            wattroff(window1, COLOR_PAIR(color));
+            break;
+
+        default :
+            printVoid(x_loc, y_loc, window1);
+            break;
     }
-    else if(shrink == 1)
-    {
-        wattron(window1, COLOR_PAIR(color));
-        mvwprintw(window1,y_loc,x_loc+1,"   ");
-        mvwprintw(window1,y_loc+1,x_loc+1,"   ");
-        mvwprintw(window1,y_loc+2,x_loc+1,"   ");
-        wattroff(window1, COLOR_PAIR(color));
-    }
-    else if(shrink == 2)
-    {
-        wattron(window1, COLOR_PAIR(color));
-        mvwprintw(window1,y_loc,x_loc+2," ");
-        mvwprintw(window1,y_loc+1,x_loc+1,"   ");
-        mvwprintw(window1,y_loc+2,x_loc+2," ");
-        wattroff(window1, COLOR_PAIR(color));
-    }
-    else if(shrink == 3)
-    {
-        wattron(window1, COLOR_PAIR(color));
-        mvwprintw(window1,y_loc,x_loc+2,"");
-        mvwprintw(window1,y_loc+1,x_loc+2," ");
-        mvwprintw(window1,y_loc+2,x_loc+2,"");
-        wattroff(window1, COLOR_PAIR(color));
-    }
-    else
-        printVoid(x_loc, y_loc, window1);
 }
 
 
