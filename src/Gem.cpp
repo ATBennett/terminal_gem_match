@@ -3,10 +3,10 @@
 #include "../include/Gem.h"
 #include "../include/definitions.h"
 
-Gem::Gem()
+Gem::Gem(int color_in)
 {
     new_gem = true;
-    color=COLOR_BLACK;
+    color=color_in;
     score=0;
     multiplier = 0;
     type = 'X';

@@ -10,15 +10,18 @@ class Match
 {
     private:
         std::vector<std::pair<int,int> > gem_locs;
-        char type;
+        bool large_match;
+        bool intersecting;
+        int length_of_match;
         std::pair<int,int> start_loc;
 
         Gem* randGem();
+        Gem* createRegularGem(int);
 
     protected:
     public:
         Match(std::vector<std::pair<int,int> >);
-        Match(std::vector<std::pair<int,int> >, char);
+        Match(std::vector<std::pair<int,int> >, bool);
         virtual ~Match();
 
         //Operations for a match to work on a grid via a pointer to the grid
@@ -32,7 +35,7 @@ class Match
 
         //Getters and setters
         std::vector<std::pair<int,int> > getGemLocs() { return gem_locs; }
-        char getType() { return type; }
+        bool getLargeMatch() { return large_match; }
 };
 
 #endif // MATCH_H

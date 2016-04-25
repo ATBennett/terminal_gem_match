@@ -8,10 +8,11 @@
 Match::Match(std::vector<std::pair<int,int> > gem_locs_in)
 {
     gem_locs = gem_locs_in;
-    type = 'R'; //Default value for 'Regular' match.
+    large_match = false; //Default value for 'Regular' match.
+    intersecting = false;
 
     if(gem_locs.size() > 3)
-        type = 'A'; //'A' for 'Absorbing' match.
+        large_match = true; //'A' for 'Absorbing' match.
 
     std::sort(gem_locs.begin(),gem_locs.end());
     start_loc = gem_locs[0];
@@ -20,17 +21,21 @@ Match::Match(std::vector<std::pair<int,int> > gem_locs_in)
     {
         if(gem_locs[i] == gem_locs[i-1])
         {
+            intersecting = true;
             start_loc = gem_locs[i];
             gem_locs.erase(gem_locs.begin() + i);
             break;
         }
     }
+
+    length_of_match = gem_locs.size();
 }
 
-Match::Match(std::vector<std::pair<int,int> > gem_locs_in, char type_in)
+Match::Match(std::vector<std::pair<int,int> > gem_locs_in, bool large_match_in)
 {
     gem_locs = gem_locs_in;
-    type = type_in; //Default value for 'Regular' match.
+    large_match = large_match_in; //Default value for 'Regular' match.#
+    intersecting = false;
 
     std::sort(gem_locs.begin(),gem_locs.end());
     start_loc = gem_locs[0];
@@ -39,11 +44,14 @@ Match::Match(std::vector<std::pair<int,int> > gem_locs_in, char type_in)
     {
         if(gem_locs[i] == gem_locs[i-1])
         {
+            intersecting = true;
             start_loc = gem_locs[i];
             gem_locs.erase(gem_locs.begin() + i);
             break;
         }
     }
+
+    length_of_match = gem_locs.size();
 }
 
 Match::~Match()
@@ -123,7 +131,25 @@ void Match::replaceWithSpecial(Gem *(*Gem_Grid)[100][100])
         int y = gem_locs[i].second;
         if(gem_locs[i] == start_loc)
         {
+            int color = (*Gem_Grid)[x][y]->getColor();
+            delete(*Gem_Grid)[x][y];
 
+            if(intersecting)
+                (*Gem_Grid)[x][y] = new StarGem(color);
+
+            else if(length_of_match == 4)
+                (*Gem_Grid)[x][y] = new FireGem(color);
+
+            else if(length_of_match == 5)
+                (*Gem_Grid)[x][y] = new ColorNukeGem();
+
+            else if(length_of_match >= 6)
+                (*Gem_Grid)[x][y] = new StarNukeGem(color);
+
+            else
+                (*Gem_Grid)[x][y] = createRegularGem(color);
+
+            (*Gem_Grid)[x][y]->setNew(false);
         }
         else
         {
@@ -162,6 +188,21 @@ Gem* Match::randGem()
         case 4 : return new MagentaGem();
         case 5 : return new CyanGem();
         case 6 : return new WhiteGem();
+        default : return nullptr;
+    }
+}
+
+Gem* Match::createRegularGem(int color)
+{
+    switch(color)
+    {
+        case COLOR_RED : return new RedGem();
+        case COLOR_GREEN : return new GreenGem();
+        case COLOR_YELLOW : return new YellowGem();
+        case COLOR_BLUE : return new BlueGem();
+        case COLOR_MAGENTA : return new MagentaGem();
+        case COLOR_CYAN : return new CyanGem();
+        case COLOR_WHITE : return new WhiteGem();
         default : return nullptr;
     }
 }

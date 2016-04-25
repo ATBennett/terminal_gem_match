@@ -449,20 +449,21 @@ float GemGrid::removeMatches(std::vector<Match> matches)
     {
         for(unsigned int i = 0; i < matches.size(); i++)
         {
-            if(matches[i].getType() == 'R')
-                matches[i].printShrink(num,Window_1,&Gem_Matrix);
-            else
+            if(matches[i].getLargeMatch())
                 matches[i].printAbsorb(num,Window_1,&Gem_Matrix);
+            else
+                matches[i].printShrink(num,Window_1,&Gem_Matrix);
         }
         wrefresh(Window_1);
         usleep((SPEED*60000)/SHRINK_ANIM_LENGTH);
     }
     for(unsigned int i = 0; i < matches.size(); i++)
     {
-        if(matches[i].getType() == 'R')
-            matches[i].deleteGems(&Gem_Matrix);
-        else
+        if(matches[i].getLargeMatch())
             matches[i].replaceWithSpecial(&Gem_Matrix);
+        else
+            matches[i].deleteGems(&Gem_Matrix);
+
     }
     for(unsigned int i = 0; i < matches.size(); i++)
     {

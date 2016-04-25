@@ -13,7 +13,7 @@ class Gem
         bool falling;
         bool new_gem;    //Set to true on creation.
     public:
-        Gem();
+        Gem(int);
         virtual ~Gem();
 
         void printVoid(int,int,WINDOW*);
