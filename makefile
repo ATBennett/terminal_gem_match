@@ -1,6 +1,6 @@
 
 # The compiler
-CC = g++
+CC = g++ -std=c++14
 
 #Compiler flags
 CFLAGS = -g

@@ -100,7 +100,7 @@ void Match::deleteGems(Gem *(*Gem_Grid)[100][100])
         int x = gem_locs[i].first;
         int y = gem_locs[i].second;
         delete(*Gem_Grid)[x][y];
-        (*Gem_Grid)[x][y]=NULL;
+        (*Gem_Grid)[x][y]=nullptr;
     }
 }
 
@@ -128,7 +128,7 @@ void Match::replaceWithSpecial(Gem *(*Gem_Grid)[100][100])
         else
         {
             delete(*Gem_Grid)[x][y];
-            (*Gem_Grid)[x][y]=NULL;
+            (*Gem_Grid)[x][y]=nullptr;
         }
     }
 }
@@ -139,7 +139,7 @@ void Match::printGems(WINDOW* Window_1,Gem *(*Gem_Grid)[100][100])
     {
         int x = gem_locs[i].first;
         int y = gem_locs[i].second;
-        if((*Gem_Grid)[x][y] != NULL)
+        if((*Gem_Grid)[x][y] != nullptr)
             (*Gem_Grid)[x][y]->printGem(x*GEM_WIDTH,y*GEM_HEIGHT,Window_1);
         else
         {
@@ -162,6 +162,6 @@ Gem* Match::randGem()
         case 4 : return new MagentaGem();
         case 5 : return new CyanGem();
         case 6 : return new WhiteGem();
-        default : return NULL;
+        default : return nullptr;
     }
 }
