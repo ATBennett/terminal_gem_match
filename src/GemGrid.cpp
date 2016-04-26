@@ -437,6 +437,46 @@ std::vector<Match> GemGrid::color_nuke(int first_x,int first_y,int second_x,int 
 //Removes them with flair.
 std::vector<Match> GemGrid::fireSpecials(std::vector<Match> matches)
 {
+    std::vector<Match> result_matches = matches;
+    std::vector<std::pair<int,int> > old_gem_locs;
+    std::vector<std::pair<int,int> > new_gem_locs;
+    for(unsigned int i = 0; i < matches.size(); i++)
+    {
+        std::vector<std::pair<int,int> > gem_locs = matches[i].getGemLocs();
+        old_gem_locs.insert(old_gem_locs.end(),gem_locs.begin(),gem_locs.end());
+    }
+    for(unsigned int i = 0; i < old_gem_locs.size(); i++)
+    {
+        int x = old_gem_locs[i].first;
+        int y = old_gem_locs[i].second;
+        std::vector<std::pair<int,int> > temp_gem_locs = Gem_Matrix[x][y]->getKillCoords(x,y);
+        if(!temp_gem_locs.empty())
+            new_gem_locs.insert(new_gem_locs.end(),temp_gem_locs.begin(),temp_gem_locs.end());
+    }
+
+    bool reset = true;
+    while(reset)
+    {
+        reset = false;
+        for(unsigned int i = 0; i < new_gem_locs.size() && !reset; i++)
+        {
+            for(unsigned int j = 0; j < old_gem_locs.size() && !reset; j++)
+            {
+                if(new_gem_locs[i] == old_gem_locs[j])
+                {
+                    new_gem_locs.erase(new_gem_locs.begin()+i);
+                    reset = true;
+                }
+            }
+        }
+    }
+
+    if(!new_gem_locs.empty())
+    {
+        result_matches.push_back(Match(new_gem_locs,true));
+        result_matches = fireSpecials(result_matches);
+    }
+
     return result_matches;
 }
 
@@ -446,16 +486,9 @@ std::vector<Match> GemGrid::fireSpecials(std::vector<Match> matches)
 float GemGrid::removeMatches(std::vector<Match> matches)
 {
     float score = 0;
-    for(unsigned int i = 0; i < matches.size(); i++)
-    {
-        std::vector<std::pair<int,int> > gem_locs = matches[i].getGemLocs();
-        for(unsigned int j = 0; j < gem_locs.size(); j++)
-            if(Gem_Matrix[gem_locs[i].first][gem_locs[i].second]->getType() != 'B')
-                special_fired = true;
-    }
 
-    if(special_fired)
     matches=fireSpecials(matches);
+
     for(int num = 0; num < SHRINK_ANIM_LENGTH; num++)
     {
         for(unsigned int i = 0; i < matches.size(); i++)
