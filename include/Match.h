@@ -25,13 +25,13 @@ class Match
         virtual ~Match();
 
         //Operations for a match to work on a grid via a pointer to the grid
-        void printGems(WINDOW*, Gem*(*)[100][100]);
-        void printShrink(int,WINDOW*, Gem*(*)[100][100]);
-        void printAbsorb(int,WINDOW*, Gem*(*)[100][100]);
-        void printVoid(WINDOW*, Gem*(*)[100][100]);
-        void deleteGems(Gem*(*)[100][100]);
-        void replaceWithSpecial(Gem*(*)[100][100]);
-        void replaceWithRand(Gem*(*)[100][100]);
+        void printGems(WINDOW*, Gem*(&)[32][32]);
+        void printShrink(int,WINDOW*, Gem*(&)[32][32]);
+        void printAbsorb(int,WINDOW*, Gem*(&)[32][32]);
+        void printVoid(WINDOW*, Gem*(&)[32][32]);
+        float deleteGems(Gem*(&)[32][32]);
+        float replaceWithSpecial(Gem*(&)[32][32]);
+        void replaceWithRand(Gem*(&)[32][32]);
 
         //Getters and setters
         std::vector<std::pair<int,int> > getGemLocs() { return gem_locs; }

@@ -85,6 +85,5 @@ void Gem::printGem(int x_loc,int y_loc, WINDOW *window1)
 
 std::vector<std::pair<int,int> > Gem::getKillCoords(int x_loc, int y_loc){
     std::vector<std::pair<int,int> > coord_buffer;
-//  coord_buffer.push_back(std::make_pair(x_loc,y_loc));
     return coord_buffer;
 }

@@ -18,3 +18,6 @@
 
 //How fast to play animations (1 is fastest, 0 is instant).
 #define SPEED 3
+
+//Define the number of the color nuke gem (must be higher than 7)
+#define COLOR_NUKE 8

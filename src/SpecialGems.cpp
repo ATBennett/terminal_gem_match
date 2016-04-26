@@ -46,7 +46,8 @@ void StarGem::printGem(int x_loc,int y_loc,WINDOW *window1)
     wattroff( window1, COLOR_PAIR(color));
 }
 
-std::vector<std::pair<int,int> > StarGem::getKillCoords(int x_loc, int y_loc){
+std::vector<std::pair<int,int> > StarGem::getKillCoords(int x_loc, int y_loc)
+{
     std::vector<std::pair<int,int> > coord_buffer;
     for(int i = 0; i < BOARD_HEIGHT; i++)
         coord_buffer.push_back(std::make_pair(x_loc,i));
@@ -102,7 +103,8 @@ void FireGem::printGem(int x_loc,int y_loc,WINDOW *window1)
     wattroff( window1, COLOR_PAIR(color));
 }
 
-std::vector<std::pair<int,int> > FireGem::getKillCoords(int x_loc, int y_loc){
+std::vector<std::pair<int,int> > FireGem::getKillCoords(int x_loc, int y_loc)
+{
     std::vector<std::pair<int,int> > coord_buffer;
     coord_buffer.push_back(std::make_pair(x_loc,y_loc));
     if(x_loc > 0)
@@ -130,9 +132,9 @@ std::vector<std::pair<int,int> > FireGem::getKillCoords(int x_loc, int y_loc){
 }
 
 ColorNukeGem::ColorNukeGem()
-: Gem(COLOR_BLACK)
+: Gem(COLOR_NUKE)
 {
-    type = 'R';
+    type = 'N';
     score = 20;
     multiplier = 1;
 }
@@ -219,7 +221,8 @@ void StarNukeGem::printGem(int x_loc,int y_loc,WINDOW *window1)
     wattroff( window1, COLOR_PAIR(color));
 }
 
-std::vector<std::pair<int,int> > StarNukeGem::getKillCoords(int x_loc, int y_loc){
+std::vector<std::pair<int,int> > StarNukeGem::getKillCoords(int x_loc, int y_loc)
+{
     std::vector<std::pair<int,int> > coord_buffer;
     for(int i = 0; i < BOARD_HEIGHT; i++)
     {

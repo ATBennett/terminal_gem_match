@@ -14,7 +14,7 @@ class GemGrid
 {
     private:
         //2D matrix of gems x,y
-        Gem *Gem_Matrix[100][100];
+        Gem* Gem_Matrix[32][32];
         Gem* randGem();
 
         //Causes gems to fall down by 1.
@@ -25,7 +25,7 @@ class GemGrid
         std::vector<std::pair<int,int> > matchH(int,int);
         std::vector<Match> intersectMatches(std::vector<Match>);
 
-        WINDOW *Window_1;
+        WINDOW* Window_1;
         int grid_width;
         int grid_height;
     public:

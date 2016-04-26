@@ -31,11 +31,14 @@ Match::Match(std::vector<std::pair<int,int> > gem_locs_in)
     length_of_match = gem_locs.size();
 }
 
-Match::Match(std::vector<std::pair<int,int> > gem_locs_in, bool large_match_in)
+Match::Match(std::vector<std::pair<int,int> > gem_locs_in, bool quick_destroy)
 {
     gem_locs = gem_locs_in;
-    large_match = large_match_in; //Default value for 'Regular' match.#
     intersecting = false;
+    large_match = false;
+
+    if(gem_locs.size() > 3 && !quick_destroy)
+        large_match = true; //'A' for 'Absorbing' match.
 
     std::sort(gem_locs.begin(),gem_locs.end());
     start_loc = gem_locs[0];
@@ -59,24 +62,24 @@ Match::~Match()
     //dtor
 }
 
-void Match::printShrink(int shrink,WINDOW* Window_1, Gem *(*Gem_Grid)[100][100])
+void Match::printShrink(int shrink,WINDOW* Window_1, Gem* (&Gem_Grid)[32][32])
 {
     for(unsigned int i = 0; i < gem_locs.size(); i++)
     {
         int x = gem_locs[i].first;
         int y = gem_locs[i].second;
-        (*Gem_Grid)[x][y]->printVoid(x*GEM_WIDTH,y*GEM_HEIGHT,Window_1);
-        (*Gem_Grid)[x][y]->printShrink(shrink,x*GEM_WIDTH,y*GEM_HEIGHT,Window_1);
+        Gem_Grid[x][y]->printVoid(x*GEM_WIDTH,y*GEM_HEIGHT,Window_1);
+        Gem_Grid[x][y]->printShrink(shrink,x*GEM_WIDTH,y*GEM_HEIGHT,Window_1);
     }
 }
 
-void Match::printAbsorb(int num,WINDOW* Window_1, Gem *(*Gem_Grid)[100][100])
+void Match::printAbsorb(int num,WINDOW* Window_1, Gem* (&Gem_Grid)[32][32])
 {
     for(unsigned int i = 0; i < gem_locs.size(); i++)
     {
         int x = gem_locs[i].first;
         int y = gem_locs[i].second;
-        (*Gem_Grid)[x][y]->printVoid(x*GEM_WIDTH,y*GEM_HEIGHT,Window_1);
+        Gem_Grid[x][y]->printVoid(x*GEM_WIDTH,y*GEM_HEIGHT,Window_1);
     }
 
     for(unsigned int i = 0; i < gem_locs.size(); i++)
@@ -87,86 +90,96 @@ void Match::printAbsorb(int num,WINDOW* Window_1, Gem *(*Gem_Grid)[100][100])
         int diff_y = (gem_locs[i].second - start_loc.second) * GEM_HEIGHT;
         int move_x = -(diff_x/SHRINK_ANIM_LENGTH) * (num + 1);
         int move_y = -(diff_y/SHRINK_ANIM_LENGTH) * (num + 1);
-        (*Gem_Grid)[x][y]->printGem(x*GEM_WIDTH + move_x,y*GEM_HEIGHT + move_y,Window_1);
+        Gem_Grid[x][y]->printGem(x*GEM_WIDTH + move_x,y*GEM_HEIGHT + move_y,Window_1);
     }
 }
 
-void Match::printVoid(WINDOW* Window_1, Gem *(*Gem_Grid)[100][100])
+void Match::printVoid(WINDOW* Window_1, Gem* (&Gem_Grid)[32][32])
 {
     for(unsigned int i = 0; i < gem_locs.size(); i++)
     {
         int x = gem_locs[i].first;
         int y = gem_locs[i].second;
-        (*Gem_Grid)[x][y]->printVoid(x*GEM_WIDTH,y*GEM_HEIGHT,Window_1);
+        Gem_Grid[x][y]->printVoid(x*GEM_WIDTH,y*GEM_HEIGHT,Window_1);
     }
 }
 
-void Match::deleteGems(Gem *(*Gem_Grid)[100][100])
+float Match::deleteGems(Gem* (&Gem_Grid)[32][32])
+{
+    float score = 0;
+    float multiplier = 0;
+    for(unsigned int i = 0; i < gem_locs.size(); i++)
+    {
+        int x = gem_locs[i].first;
+        int y = gem_locs[i].second;
+        score += Gem_Grid[x][y]->getScore();
+        multiplier += Gem_Grid[x][y]->getMultiplier();
+        delete Gem_Grid[x][y];
+        Gem_Grid[x][y]=nullptr;
+    }
+    return score*multiplier;
+}
+
+void Match::replaceWithRand(Gem* (&Gem_Grid)[32][32])
 {
     for(unsigned int i = 0; i < gem_locs.size(); i++)
     {
         int x = gem_locs[i].first;
         int y = gem_locs[i].second;
-        delete(*Gem_Grid)[x][y];
-        (*Gem_Grid)[x][y]=nullptr;
+        delete Gem_Grid[x][y];
+        Gem_Grid[x][y]=randGem();
     }
 }
 
-void Match::replaceWithRand(Gem *(*Gem_Grid)[100][100])
+float Match::replaceWithSpecial(Gem* (&Gem_Grid)[32][32])
 {
+    float score = 0;
+    float multiplier = 0;
     for(unsigned int i = 0; i < gem_locs.size(); i++)
     {
         int x = gem_locs[i].first;
         int y = gem_locs[i].second;
-        delete(*Gem_Grid)[x][y];
-        (*Gem_Grid)[x][y]=randGem();
-    }
-}
-
-void Match::replaceWithSpecial(Gem *(*Gem_Grid)[100][100])
-{
-    for(unsigned int i = 0; i < gem_locs.size(); i++)
-    {
-        int x = gem_locs[i].first;
-        int y = gem_locs[i].second;
+        score += Gem_Grid[x][y]->getScore();
+        multiplier += Gem_Grid[x][y]->getMultiplier();
         if(gem_locs[i] == start_loc)
         {
-            int color = (*Gem_Grid)[x][y]->getColor();
-            delete(*Gem_Grid)[x][y];
+            int color = Gem_Grid[x][y]->getColor();
+            delete Gem_Grid[x][y];
 
             if(intersecting)
-                (*Gem_Grid)[x][y] = new StarGem(color);
+                Gem_Grid[x][y] = new StarGem(color);
 
             else if(length_of_match == 4)
-                (*Gem_Grid)[x][y] = new FireGem(color);
+                Gem_Grid[x][y] = new FireGem(color);
 
             else if(length_of_match == 5)
-                (*Gem_Grid)[x][y] = new ColorNukeGem();
+                Gem_Grid[x][y] = new ColorNukeGem();
 
             else if(length_of_match >= 6)
-                (*Gem_Grid)[x][y] = new StarNukeGem(color);
+                Gem_Grid[x][y] = new StarNukeGem(color);
 
             else
-                (*Gem_Grid)[x][y] = createRegularGem(color);
+                Gem_Grid[x][y] = createRegularGem(color);
 
-            (*Gem_Grid)[x][y]->setNew(false);
+            Gem_Grid[x][y]->setNew(false);
         }
         else
         {
-            delete(*Gem_Grid)[x][y];
-            (*Gem_Grid)[x][y]=nullptr;
+            delete Gem_Grid[x][y];
+            Gem_Grid[x][y]=nullptr;
         }
     }
+    return score*multiplier;
 }
 
-void Match::printGems(WINDOW* Window_1,Gem *(*Gem_Grid)[100][100])
+void Match::printGems(WINDOW* Window_1,Gem* (&Gem_Grid)[32][32])
 {
     for(unsigned int i = 0; i < gem_locs.size(); i++)
     {
         int x = gem_locs[i].first;
         int y = gem_locs[i].second;
-        if((*Gem_Grid)[x][y] != nullptr)
-            (*Gem_Grid)[x][y]->printGem(x*GEM_WIDTH,y*GEM_HEIGHT,Window_1);
+        if (Gem_Grid[x][y] != nullptr)
+            Gem_Grid[x][y]->printGem(x*GEM_WIDTH,y*GEM_HEIGHT,Window_1);
         else
         {
             Gem* GemBuffer = randGem();

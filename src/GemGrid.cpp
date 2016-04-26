@@ -7,7 +7,7 @@
 #include "../include/GemGrid.h"
 
 
-GemGrid::GemGrid(unsigned int width, unsigned int height, WINDOW *Screen_1)
+GemGrid::GemGrid(unsigned int width, unsigned int height, WINDOW* Screen_1)
 {
     srand(time(nullptr));
     grid_height = height;
@@ -16,6 +16,7 @@ GemGrid::GemGrid(unsigned int width, unsigned int height, WINDOW *Screen_1)
 
     //Initialises the colors for ncurses (may move this).
     init_pair(COLOR_BLACK,COLOR_BLACK,COLOR_BLACK);
+    init_pair(COLOR_NUKE,COLOR_BLACK,COLOR_BLACK);
     init_pair(COLOR_BLUE,COLOR_WHITE,COLOR_BLUE);
     init_pair(COLOR_CYAN,COLOR_BLACK,COLOR_CYAN);
     init_pair(COLOR_GREEN,COLOR_BLACK,COLOR_GREEN);
@@ -27,7 +28,18 @@ GemGrid::GemGrid(unsigned int width, unsigned int height, WINDOW *Screen_1)
 
 GemGrid::~GemGrid()
 {
-    //dtor
+    delwin(Window_1);
+    for(int y = 0; y < 32; y++)
+    {
+        for(int x = 0; x < 32; x++)
+        {
+            if(Gem_Matrix[x][y] != nullptr)
+            {
+                delete Gem_Matrix[x][y];
+                Gem_Matrix[x][y] = nullptr;
+            }
+        }
+    }
 }
 
 void GemGrid::createRandomGrid()
@@ -267,7 +279,7 @@ void GemGrid::quickRemoveMatches(std::vector<Match> matches)
 {
     for( unsigned int i = 0; i < matches.size(); i++)
     {
-        matches[i].replaceWithRand(&Gem_Matrix);
+        matches[i].replaceWithRand(Gem_Matrix);
     }
 }
 
@@ -425,7 +437,7 @@ std::vector<Match> GemGrid::color_nuke(int first_x,int first_y,int second_x,int 
 //Removes them with flair.
 std::vector<Match> GemGrid::fireSpecials(std::vector<Match> matches)
 {
-    return matches;
+    return result_matches;
 }
 
 
@@ -433,7 +445,7 @@ std::vector<Match> GemGrid::fireSpecials(std::vector<Match> matches)
 //Removes them with flair.
 float GemGrid::removeMatches(std::vector<Match> matches)
 {
-    bool special_fired = false;
+    float score = 0;
     for(unsigned int i = 0; i < matches.size(); i++)
     {
         std::vector<std::pair<int,int> > gem_locs = matches[i].getGemLocs();
@@ -443,16 +455,15 @@ float GemGrid::removeMatches(std::vector<Match> matches)
     }
 
     if(special_fired)
-        matches=fireSpecials(matches);
-
+    matches=fireSpecials(matches);
     for(int num = 0; num < SHRINK_ANIM_LENGTH; num++)
     {
         for(unsigned int i = 0; i < matches.size(); i++)
         {
             if(matches[i].getLargeMatch())
-                matches[i].printAbsorb(num,Window_1,&Gem_Matrix);
+                matches[i].printAbsorb(num,Window_1,Gem_Matrix);
             else
-                matches[i].printShrink(num,Window_1,&Gem_Matrix);
+                matches[i].printShrink(num,Window_1,Gem_Matrix);
         }
         wrefresh(Window_1);
         usleep((SPEED*60000)/SHRINK_ANIM_LENGTH);
@@ -460,18 +471,18 @@ float GemGrid::removeMatches(std::vector<Match> matches)
     for(unsigned int i = 0; i < matches.size(); i++)
     {
         if(matches[i].getLargeMatch())
-            matches[i].replaceWithSpecial(&Gem_Matrix);
+            score += matches[i].replaceWithSpecial(Gem_Matrix);
         else
-            matches[i].deleteGems(&Gem_Matrix);
+            score += matches[i].deleteGems(Gem_Matrix);
 
     }
     for(unsigned int i = 0; i < matches.size(); i++)
     {
-        matches[i].printGems(Window_1,&Gem_Matrix);
+        matches[i].printGems(Window_1,Gem_Matrix);
     }
     wrefresh(Window_1);
     usleep(SPEED*30000);
-    return matches.size();
+    return score;
 }
 
 //Makes the gems fall into blank spaces below them.
