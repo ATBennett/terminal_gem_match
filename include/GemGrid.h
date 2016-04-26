@@ -14,7 +14,7 @@ class GemGrid
 {
     private:
         //2D matrix of gems x,y
-        Gem* Gem_Matrix[32][32];
+        Gem* Gem_Matrix[50][50];
         Gem* randGem();
 
         //Causes gems to fall down by 1.

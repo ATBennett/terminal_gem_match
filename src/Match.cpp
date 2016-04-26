@@ -62,7 +62,7 @@ Match::~Match()
     //dtor
 }
 
-void Match::printShrink(int shrink,WINDOW* Window_1, Gem* (&Gem_Grid)[32][32])
+void Match::printShrink(int shrink,WINDOW* Window_1, Gem* (&Gem_Grid)[50][50])
 {
     for(unsigned int i = 0; i < gem_locs.size(); i++)
     {
@@ -73,7 +73,7 @@ void Match::printShrink(int shrink,WINDOW* Window_1, Gem* (&Gem_Grid)[32][32])
     }
 }
 
-void Match::printAbsorb(int num,WINDOW* Window_1, Gem* (&Gem_Grid)[32][32])
+void Match::printAbsorb(int num,WINDOW* Window_1, Gem* (&Gem_Grid)[50][50])
 {
     for(unsigned int i = 0; i < gem_locs.size(); i++)
     {
@@ -94,7 +94,7 @@ void Match::printAbsorb(int num,WINDOW* Window_1, Gem* (&Gem_Grid)[32][32])
     }
 }
 
-void Match::printVoid(WINDOW* Window_1, Gem* (&Gem_Grid)[32][32])
+void Match::printVoid(WINDOW* Window_1, Gem* (&Gem_Grid)[50][50])
 {
     for(unsigned int i = 0; i < gem_locs.size(); i++)
     {
@@ -104,7 +104,7 @@ void Match::printVoid(WINDOW* Window_1, Gem* (&Gem_Grid)[32][32])
     }
 }
 
-float Match::deleteGems(Gem* (&Gem_Grid)[32][32])
+float Match::deleteGems(Gem* (&Gem_Grid)[50][50])
 {
     float score = 0;
     float multiplier = 0;
@@ -120,7 +120,7 @@ float Match::deleteGems(Gem* (&Gem_Grid)[32][32])
     return score*multiplier;
 }
 
-void Match::replaceWithRand(Gem* (&Gem_Grid)[32][32])
+void Match::replaceWithRand(Gem* (&Gem_Grid)[50][50])
 {
     for(unsigned int i = 0; i < gem_locs.size(); i++)
     {
@@ -131,7 +131,7 @@ void Match::replaceWithRand(Gem* (&Gem_Grid)[32][32])
     }
 }
 
-float Match::replaceWithSpecial(Gem* (&Gem_Grid)[32][32])
+float Match::replaceWithSpecial(Gem* (&Gem_Grid)[50][50])
 {
     float score = 0;
     float multiplier = 0;
@@ -172,7 +172,7 @@ float Match::replaceWithSpecial(Gem* (&Gem_Grid)[32][32])
     return score*multiplier;
 }
 
-void Match::printGems(WINDOW* Window_1,Gem* (&Gem_Grid)[32][32])
+void Match::printGems(WINDOW* Window_1,Gem* (&Gem_Grid)[50][50])
 {
     for(unsigned int i = 0; i < gem_locs.size(); i++)
     {

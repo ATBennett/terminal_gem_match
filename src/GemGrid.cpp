@@ -29,9 +29,9 @@ GemGrid::GemGrid(unsigned int width, unsigned int height, WINDOW* Screen_1)
 GemGrid::~GemGrid()
 {
     delwin(Window_1);
-    for(int y = 0; y < 32; y++)
+    for(int y = 0; y < 50; y++)
     {
-        for(int x = 0; x < 32; x++)
+        for(int x = 0; x < 50; x++)
         {
             if(Gem_Matrix[x][y] != nullptr)
             {
@@ -60,7 +60,7 @@ void GemGrid::createRandomGrid()
 //Animation to make gems appear as if they are falling onto the board.
 void GemGrid::fallOntoBoard()
 {
-    Gem *Gem_Buffer[100][100];
+    Gem* Gem_Buffer[50][50];
     for(int y = 0; y < grid_height; y++)
     {
         for(int x = 0; x < grid_width; x++)
