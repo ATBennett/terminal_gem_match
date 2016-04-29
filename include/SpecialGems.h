@@ -8,6 +8,7 @@ class StarGem : public Gem
         StarGem(int);
         virtual ~StarGem();
         void printGem(int,int, WINDOW*) override;
+        void printSpecialAnim(int,int,int,WINDOW*) override;
         std::vector<std::pair<int,int> > getKillCoords(int,int) override;
 };
 
@@ -17,6 +18,7 @@ class FireGem : public Gem
         FireGem(int);
         virtual ~FireGem();
         void printGem(int,int, WINDOW*) override;
+        void printSpecialAnim(int,int,int,WINDOW*) override;
         std::vector<std::pair<int,int> > getKillCoords(int,int) override;
 };
 
@@ -26,6 +28,7 @@ class ColorNukeGem : public Gem
         ColorNukeGem();
         virtual ~ColorNukeGem();
         void printGem(int,int, WINDOW*) override;
+        void printSpecialAnim(int,int,int,WINDOW*) override;
 };
 
 class StarNukeGem : public Gem
@@ -34,6 +37,7 @@ class StarNukeGem : public Gem
         StarNukeGem(int);
         virtual ~StarNukeGem();
         void printGem(int,int, WINDOW*) override;
+        void printSpecialAnim(int,int,int,WINDOW*) override;
         std::vector<std::pair<int,int> > getKillCoords(int,int) override;
 };
 #endif // SPECIALGEMS_H

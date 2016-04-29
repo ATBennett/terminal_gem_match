@@ -7,7 +7,7 @@
 #define GEM_HEIGHT 3
 #define GEM_WIDTH 5
 
-#define SHRINK_ANIM_LENGTH 4
+#define ANIM_LENGTH 4
 
 //Tells the program how large to make the GemBoard.
 #define BOARD_HEIGHT 8

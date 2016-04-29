@@ -11,6 +11,7 @@ Gem::Gem(int color_in)
     multiplier = 0;
     type = 'X';
     falling = false;
+    activated = false;
 }
 
 Gem::~Gem()
@@ -29,9 +30,9 @@ void Gem::printVoid(int x_loc, int y_loc, WINDOW *window1)
     wattroff(window1, COLOR_PAIR(COLOR_BLACK));
 }
 //Prints a smaller version of the gem at x,y.
-void Gem::printShrink(int shrink,int x_loc,int y_loc, WINDOW *window1)
+void Gem::printShrink(int num,int x_loc,int y_loc, WINDOW *window1)
 {
-    switch(shrink)
+    switch(num)
     {
         case 0 :
             wattron(window1, COLOR_PAIR(color));

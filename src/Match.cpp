@@ -88,8 +88,8 @@ void Match::printAbsorb(int num,WINDOW* Window_1, Gem* (&Gem_Grid)[50][50])
         int y = gem_locs[i].second;
         int diff_x = (gem_locs[i].first - start_loc.first) * GEM_WIDTH;
         int diff_y = (gem_locs[i].second - start_loc.second) * GEM_HEIGHT;
-        int move_x = -(diff_x/SHRINK_ANIM_LENGTH) * (num + 1);
-        int move_y = -(diff_y/SHRINK_ANIM_LENGTH) * (num + 1);
+        int move_x = -(diff_x/ANIM_LENGTH) * (num + 1);
+        int move_y = -(diff_y/ANIM_LENGTH) * (num + 1);
         Gem_Grid[x][y]->printGem(x*GEM_WIDTH + move_x,y*GEM_HEIGHT + move_y,Window_1);
     }
 }
