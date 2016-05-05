@@ -135,9 +135,65 @@ void FireGem::printGem(int x_loc,int y_loc,WINDOW *window1)
     wattroff( window1, COLOR_PAIR(color));
 }
 
-void FireGem::printSpecialAnim(int num,int x_loc,int y_locs,WINDOW* window1)
+void FireGem::printSpecialAnim(int num,int x_loc,int y_loc,WINDOW* window1)
 {
+    switch(num)
+    {
+        case 0 :
+            wattron(window1, COLOR_PAIR(COLOR_YELLOW));
 
+            mvwprintw(window1,y_loc,x_loc+1,"   ");
+            mvwprintw(window1,y_loc+1,x_loc,"     ");
+            mvwprintw(window1,y_loc+2,x_loc+1,"   ");
+
+            wattron(window1, COLOR_PAIR(COLOR_YELLOW));
+            break;
+
+        case 1 :
+            wattron(window1, COLOR_PAIR(COLOR_YELLOW));
+
+            mvwprintw(window1,y_loc-1,x_loc+1,"   ");
+            mvwprintw(window1,y_loc,x_loc - 1,"       ");
+            mvwprintw(window1,y_loc+1,x_loc - 2,"         ");
+            mvwprintw(window1,y_loc+2,x_loc - 1,"       ");
+            mvwprintw(window1,y_loc+GEM_HEIGHT,x_loc+1,"   ");
+
+            wattron(window1, COLOR_PAIR(COLOR_YELLOW));
+            break;
+
+        case 2 :
+            wattron(window1, COLOR_PAIR(COLOR_YELLOW));
+
+            mvwprintw(window1,y_loc-2,x_loc+1,"   ");
+            mvwprintw(window1,y_loc-1,x_loc-1,"       ");
+            mvwprintw(window1,y_loc,x_loc-3,"           ");
+            mvwprintw(window1,y_loc+1,x_loc-4,"             ");
+            mvwprintw(window1,y_loc+2,x_loc-3,"           ");
+            mvwprintw(window1,y_loc+GEM_HEIGHT,x_loc,"     ");
+            mvwprintw(window1,y_loc+GEM_HEIGHT+1,x_loc+1,"   ");
+
+            wattron(window1, COLOR_PAIR(COLOR_YELLOW));
+            break;
+
+        case 3 :
+            wattron(window1, COLOR_PAIR(COLOR_YELLOW));
+
+            mvwprintw(window1,y_loc-3,x_loc,"     ");
+            mvwprintw(window1,y_loc-2,x_loc-2,"         ");
+            mvwprintw(window1,y_loc-1,x_loc-3,"           ");
+            mvwprintw(window1,y_loc,x_loc-4,"             ");
+            mvwprintw(window1,y_loc+1,x_loc-5,"               ");
+            mvwprintw(window1,y_loc+2,x_loc-4,"             ");
+            mvwprintw(window1,y_loc+GEM_HEIGHT,x_loc-3,"           ");
+            mvwprintw(window1,y_loc+GEM_HEIGHT+1,x_loc-2,"         ");
+            mvwprintw(window1,y_loc+GEM_HEIGHT+2,x_loc,"     ");
+
+            wattron(window1, COLOR_PAIR(COLOR_YELLOW));
+            break;
+
+        default :
+            break;
+    }
 }
 
 std::vector<std::pair<int,int> > FireGem::getKillCoords(int x_loc, int y_loc)

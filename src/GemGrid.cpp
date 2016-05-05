@@ -452,8 +452,8 @@ std::vector<Match> GemGrid::color_nuke(int first_x,int first_y,int second_x,int 
     return matches;
 }
 
-//Takes a vector of pairs that contain the location of all the gems to be removed.
-//Removes them with flair.
+//Takes a vector of matches that contain the location of all the gems to be removed.
+//Returns matches that include the special gem kills and plays the animations
 std::vector<Match> GemGrid::fireSpecials(std::vector<Match> matches)
 {
     std::vector<std::pair<int,int> > current_gem_locs;
@@ -492,6 +492,7 @@ std::vector<Match> GemGrid::fireSpecials(std::vector<Match> matches)
                 if(Gem_Matrix[x][y]->getType() == 'S' && !Gem_Matrix[x][y]->getActivated())
                     Gem_Matrix[x][y]->printSpecialAnim(i,x*GEM_WIDTH,y*GEM_HEIGHT,Window_1);
             }
+            wrefresh(Window_1);
             usleep((SPEED*60000)/ANIM_LENGTH);
         }
         for(unsigned int j = 0; j < current_gem_locs.size(); j++)
