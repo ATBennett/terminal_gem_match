@@ -5,8 +5,8 @@
 PlayingBoard::PlayingBoard()
 : Gem_Grid(BOARD_WIDTH,BOARD_HEIGHT, newwin(GEM_HEIGHT*BOARD_HEIGHT,GEM_WIDTH*BOARD_WIDTH,1,1))
 {
-    cursor_pos.first = 0;
-    cursor_pos.second = 0;
+    cursor_x = 0;
+    cursor_y = 0;
     turns = GAME_TURNS;
     score = 0;
     highlight = false;
@@ -14,7 +14,6 @@ PlayingBoard::PlayingBoard()
     Grid_Window = Gem_Grid.getWindow();
     Stats_Window = newwin(GEM_HEIGHT*BOARD_HEIGHT, 24, 0, GEM_WIDTH*BOARD_WIDTH + 3);
     Background_Window = newwin(GEM_HEIGHT*BOARD_HEIGHT + 2,GEM_WIDTH*BOARD_WIDTH + 2,0,0);
-    printExtras();
     wrefresh(Grid_Window);
     wrefresh(Stats_Window);
 
@@ -36,36 +35,33 @@ void PlayingBoard::printEnding()
 
 void PlayingBoard::mvCursorH(int val)
 {
-    if(cursor_pos.first + val < BOARD_WIDTH && cursor_pos.first + val >= 0)
+    if(cursor_x + val < BOARD_WIDTH && cursor_x + val >= 0)
     {
-        cursor_pos.first = cursor_pos.first+val;
+        Gem_Grid.removeCursor(cursor_x,cursor_y);
+        cursor_x = cursor_x+val;
+        Gem_Grid.printCursor(cursor_x,cursor_y,"=====");
+        wrefresh(Grid_Window);
     }
 }
 
 void PlayingBoard::mvCursorV(int val)
 {
-    if(cursor_pos.second + val < BOARD_HEIGHT && cursor_pos.second + val >= 0)
+    if(cursor_y + val < BOARD_HEIGHT && cursor_y + val >= 0)
     {
-        cursor_pos.second = cursor_pos.second+val;
+        Gem_Grid.removeCursor(cursor_x,cursor_y);
+        cursor_y = cursor_y+val;
+        Gem_Grid.printCursor(cursor_x,cursor_y,"=====");
+        wrefresh(Grid_Window);
     }
 }
 
 void PlayingBoard::swapGem(char dir)
 {
-    Gem_Grid.swapGems(std::make_pair(cursor_pos.first,cursor_pos.second),dir);
-    if(Gem_Grid.matched().empty()) Gem_Grid.swapGems(std::make_pair(cursor_pos.first,cursor_pos.second),dir);
-    else
+    float tmp = Gem_Grid.swapGems(cursor_x,cursor_y,dir);
+    if( tmp != 0)
     {
+        score += tmp;
         turns--;
-        printExtras();
-        std::vector<std::pair<int,int> > matched = Gem_Grid.matched();
-        std::vector<std::pair<int,int> > killedGems;
-        while(!matched.empty())
-        {
-            killedGems = Gem_Grid.getKilledGems(matched);
-            score = score + Gem_Grid.fancyRemoveGems(killedGems);
-            matched = Gem_Grid.matched();
-        }
     }
 }
 
@@ -73,29 +69,42 @@ void PlayingBoard::initialise()
 {
     wborder(Background_Window,0,0,0,0,0,0,0,0);
     wrefresh(Background_Window);
-    printExtras();
+    printEverything();
     Gem_Grid.createRandomGrid();
     Gem_Grid.fallOntoBoard();
 }
 
-void PlayingBoard::printExtras()
+void PlayingBoard::updateExtras()
+{
+    //Printing the cursor into the Grid_Window.
+    if(highlight) Gem_Grid.printCursor(cursor_x,cursor_y,"+++++"); //Highlight changes the cursor
+    else Gem_Grid.printCursor(cursor_x,cursor_y,"=====");
+
+    //Printing extra info.
+    mvwprintw( Stats_Window, 13, 1,"Score:             ");
+    mvwprintw( Stats_Window, 14, 1,"Turns Remaining:             ");
+    mvwprintw( Stats_Window, 13, 1,"Score: %.0f",score);
+    mvwprintw( Stats_Window, 14, 1,"Turns Remaining: %d",turns);
+
+    wrefresh(Grid_Window);
+    wrefresh(Stats_Window);
+}
+
+void PlayingBoard::printEverything()
 {
 
     wclear(Stats_Window);
     Gem_Grid.printGrid();
-
     //Printing the cursor into the Grid_Window.
-    wattron( Grid_Window, COLOR_PAIR(COLOR_BLACK));
-    if(highlight) mvwprintw( Grid_Window, cursor_pos.second*GEM_HEIGHT+2,cursor_pos.first*GEM_WIDTH,"+++++"); //Highlight changes the cursor
-    else mvwprintw( Grid_Window, cursor_pos.second*GEM_HEIGHT+2,cursor_pos.first*GEM_WIDTH,"=====");
-    wattroff( Grid_Window, COLOR_PAIR(COLOR_BLACK));
+    if(highlight) Gem_Grid.printCursor(cursor_x,cursor_y,"+++++"); //Highlight changes the cursor
+    else Gem_Grid.printCursor(cursor_x,cursor_y,"=====");
 
     //Printing extra info.
     mvwprintw( Stats_Window, 1, 1,"Controls: ");
     mvwprintw( Stats_Window, 3, 1,"Arrow keys: move cursor");
     mvwprintw( Stats_Window, 5, 1,"Space bar: select Gem");
     mvwprintw( Stats_Window, 7, 1,"X: Reset board");
-    mvwprintw( Stats_Window, 8, 1,"(Costs 2 turns)");
+    mvwprintw( Stats_Window, 8, 1,"(Costs 1 turn)");
     mvwprintw( Stats_Window, 10, 1,"You must make a match");
     mvwprintw( Stats_Window, 11, 1,"for a move to be valid");
     mvwprintw( Stats_Window, 13, 1,"Score: %.0f",score);
@@ -107,12 +116,12 @@ void PlayingBoard::printExtras()
 
 void PlayingBoard::resetGems()
 {
-    if(turns > 2)
+    if(turns > 1)
     {
         Gem_Grid.fallAll();
         Gem_Grid.createRandomGrid();
         Gem_Grid.fallOntoBoard();
-        turns = turns - 2;
+        turns = turns - 1;
     }
     else
     {
@@ -129,5 +138,5 @@ void PlayingBoard::resizeW()
     wresize(Stats_Window, GEM_HEIGHT*BOARD_HEIGHT, 24);
     wborder(Background_Window,0,0,0,0,0,0,0,0);
     wrefresh(Background_Window);
-    printExtras();
+    printEverything();
 }

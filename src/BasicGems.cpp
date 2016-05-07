@@ -5,9 +5,8 @@
 #include <ncurses.h>
 
 RedGem::RedGem()
-: Gem()
+: Gem(COLOR_RED)
 {
-    color = COLOR_RED;
     score = 5;
     multiplier = 0.333333;
     type = 'B';
@@ -48,9 +47,8 @@ void RedGem::printGem(int x_loc,int y_loc, WINDOW *window1)
 }
 
 GreenGem::GreenGem()
-: Gem()
+: Gem(COLOR_GREEN)
 {
-    color = COLOR_GREEN;
     score = 5;
     multiplier = 0.333333;
     type = 'B';
@@ -91,9 +89,8 @@ void GreenGem::printGem(int x_loc,int y_loc, WINDOW *window1)
 }
 
 YellowGem::YellowGem()
-: Gem()
+: Gem(COLOR_YELLOW)
 {
-    color = COLOR_YELLOW;
     score = 5;
     multiplier = 0.333333;
     type = 'B';
@@ -134,9 +131,8 @@ void YellowGem::printGem(int x_loc,int y_loc, WINDOW *window1)
 }
 
 BlueGem::BlueGem()
-: Gem()
+: Gem(COLOR_BLUE)
 {
-    color = COLOR_BLUE;
     score = 5;
     multiplier = 0.333333;
     type = 'B';
@@ -177,9 +173,8 @@ void BlueGem::printGem(int x_loc,int y_loc, WINDOW *window1)
 }
 
 MagentaGem::MagentaGem()
-: Gem()
+: Gem(COLOR_MAGENTA)
 {
-    color = COLOR_MAGENTA;
     score = 5;
     multiplier = 0.333333;
     type = 'B';
@@ -214,9 +209,8 @@ void MagentaGem::printGem(int x_loc,int y_loc, WINDOW *window1)
 }
 
 CyanGem::CyanGem()
-: Gem()
+: Gem(COLOR_CYAN)
 {
-    color = COLOR_CYAN;
     score = 5;
     multiplier = 0.333333;
     type = 'B';
@@ -257,9 +251,8 @@ void CyanGem::printGem(int x_loc,int y_loc, WINDOW *window1)
 }
 
 WhiteGem::WhiteGem()
-: Gem()
+: Gem(COLOR_WHITE)
 {
-    color = COLOR_WHITE;
     score = 5;
     multiplier = 0.333333;
     type = 'B';

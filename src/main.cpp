@@ -65,6 +65,7 @@ int main()
     //Initialises the board.
     PlayingBoard Main_Board;
     Main_Board.initialise();
+    Main_Board.printEverything();
 
     //Main Gameplay loop.
     while(Main_Board.getTurns()>0)
@@ -76,10 +77,9 @@ int main()
         {
             checkWindowSize(min_x,min_y);
             Main_Board.resizeW();
+            Main_Board.printEverything();
             getmaxyx(stdscr, last_x,last_y);
         }
-
-        Main_Board.printExtras();
 
         //Input detection.
         int temp = toupper(getch());
@@ -109,7 +109,7 @@ int main()
             {
                 //If space is pressed enters gem swapping mode.
                 Main_Board.setHighlight(true);
-                Main_Board.printExtras();
+                Main_Board.updateExtras();
                 int temp2 = toupper(getch());
                 char dir;
                 switch(temp2)
@@ -123,6 +123,7 @@ int main()
                 }
                 Main_Board.setHighlight(false);
                 Main_Board.swapGem(dir);
+                Main_Board.updateExtras();
                 break;
             }
 

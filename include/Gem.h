@@ -12,14 +12,14 @@ class Gem
     private:
         bool falling;
         bool new_gem;    //Set to true on creation.
+        bool activated;
     public:
-        Gem();
+        Gem(int);
         virtual ~Gem();
 
         void printVoid(int,int,WINDOW*);
         virtual void printGem(int,int,WINDOW*);
-        void printShrink1(int,int,WINDOW*);
-        void printShrink2(int,int,WINDOW*);
+        void printShrink(int,int,int,WINDOW*);
         virtual std::vector<std::pair<int,int> > getKillCoords(int,int); //Returns the coordinates of all the gems to be removed from matching this gem
 
         //Getters and setters,
@@ -31,6 +31,8 @@ class Gem
         void setFalling(bool val) { falling = val; }
         bool getNew() { return new_gem; }
         void setNew(bool var) { new_gem = var; }
+        void setActivated(bool var) { activated = var; }
+        bool getActivated() { return activated; }
     protected:
         int color;
         int score;
