@@ -1,6 +1,7 @@
 #ifndef MATCH_H
 #define MATCH_H
 
+#include "definitions.h"
 #include <vector>
 #include <ncurses.h>
 #include "Gem.h"
@@ -25,13 +26,13 @@ class Match
         virtual ~Match();
 
         //Operations for a match to work on a grid via a pointer to the grid
-        void printGems(WINDOW*, Gem*(&)[50][50]);
-        void printShrink(int,WINDOW*, Gem*(&)[50][50]);
-        void printAbsorb(int,WINDOW*, Gem*(&)[50][50]);
-        void printVoid(WINDOW*, Gem*(&)[50][50]);
-        float deleteGems(Gem*(&)[50][50]);
-        float replaceWithSpecial(Gem*(&)[50][50]);
-        void replaceWithRand(Gem*(&)[50][50]);
+        void printGems(WINDOW*, Gem*(&)[MAX_BOARD_WIDTH][MAX_BOARD_HEIGHT]);
+        void printShrink(int,WINDOW*, Gem*(&)[MAX_BOARD_WIDTH][MAX_BOARD_HEIGHT]);
+        void printAbsorb(int,WINDOW*, Gem*(&)[MAX_BOARD_WIDTH][MAX_BOARD_HEIGHT]);
+        void printVoid(WINDOW*, Gem*(&)[MAX_BOARD_WIDTH][MAX_BOARD_HEIGHT]);
+        float deleteGems(Gem*(&)[MAX_BOARD_WIDTH][MAX_BOARD_HEIGHT]);
+        float replaceWithSpecial(Gem*(&)[MAX_BOARD_WIDTH][MAX_BOARD_HEIGHT]);
+        void replaceWithRand(Gem*(&)[MAX_BOARD_WIDTH][MAX_BOARD_HEIGHT]);
 
         //Getters and setters
         std::vector<std::pair<int,int> > getGemLocs() { return gem_locs; }

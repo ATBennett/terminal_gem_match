@@ -62,49 +62,57 @@ Match::~Match()
     //dtor
 }
 
-void Match::printShrink(int shrink,WINDOW* Window_1, Gem* (&Gem_Grid)[50][50])
+void Match::printShrink(int shrink,WINDOW* Window_1, Gem* (&Gem_Grid)[MAX_BOARD_WIDTH][MAX_BOARD_HEIGHT])
 {
     for(unsigned int i = 0; i < gem_locs.size(); i++)
     {
         int x = gem_locs[i].first;
         int y = gem_locs[i].second;
-        Gem_Grid[x][y]->printVoid(x*GEM_WIDTH,y*GEM_HEIGHT,Window_1);
-        Gem_Grid[x][y]->printShrink(shrink,x*GEM_WIDTH,y*GEM_HEIGHT,Window_1);
+        if(Gem_Grid[x][y] != nullptr)
+        {
+            Gem_Grid[x][y]->printVoid(x*GEM_WIDTH,y*GEM_HEIGHT,Window_1);
+            Gem_Grid[x][y]->printShrink(shrink,x*GEM_WIDTH,y*GEM_HEIGHT,Window_1);
+        }
     }
 }
 
-void Match::printAbsorb(int num,WINDOW* Window_1, Gem* (&Gem_Grid)[50][50])
+void Match::printAbsorb(int num,WINDOW* Window_1, Gem* (&Gem_Grid)[MAX_BOARD_WIDTH][MAX_BOARD_HEIGHT])
 {
     for(unsigned int i = 0; i < gem_locs.size(); i++)
     {
         int x = gem_locs[i].first;
         int y = gem_locs[i].second;
-        Gem_Grid[x][y]->printVoid(x*GEM_WIDTH,y*GEM_HEIGHT,Window_1);
+        if(Gem_Grid[x][y] != nullptr)
+            Gem_Grid[x][y]->printVoid(x*GEM_WIDTH,y*GEM_HEIGHT,Window_1);
     }
 
     for(unsigned int i = 0; i < gem_locs.size(); i++)
     {
         int x = gem_locs[i].first;
         int y = gem_locs[i].second;
-        int diff_x = (gem_locs[i].first - start_loc.first) * GEM_WIDTH;
-        int diff_y = (gem_locs[i].second - start_loc.second) * GEM_HEIGHT;
-        int move_x = -(diff_x/ANIM_LENGTH) * (num + 1);
-        int move_y = -(diff_y/ANIM_LENGTH) * (num + 1);
-        Gem_Grid[x][y]->printGem(x*GEM_WIDTH + move_x,y*GEM_HEIGHT + move_y,Window_1);
+        if(Gem_Grid[x][y] != nullptr)
+        {
+            int diff_x = (gem_locs[i].first - start_loc.first) * GEM_WIDTH;
+            int diff_y = (gem_locs[i].second - start_loc.second) * GEM_HEIGHT;
+            int move_x = -(diff_x/ANIM_LENGTH) * (num + 1);
+            int move_y = -(diff_y/ANIM_LENGTH) * (num + 1);
+            Gem_Grid[x][y]->printGem(x*GEM_WIDTH + move_x,y*GEM_HEIGHT + move_y,Window_1);
+        }
     }
 }
 
-void Match::printVoid(WINDOW* Window_1, Gem* (&Gem_Grid)[50][50])
+void Match::printVoid(WINDOW* Window_1, Gem* (&Gem_Grid)[MAX_BOARD_WIDTH][MAX_BOARD_HEIGHT])
 {
     for(unsigned int i = 0; i < gem_locs.size(); i++)
     {
         int x = gem_locs[i].first;
         int y = gem_locs[i].second;
-        Gem_Grid[x][y]->printVoid(x*GEM_WIDTH,y*GEM_HEIGHT,Window_1);
+        if(Gem_Grid[x][y] != nullptr)
+            Gem_Grid[x][y]->printVoid(x*GEM_WIDTH,y*GEM_HEIGHT,Window_1);
     }
 }
 
-float Match::deleteGems(Gem* (&Gem_Grid)[50][50])
+float Match::deleteGems(Gem* (&Gem_Grid)[MAX_BOARD_WIDTH][MAX_BOARD_HEIGHT])
 {
     float score = 0;
     float multiplier = 0;
@@ -112,26 +120,30 @@ float Match::deleteGems(Gem* (&Gem_Grid)[50][50])
     {
         int x = gem_locs[i].first;
         int y = gem_locs[i].second;
-        score += Gem_Grid[x][y]->getScore();
-        multiplier += Gem_Grid[x][y]->getMultiplier();
-        delete Gem_Grid[x][y];
-        Gem_Grid[x][y]=nullptr;
+        if(Gem_Grid[x][y] != nullptr)
+        {
+            score += Gem_Grid[x][y]->getScore();
+            multiplier += Gem_Grid[x][y]->getMultiplier();
+            delete Gem_Grid[x][y];
+            Gem_Grid[x][y]=nullptr;
+        }
     }
     return score*multiplier;
 }
 
-void Match::replaceWithRand(Gem* (&Gem_Grid)[50][50])
+void Match::replaceWithRand(Gem* (&Gem_Grid)[MAX_BOARD_WIDTH][MAX_BOARD_HEIGHT])
 {
     for(unsigned int i = 0; i < gem_locs.size(); i++)
     {
         int x = gem_locs[i].first;
         int y = gem_locs[i].second;
-        delete Gem_Grid[x][y];
+        if(Gem_Grid[x][y] != nullptr)
+            delete Gem_Grid[x][y];
         Gem_Grid[x][y]=randGem();
     }
 }
 
-float Match::replaceWithSpecial(Gem* (&Gem_Grid)[50][50])
+float Match::replaceWithSpecial(Gem* (&Gem_Grid)[MAX_BOARD_WIDTH][MAX_BOARD_HEIGHT])
 {
     float score = 0;
     float multiplier = 0;
@@ -139,12 +151,19 @@ float Match::replaceWithSpecial(Gem* (&Gem_Grid)[50][50])
     {
         int x = gem_locs[i].first;
         int y = gem_locs[i].second;
-        score += Gem_Grid[x][y]->getScore();
-        multiplier += Gem_Grid[x][y]->getMultiplier();
+        if(Gem_Grid[x][y] != nullptr)
+        {
+            score += Gem_Grid[x][y]->getScore();
+            multiplier += Gem_Grid[x][y]->getMultiplier();
+        }
         if(gem_locs[i] == start_loc)
         {
-            int color = Gem_Grid[x][y]->getColor();
-            delete Gem_Grid[x][y];
+            int color = COLOR_BLACK;
+            if(Gem_Grid[x][y] != nullptr)
+            {
+                color = Gem_Grid[x][y]->getColor();
+                delete Gem_Grid[x][y];
+            }
 
             if(intersecting)
                 Gem_Grid[x][y] = new StarGem(color);
@@ -165,14 +184,17 @@ float Match::replaceWithSpecial(Gem* (&Gem_Grid)[50][50])
         }
         else
         {
-            delete Gem_Grid[x][y];
-            Gem_Grid[x][y]=nullptr;
+            if(Gem_Grid[x][y] != nullptr)
+            {
+                delete Gem_Grid[x][y];
+                Gem_Grid[x][y]=nullptr;
+            }
         }
     }
     return score*multiplier;
 }
 
-void Match::printGems(WINDOW* Window_1,Gem* (&Gem_Grid)[50][50])
+void Match::printGems(WINDOW* Window_1,Gem* (&Gem_Grid)[MAX_BOARD_WIDTH][MAX_BOARD_HEIGHT])
 {
     for(unsigned int i = 0; i < gem_locs.size(); i++)
     {

@@ -58,12 +58,6 @@ void PlayingBoard::mvCursorV(int val)
 void PlayingBoard::swapGem(char dir)
 {
     float tmp = Gem_Grid.swapGems(cursor_x,cursor_y,dir);
-    if(DEBUGGING)
-    {
-        mvprintw(GEM_HEIGHT*BOARD_HEIGHT + 3,0,"                       ");
-        mvprintw(GEM_HEIGHT*BOARD_HEIGHT + 3,0,"swapGems returned: %f",tmp);
-        refresh();
-    }
     if( tmp != 0)
     {
         score += tmp;
@@ -100,7 +94,6 @@ void PlayingBoard::printEverything()
 {
 
     wclear(Stats_Window);
-
     Gem_Grid.printGrid();
     //Printing the cursor into the Grid_Window.
     if(highlight) Gem_Grid.printCursor(cursor_x,cursor_y,"+++++"); //Highlight changes the cursor
@@ -111,7 +104,7 @@ void PlayingBoard::printEverything()
     mvwprintw( Stats_Window, 3, 1,"Arrow keys: move cursor");
     mvwprintw( Stats_Window, 5, 1,"Space bar: select Gem");
     mvwprintw( Stats_Window, 7, 1,"X: Reset board");
-    mvwprintw( Stats_Window, 8, 1,"(Costs 2 turns)");
+    mvwprintw( Stats_Window, 8, 1,"(Costs 1 turn)");
     mvwprintw( Stats_Window, 10, 1,"You must make a match");
     mvwprintw( Stats_Window, 11, 1,"for a move to be valid");
     mvwprintw( Stats_Window, 13, 1,"Score: %.0f",score);
@@ -123,12 +116,12 @@ void PlayingBoard::printEverything()
 
 void PlayingBoard::resetGems()
 {
-    if(turns > 2)
+    if(turns > 1)
     {
         Gem_Grid.fallAll();
         Gem_Grid.createRandomGrid();
         Gem_Grid.fallOntoBoard();
-        turns = turns - 2;
+        turns = turns - 1;
     }
     else
     {

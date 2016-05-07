@@ -14,6 +14,11 @@ GemGrid::GemGrid(unsigned int width, unsigned int height, WINDOW* Screen_1)
     grid_width = width;
     Window_1 = Screen_1;
 
+    //Sets entire grid to nullptr
+    for(int x = 0; x < MAX_BOARD_WIDTH; x++)
+        for(int y = 0; y < MAX_BOARD_HEIGHT; y++)
+            Gem_Matrix[x][y]=nullptr;
+
     //Initialises the colors for ncurses (may move this).
     init_pair(COLOR_BLACK,COLOR_BLACK,COLOR_BLACK);
     init_pair(COLOR_NUKE,COLOR_BLACK,COLOR_BLACK);
@@ -29,9 +34,9 @@ GemGrid::GemGrid(unsigned int width, unsigned int height, WINDOW* Screen_1)
 GemGrid::~GemGrid()
 {
     delwin(Window_1);
-    for(int y = 0; y < 50; y++)
+    for(int y = 0; y < MAX_BOARD_HEIGHT; y++)
     {
-        for(int x = 0; x < 50; x++)
+        for(int x = 0; x < MAX_BOARD_WIDTH; x++)
         {
             if(Gem_Matrix[x][y] != nullptr)
             {
@@ -60,7 +65,7 @@ void GemGrid::createRandomGrid()
 //Animation to make gems appear as if they are falling onto the board.
 void GemGrid::fallOntoBoard()
 {
-    Gem* Gem_Buffer[50][50];
+    Gem* Gem_Buffer[MAX_BOARD_WIDTH][MAX_BOARD_HEIGHT];
     for(int y = 0; y < grid_height; y++)
     {
         for(int x = 0; x < grid_width; x++)
@@ -356,7 +361,8 @@ float GemGrid::swapGems(int first_x, int first_y, char dir)
         matches = getMatched();
         if(matches.empty())
         {
-            swapGemPosition(first_x, first_y, second_x, second_y);
+            if(SWAP_BACK)
+                swapGemPosition(first_x, first_y, second_x, second_y);
             return 0;
         }
     }
@@ -654,7 +660,7 @@ void GemGrid::fallAll()
             {
                 if(Gem_Matrix[x][b_y]!=nullptr)
                 {
-                    if(b_y < grid_height)
+                    if(b_y < grid_height-1)
                     {
                         Gem_Matrix[x][b_y+1] = Gem_Matrix[x][b_y];
                         Gem_Matrix[x][b_y] = nullptr;
@@ -673,7 +679,7 @@ void GemGrid::fallAll()
         //Plays the falling animation.
         for(int h = 0; h < GEM_HEIGHT; h++)
         {
-            for(int y = grid_height - 1; y >= 0; y-- )
+            for(int y = grid_height - 1; y > 0; y-- )
             {
                 for(int x = 0; x < grid_width; x++)
                 {
@@ -688,13 +694,13 @@ void GemGrid::fallAll()
             usleep(SPEED*15000);
         }
         //Moves all the gems down one.
-        for(int y = grid_height - 1; y >= 0; y-- )
+        for(int y = grid_height - 1; y > 0; y-- )
         {
             for(int x = 0; x < grid_width; x++)
             {
                 if(Gem_Matrix[x][y]!=nullptr)
                 {
-                    if(y < grid_height)
+                    if(y < grid_height - 1)
                     {
                         Gem_Matrix[x][y+1] = Gem_Matrix[x][y];
                         Gem_Matrix[x][y] = nullptr;

@@ -212,11 +212,11 @@ void StarNukeGem::printGem(int x_loc,int y_loc,WINDOW *window1)
     }
     if(y_loc + 2 >= 0 && y_loc + 2 < max_y)
     {
-        mvwaddch(window1, y_loc+2, x_loc,'/');
+        mvwaddch(window1, y_loc+2, x_loc,'\\');
         waddch( window1, ACS_CKBOARD);
         waddch( window1, ACS_CKBOARD);
         waddch( window1, ACS_CKBOARD);
-        waddch( window1, '\\');
+        waddch( window1, '/');
     }
     wattroff( window1, COLOR_PAIR(color));
 }
