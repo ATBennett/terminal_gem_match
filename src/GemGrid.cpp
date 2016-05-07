@@ -438,15 +438,6 @@ std::vector<Match> GemGrid::color_nuke(int first_x,int first_y,int second_x,int 
             if(Gem_Matrix[x][y]->getColor() == color)
                 gem_locs.push_back(std::make_pair(x,y));
 
-    for(int j = 0; j < ANIM_LENGTH; j++)
-    {
-        for(unsigned int i = 0; i < gem_locs.size(); i++)
-            Gem_Matrix[first_x][first_y]->printSpecialAnim(j,gem_locs[i].first*GEM_WIDTH,gem_locs[i].second*GEM_HEIGHT,Window_1);
-
-        wrefresh(Window_1);
-        usleep((SPEED*60000)/ANIM_LENGTH);
-    }
-
     gem_locs.push_back(std::make_pair(first_x,first_y));
     matches.push_back(Match(gem_locs,true));
     return matches;
@@ -483,18 +474,6 @@ std::vector<Match> GemGrid::fireSpecials(std::vector<Match> matches)
 
     if(!new_gem_locs.empty())
     {
-        for(int i = 0; i < ANIM_LENGTH; i++)
-        {
-            for(unsigned int j = 0; j < current_gem_locs.size(); j++)
-            {
-                int x = current_gem_locs[j].first;
-                int y = current_gem_locs[j].second;
-                if(Gem_Matrix[x][y]->getType() == 'S' && !Gem_Matrix[x][y]->getActivated())
-                    Gem_Matrix[x][y]->printSpecialAnim(i,x*GEM_WIDTH,y*GEM_HEIGHT,Window_1);
-            }
-            wrefresh(Window_1);
-            usleep((SPEED*60000)/ANIM_LENGTH);
-        }
         for(unsigned int j = 0; j < current_gem_locs.size(); j++)
         {
             int x = current_gem_locs[j].first;

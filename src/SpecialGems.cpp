@@ -46,38 +46,6 @@ void StarGem::printGem(int x_loc,int y_loc,WINDOW *window1)
     wattroff( window1, COLOR_PAIR(color));
 }
 
-void StarGem::printSpecialAnim(int num,int x_loc,int y_loc,WINDOW* window1)
-{
-    wattron( window1, COLOR_PAIR((COLOR_YELLOW)));
-    switch(num)
-    {
-        case 0 :
-            mvwprintw(window1,y_loc,x_loc+1,"   ");
-            mvwprintw(window1,y_loc,x_loc+1,"     ");
-            mvwprintw(window1,y_loc,x_loc+1,"   ");
-            break;
-        case 1 :
-            mvwprintw(window1,y_loc,x_loc+1,"   ");
-            mvwprintw(window1,y_loc,x_loc+1,"     ");
-            mvwprintw(window1,y_loc,x_loc+1,"   ");
-            break;
-        case 2 :
-            mvwprintw(window1,y_loc,x_loc+1,"   ");
-            mvwprintw(window1,y_loc,x_loc+1,"     ");
-            mvwprintw(window1,y_loc,x_loc+1,"   ");
-            break;
-        case 3 :
-            mvwprintw(window1,y_loc,x_loc+1,"   ");
-            mvwprintw(window1,y_loc,x_loc+1,"     ");
-            mvwprintw(window1,y_loc,x_loc+1,"   ");
-            break;
-        default :
-            printVoid(x_loc,y_loc,window1);
-            break;
-    }
-    wattroff( window1, COLOR_PAIR((COLOR_YELLOW)));
-}
-
 std::vector<std::pair<int,int> > StarGem::getKillCoords(int x_loc, int y_loc)
 {
     std::vector<std::pair<int,int> > coord_buffer;
@@ -133,67 +101,6 @@ void FireGem::printGem(int x_loc,int y_loc,WINDOW *window1)
         waddch( window1, ACS_CKBOARD);
     }
     wattroff( window1, COLOR_PAIR(color));
-}
-
-void FireGem::printSpecialAnim(int num,int x_loc,int y_loc,WINDOW* window1)
-{
-    switch(num)
-    {
-        case 0 :
-            wattron(window1, COLOR_PAIR(COLOR_YELLOW));
-
-            mvwprintw(window1,y_loc,x_loc+1,"   ");
-            mvwprintw(window1,y_loc+1,x_loc,"     ");
-            mvwprintw(window1,y_loc+2,x_loc+1,"   ");
-
-            wattron(window1, COLOR_PAIR(COLOR_YELLOW));
-            break;
-
-        case 1 :
-            wattron(window1, COLOR_PAIR(COLOR_YELLOW));
-
-            mvwprintw(window1,y_loc-1,x_loc+1,"   ");
-            mvwprintw(window1,y_loc,x_loc - 1,"       ");
-            mvwprintw(window1,y_loc+1,x_loc - 2,"         ");
-            mvwprintw(window1,y_loc+2,x_loc - 1,"       ");
-            mvwprintw(window1,y_loc+GEM_HEIGHT,x_loc+1,"   ");
-
-            wattron(window1, COLOR_PAIR(COLOR_YELLOW));
-            break;
-
-        case 2 :
-            wattron(window1, COLOR_PAIR(COLOR_YELLOW));
-
-            mvwprintw(window1,y_loc-2,x_loc+1,"   ");
-            mvwprintw(window1,y_loc-1,x_loc-1,"       ");
-            mvwprintw(window1,y_loc,x_loc-3,"           ");
-            mvwprintw(window1,y_loc+1,x_loc-4,"             ");
-            mvwprintw(window1,y_loc+2,x_loc-3,"           ");
-            mvwprintw(window1,y_loc+GEM_HEIGHT,x_loc,"     ");
-            mvwprintw(window1,y_loc+GEM_HEIGHT+1,x_loc+1,"   ");
-
-            wattron(window1, COLOR_PAIR(COLOR_YELLOW));
-            break;
-
-        case 3 :
-            wattron(window1, COLOR_PAIR(COLOR_YELLOW));
-
-            mvwprintw(window1,y_loc-3,x_loc,"     ");
-            mvwprintw(window1,y_loc-2,x_loc-2,"         ");
-            mvwprintw(window1,y_loc-1,x_loc-3,"           ");
-            mvwprintw(window1,y_loc,x_loc-4,"             ");
-            mvwprintw(window1,y_loc+1,x_loc-5,"               ");
-            mvwprintw(window1,y_loc+2,x_loc-4,"             ");
-            mvwprintw(window1,y_loc+GEM_HEIGHT,x_loc-3,"           ");
-            mvwprintw(window1,y_loc+GEM_HEIGHT+1,x_loc-2,"         ");
-            mvwprintw(window1,y_loc+GEM_HEIGHT+2,x_loc,"     ");
-
-            wattron(window1, COLOR_PAIR(COLOR_YELLOW));
-            break;
-
-        default :
-            break;
-    }
 }
 
 std::vector<std::pair<int,int> > FireGem::getKillCoords(int x_loc, int y_loc)
@@ -270,47 +177,6 @@ void ColorNukeGem::printGem(int x_loc,int y_loc,WINDOW *window1)
     wattroff( window1, A_BOLD);
 }
 
-void ColorNukeGem::printSpecialAnim(int num,int x_loc,int y_loc,WINDOW* window1)
-{
-    switch(num)
-    {
-        case 0 :
-            wattron(window1, COLOR_PAIR(COLOR_CYAN));
-            mvwprintw(window1,y_loc,x_loc+2,"");
-            mvwprintw(window1,y_loc+1,x_loc+2," ");
-            mvwprintw(window1,y_loc+2,x_loc+2,"");
-            wattroff(window1, COLOR_PAIR(COLOR_CYAN));
-            break;
-
-        case 1 :
-            wattron(window1, COLOR_PAIR(COLOR_CYAN));
-            mvwprintw(window1,y_loc,x_loc+2," ");
-            mvwprintw(window1,y_loc+1,x_loc+1,"   ");
-            mvwprintw(window1,y_loc+2,x_loc+2," ");
-            wattroff(window1, COLOR_PAIR(COLOR_CYAN));
-            break;
-
-        case 2 :
-            wattron(window1, COLOR_PAIR(COLOR_CYAN));
-            mvwprintw(window1,y_loc,x_loc+1,"   ");
-            mvwprintw(window1,y_loc+1,x_loc+1,"   ");
-            mvwprintw(window1,y_loc+2,x_loc+1,"   ");
-            wattroff(window1, COLOR_PAIR(COLOR_CYAN));
-            break;
-
-        case 3 :
-            wattron(window1, COLOR_PAIR(COLOR_CYAN));
-            mvwprintw(window1,y_loc,x_loc+1,"   ");
-            mvwprintw(window1,y_loc+1,x_loc,"     ");
-            mvwprintw(window1,y_loc+2,x_loc+1,"   ");
-            wattroff(window1, COLOR_PAIR(COLOR_CYAN));
-            break;
-
-        default :
-            break;
-    }
-}
-
 StarNukeGem::StarNukeGem(int color_in)
 : Gem(color_in)
 {
@@ -353,11 +219,6 @@ void StarNukeGem::printGem(int x_loc,int y_loc,WINDOW *window1)
         waddch( window1, '\\');
     }
     wattroff( window1, COLOR_PAIR(color));
-}
-
-void StarNukeGem::printSpecialAnim(int num,int x_loc,int y_loc,WINDOW* window1)
-{
-
 }
 
 std::vector<std::pair<int,int> > StarNukeGem::getKillCoords(int x_loc, int y_loc)
