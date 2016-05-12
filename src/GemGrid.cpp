@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <algorithm>
 #include "../include/GemGrid.h"
-
+#include "../include/ShrinkEffect.h"
 
 GemGrid::GemGrid(unsigned int width, unsigned int height, WINDOW* Screen_1)
 {
@@ -523,15 +523,26 @@ float GemGrid::removeMatches(std::vector<Match> matches)
 
     matches=fireSpecials(matches);
 
+    //Shrinking animation
+    std::vector<ShrinkEffect> Shrink_Effects;
+    for(unsigned int i = 0; i < matches.size(); i++)
+    {
+        if( !matches[i].getLargeMatch() )
+        {
+            std::vector<std::pair<int,int>> gem_locs = matches[i].getGemLocs();
+            for(unsigned int j = 0; j < gem_locs.size(); j++)
+                Shrink_Effects.push_back(ShrinkEffect(gem_locs[j].first*GEM_WIDTH,gem_locs[j].second*GEM_HEIGHT,ANIM_LENGTH,Window_1));
+        }
+    }
     for(int num = 0; num < ANIM_LENGTH; num++)
     {
         for(unsigned int i = 0; i < matches.size(); i++)
-        {
             if(matches[i].getLargeMatch())
                 matches[i].printAbsorb(num,Window_1,Gem_Matrix);
-            else
-                matches[i].printShrink(num,Window_1,Gem_Matrix);
-        }
+
+        for(unsigned int i = 0; i < Shrink_Effects.size(); i++)
+            Shrink_Effects[i].playEffect();
+
         wrefresh(Window_1);
         usleep((SPEED*60000)/ANIM_LENGTH);
     }

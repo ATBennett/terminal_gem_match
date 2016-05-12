@@ -62,20 +62,6 @@ Match::~Match()
     //dtor
 }
 
-void Match::printShrink(int shrink,WINDOW* Window_1, Gem* (&Gem_Grid)[MAX_BOARD_WIDTH][MAX_BOARD_HEIGHT])
-{
-    for(unsigned int i = 0; i < gem_locs.size(); i++)
-    {
-        int x = gem_locs[i].first;
-        int y = gem_locs[i].second;
-        if(Gem_Grid[x][y] != nullptr)
-        {
-            Gem_Grid[x][y]->printVoid(x*GEM_WIDTH,y*GEM_HEIGHT,Window_1);
-            Gem_Grid[x][y]->printShrink(shrink,x*GEM_WIDTH,y*GEM_HEIGHT,Window_1);
-        }
-    }
-}
-
 void Match::printAbsorb(int num,WINDOW* Window_1, Gem* (&Gem_Grid)[MAX_BOARD_WIDTH][MAX_BOARD_HEIGHT])
 {
     for(unsigned int i = 0; i < gem_locs.size(); i++)
