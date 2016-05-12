@@ -9,9 +9,6 @@
 
 class ShrinkEffect : public Effect
 {
-    private:
-        std::vector<char> gem_strings;
-
     public:
         ShrinkEffect(int,int,int,WINDOW*);
         virtual ~ShrinkEffect();
