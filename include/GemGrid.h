@@ -41,7 +41,7 @@ class GemGrid
         void quickRemoveMatches(std::vector<Match>);
         float swapGems(int,int,char);
         void fallAll();
-        void printCursor(int,int,const char*);
+        void printCursor(int,int,char);
         void removeCursor(int,int);
 
         //Getters and setters,

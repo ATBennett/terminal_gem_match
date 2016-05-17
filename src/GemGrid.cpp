@@ -727,9 +727,13 @@ void GemGrid::fallAll()
     }
 }
 
-void GemGrid::printCursor(int x, int y, const char* cursor)
+void GemGrid::printCursor(int x_loc, int y_loc, char cursor)
 {
-    mvwprintw(Window_1,y*GEM_HEIGHT+2,x*GEM_WIDTH,cursor);
+    int y = y_loc*GEM_HEIGHT + GEM_HEIGHT - 1;
+    for(int x = x_loc*GEM_WIDTH; x < (x_loc+1)*GEM_WIDTH; x++)
+    {
+        mvwaddch(Window_1,y,x,cursor);
+    }
 }
 
 void GemGrid::removeCursor(int x, int y)

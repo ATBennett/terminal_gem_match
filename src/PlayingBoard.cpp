@@ -39,7 +39,7 @@ void PlayingBoard::mvCursorH(int val)
     {
         Gem_Grid.removeCursor(cursor_x,cursor_y);
         cursor_x = cursor_x+val;
-        Gem_Grid.printCursor(cursor_x,cursor_y,"=====");
+        Gem_Grid.printCursor(cursor_x,cursor_y,'=');
         wrefresh(Grid_Window);
     }
 }
@@ -50,7 +50,7 @@ void PlayingBoard::mvCursorV(int val)
     {
         Gem_Grid.removeCursor(cursor_x,cursor_y);
         cursor_y = cursor_y+val;
-        Gem_Grid.printCursor(cursor_x,cursor_y,"=====");
+        Gem_Grid.printCursor(cursor_x,cursor_y,'=');
         wrefresh(Grid_Window);
     }
 }
@@ -77,8 +77,8 @@ void PlayingBoard::initialise()
 void PlayingBoard::updateExtras()
 {
     //Printing the cursor into the Grid_Window.
-    if(highlight) Gem_Grid.printCursor(cursor_x,cursor_y,"+++++"); //Highlight changes the cursor
-    else Gem_Grid.printCursor(cursor_x,cursor_y,"=====");
+    if(highlight) Gem_Grid.printCursor(cursor_x,cursor_y,'+'); //Highlight changes the cursor
+    else Gem_Grid.printCursor(cursor_x,cursor_y,'+');
 
     //Printing extra info.
     mvwprintw( Stats_Window, 13, 1,"Score:             ");
@@ -96,8 +96,8 @@ void PlayingBoard::printEverything()
     wclear(Stats_Window);
     Gem_Grid.printGrid();
     //Printing the cursor into the Grid_Window.
-    if(highlight) Gem_Grid.printCursor(cursor_x,cursor_y,"+++++"); //Highlight changes the cursor
-    else Gem_Grid.printCursor(cursor_x,cursor_y,"=====");
+    if(highlight) Gem_Grid.printCursor(cursor_x,cursor_y,'+'); //Highlight changes the cursor
+    else Gem_Grid.printCursor(cursor_x,cursor_y,'=');
 
     //Printing extra info.
     mvwprintw( Stats_Window, 1, 1,"Controls: ");

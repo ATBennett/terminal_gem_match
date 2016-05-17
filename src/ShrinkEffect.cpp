@@ -17,7 +17,7 @@ void ShrinkEffect::playEffect()
     if(cycle < length)
     {
         cycle++;
-        attron(COLOR_PAIR(COLOR_BLACK));
+        wattron(Window_1, COLOR_PAIR(COLOR_BLACK));
         int shrink_lines[GEM_HEIGHT];
         float line_weight = 200/GEM_HEIGHT;
         for(int i = 0; i < GEM_HEIGHT; i++)
@@ -56,6 +56,6 @@ void ShrinkEffect::playEffect()
                 mvwaddch(Window_1,y,x+GEM_WIDTH - (j+1),' ');
             }
         }
-        attroff(COLOR_PAIR(COLOR_BLACK));
+        wattroff(Window_1, COLOR_PAIR(COLOR_BLACK));
     }
 }

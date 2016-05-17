@@ -22,22 +22,32 @@ Gem::~Gem()
 //Prints a Gem sized blank space at x,y.
 void Gem::printVoid(int x_loc, int y_loc, WINDOW *window1)
 {
+    int max_x = GEM_WIDTH*BOARD_WIDTH;
     int max_y = GEM_HEIGHT*BOARD_HEIGHT;
     wattron(window1, COLOR_PAIR(COLOR_BLACK));
-    if(y_loc >= 0 && y_loc < max_y) mvwprintw(window1, y_loc,x_loc,"     ");
-    if(y_loc + 1 >= 0 && y_loc+1 < max_y) mvwprintw(window1,y_loc+1,x_loc,"     ");
-    if(y_loc + 2 >= 0 && y_loc+2 < max_y) mvwprintw(window1,y_loc+2,x_loc,"     ");
+    for(int x = x_loc; x < GEM_WIDTH+x_loc && x < max_x; x++)
+    {
+        for(int y = y_loc; y < GEM_HEIGHT+y_loc && y < max_y; y++)
+        {
+            mvwaddch( window1, y,x,' ');
+        }
+    }
     wattroff(window1, COLOR_PAIR(COLOR_BLACK));
 }
 
 //By Default a gem prints it's color in a 6x3 square.
 void Gem::printGem(int x_loc,int y_loc, WINDOW *window1)
 {
+    int max_x = GEM_WIDTH*BOARD_WIDTH;
     int max_y = GEM_HEIGHT*BOARD_HEIGHT;
     wattron(window1, COLOR_PAIR(color));
-    if(y_loc >= 0 && y_loc < max_y) mvwprintw( window1, y_loc,x_loc,"     ");
-    if(y_loc + 1 >= 0 && y_loc+1 < max_y) mvwprintw( window1, y_loc+1,x_loc,"     ");
-    if(y_loc + 2 >= 0 && y_loc+2 < max_y) mvwprintw( window1, y_loc+2,x_loc,"     ");
+    for(int x = x_loc; x < GEM_WIDTH+x_loc && x < max_x; x++)
+    {
+        for(int y = y_loc; y < GEM_HEIGHT+y_loc && y < max_y; y++)
+        {
+            mvwaddch( window1, y,x,' ');
+        }
+    }
     wattroff(window1, COLOR_PAIR(color));
 }
 
