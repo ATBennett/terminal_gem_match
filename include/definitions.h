@@ -4,7 +4,7 @@
 #define GEM_HEIGHT 3
 #define GEM_WIDTH 5
 
-#define ANIM_LENGTH 4
+#define ANIM_LENGTH 5
 
 //Defines how large to make the maximum grid size(no issues found with larger sizes, but may run into performance problems)
 #define MAX_BOARD_HEIGHT 32
