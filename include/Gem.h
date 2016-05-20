@@ -5,6 +5,7 @@
 
 #include <ncurses.h>
 #include <vector>
+#include "Effect.h"
 
 
 class Gem
@@ -21,6 +22,7 @@ class Gem
         void printVoid(int,int,WINDOW*);
         virtual void printGem(int,int,WINDOW*);
         virtual std::vector<std::pair<int,int> > getKillCoords(int,int); //Returns the coordinates of all the gems to be removed from matching this gem
+        virtual Effect* initEffect(int,int,WINDOW*) { return nullptr; } //Returns a pointer to a new effect created by the gem
 
         //Getters and setters,
         int getColor() { return color; }

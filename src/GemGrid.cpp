@@ -6,6 +6,7 @@
 #include <algorithm>
 #include "../include/GemGrid.h"
 #include "../include/ShrinkEffect.h"
+#include "../include/SpecialEffects.h"
 
 GemGrid::GemGrid(unsigned int width, unsigned int height, WINDOW* Screen_1)
 {
@@ -455,6 +456,7 @@ std::vector<Match> GemGrid::fireSpecials(std::vector<Match> matches)
 {
     std::vector<std::pair<int,int> > current_gem_locs;
     std::vector<std::pair<int,int> > new_gem_locs;
+    std::vector<Effect*> effects;
     for(unsigned int i = 0; i < matches.size(); i++)
     {
         std::vector<std::pair<int,int> > temp_gem_locs = matches[i].getGemLocs();
@@ -472,14 +474,31 @@ std::vector<Match> GemGrid::fireSpecials(std::vector<Match> matches)
         if(Gem_Matrix[x][y]->getType() == 'S' && !Gem_Matrix[x][y]->getActivated())
         {
             std::vector<std::pair<int,int> > temp_gem_locs = Gem_Matrix[x][y]->getKillCoords(x,y);
+            effects.push_back(Gem_Matrix[x][y]->initEffect(x*GEM_WIDTH,y*GEM_HEIGHT,Window_1));
 
             for(unsigned int j = 0; j < temp_gem_locs.size(); j++)
                 new_gem_locs.push_back(temp_gem_locs[j]);
         }
     }
 
+
     if(!new_gem_locs.empty())
     {
+        for(int num = 0; num < ANIM_LENGTH; num++)
+        {
+            for(unsigned int i = 0; i < effects.size(); i++)
+                effects[i]->playEffect();
+
+            wrefresh(Window_1);
+            usleep((SPEED*60000)/ANIM_LENGTH);
+        }
+
+        for(unsigned int i = 0; i < effects.size(); i++)
+        {
+            delete effects[i];
+            effects[i]=nullptr;
+        }
+
         for(unsigned int j = 0; j < current_gem_locs.size(); j++)
         {
             int x = current_gem_locs[j].first;
@@ -524,14 +543,14 @@ float GemGrid::removeMatches(std::vector<Match> matches)
     matches=fireSpecials(matches);
 
     //Shrinking animation
-    std::vector<ShrinkEffect> Shrink_Effects;
+    std::vector<ShrinkEffect> shrink_effects;
     for(unsigned int i = 0; i < matches.size(); i++)
     {
         if( !matches[i].getLargeMatch() )
         {
             std::vector<std::pair<int,int>> gem_locs = matches[i].getGemLocs();
             for(unsigned int j = 0; j < gem_locs.size(); j++)
-                Shrink_Effects.push_back(ShrinkEffect(gem_locs[j].first*GEM_WIDTH,gem_locs[j].second*GEM_HEIGHT,ANIM_LENGTH,Window_1));
+                shrink_effects.push_back(ShrinkEffect(gem_locs[j].first*GEM_WIDTH,gem_locs[j].second*GEM_HEIGHT,ANIM_LENGTH,Window_1));
         }
     }
     for(int num = 0; num < ANIM_LENGTH; num++)
@@ -540,8 +559,8 @@ float GemGrid::removeMatches(std::vector<Match> matches)
             if(matches[i].getLargeMatch())
                 matches[i].printAbsorb(num,Window_1,Gem_Matrix);
 
-        for(unsigned int i = 0; i < Shrink_Effects.size(); i++)
-            Shrink_Effects[i].playEffect();
+        for(unsigned int i = 0; i < shrink_effects.size(); i++)
+            shrink_effects[i].playEffect();
 
         wrefresh(Window_1);
         usleep((SPEED*60000)/ANIM_LENGTH);

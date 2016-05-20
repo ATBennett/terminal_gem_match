@@ -1,4 +1,5 @@
 #include "../include/ShrinkEffect.h"
+#include "../include/definitions.h"
 #include <math.h>
 
 ShrinkEffect::ShrinkEffect(int x_loc, int y_loc, int length, WINDOW* Window_1)

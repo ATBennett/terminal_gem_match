@@ -1,5 +1,6 @@
 #include "../include/SpecialGems.h"
 #include "../include/definitions.h"
+#include "../include/SpecialEffects.h"
 #include <ncurses.h>
 
 StarGem::StarGem(int color_in)
@@ -57,6 +58,11 @@ std::vector<std::pair<int,int> > StarGem::getKillCoords(int x_loc, int y_loc)
             coord_buffer.push_back(std::make_pair(i,y_loc));
 
     return coord_buffer;
+}
+
+Effect* StarGem::initEffect(int x_loc,int y_loc,WINDOW* Window_1)
+{
+    return new LightningEffect(x_loc,y_loc,ANIM_LENGTH,Window_1);
 }
 
 FireGem::FireGem(int color_in)
@@ -129,6 +135,11 @@ std::vector<std::pair<int,int> > FireGem::getKillCoords(int x_loc, int y_loc)
         coord_buffer.push_back(std::make_pair(x_loc,y_loc+1));
 
     return coord_buffer;
+}
+
+Effect* FireGem::initEffect(int x_loc,int y_loc,WINDOW* Window_1)
+{
+    return new ExplosionEffect(x_loc,y_loc,ANIM_LENGTH,Window_1);
 }
 
 ColorNukeGem::ColorNukeGem()
@@ -249,4 +260,9 @@ std::vector<std::pair<int,int> > StarNukeGem::getKillCoords(int x_loc, int y_loc
     }
 
     return coord_buffer;
+}
+
+Effect* StarNukeGem::initEffect(int x_loc,int y_loc,WINDOW* Window_1)
+{
+    return new StarNukeEffect(x_loc,y_loc,ANIM_LENGTH,Window_1);
 }
