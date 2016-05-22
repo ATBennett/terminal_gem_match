@@ -438,14 +438,29 @@ std::vector<Match> GemGrid::color_nuke(int first_x,int first_y,int second_x,int 
 {
     std::vector<Match> matches;
     std::vector<std::pair<int,int> > gem_locs;
+    std::vector<ColorNukeEffect> effects;
     int color = Gem_Matrix[second_x][second_y]->getColor();
 
     for(int y = 0; y < BOARD_HEIGHT; y++)
         for(int x = 0; x < BOARD_WIDTH; x++)
             if(Gem_Matrix[x][y]->getColor() == color)
+            {
                 gem_locs.push_back(std::make_pair(x,y));
+                effects.push_back(ColorNukeEffect(x*GEM_WIDTH,y*GEM_HEIGHT,ANIM_LENGTH,Window_1));
+            }
 
     gem_locs.push_back(std::make_pair(first_x,first_y));
+    effects.push_back(ColorNukeEffect(first_x*GEM_WIDTH,first_y*GEM_HEIGHT,ANIM_LENGTH,Window_1));
+
+    for(int num = 0; num < ANIM_LENGTH; num++)
+    {
+        for(unsigned int i = 0; i < effects.size(); i++)
+            effects[i].playEffect();
+
+        wrefresh(Window_1);
+        usleep((SPEED*100000)/ANIM_LENGTH);
+    }
+
     matches.push_back(Match(gem_locs,true));
     return matches;
 }
@@ -490,7 +505,7 @@ std::vector<Match> GemGrid::fireSpecials(std::vector<Match> matches)
                 effects[i]->playEffect();
 
             wrefresh(Window_1);
-            usleep((SPEED*60000)/ANIM_LENGTH);
+            usleep((SPEED*100000)/ANIM_LENGTH);
         }
 
         for(unsigned int i = 0; i < effects.size(); i++)
