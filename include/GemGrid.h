@@ -1,13 +1,14 @@
 //This class manages everything on the GemGrid.
 
+#ifndef GEMGRID_H
+#define GEMGRID_H
+
 #include "BasicGems.h"
 #include "definitions.h"
 #include "Match.h"
 #include <vector>
 #include <string>
 
-#ifndef GEMGRID_H
-#define GEMGRID_H
 
 
 class GemGrid

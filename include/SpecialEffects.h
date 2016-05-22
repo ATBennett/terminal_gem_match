@@ -1,7 +1,7 @@
 #ifndef SPECIALEFFECTS_H
 #define SPECIALEFFECTS_H
 
-#include <Effect.h>
+#include "Effect.h"
 
 
 class ExplosionEffect : public Effect

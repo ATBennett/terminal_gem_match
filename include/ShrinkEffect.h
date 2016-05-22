@@ -1,7 +1,7 @@
 #ifndef SHRINK_EFFECT_H
 #define SHRINK_EFFECT_H
 
-#include <Effect.h>
+#include "Effect.h"
 #include <string>
 #include <vector>
 

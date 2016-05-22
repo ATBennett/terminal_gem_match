@@ -1,10 +1,11 @@
 //This Header file declares the seperate classes for the basic gems.
 //Each gem class overwrites the print functions,so they can all be displayed differently.
+#ifndef BASICGEMS_H
+#define BASICGEMS_H
 
 #include "Gem.h"
 #include <ncurses.h>
-#ifndef BASICGEMS_H
-#define BASICGEMS_H
+
 
 class RedGem: public Gem
 {

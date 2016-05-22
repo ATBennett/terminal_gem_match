@@ -1,5 +1,6 @@
 #ifndef SPECIALGEMS_H
 #define SPECIALGEMS_H
+
 #include "Gem.h"
 
 class StarGem : public Gem
