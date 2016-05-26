@@ -1,9 +1,15 @@
 TODO List
-===========
+=========
+
+Fixes/Minor Additions
+=====================
+- Intersecting Match absorbed gem location can be wrong
+- Add an absorb location when creating a large match
 
 Short Term Goals
 ================
-- Add special gems
+- Add special gem Effects
+- Seperate Input and game logic threads
 
 Long Term Goals
 ===============
