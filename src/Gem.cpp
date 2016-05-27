@@ -1,7 +1,7 @@
 //Implementation of the Gem superclass.
 
 #include "../include/Gem.h"
-#include "../include/definitions.h"
+#include "../include/cfg.h"
 
 Gem::Gem(int color_in)
 {
@@ -22,12 +22,12 @@ Gem::~Gem()
 //Prints a Gem sized blank space at x,y.
 void Gem::printVoid(int x_loc, int y_loc, WINDOW *window1)
 {
-    int max_x = GEM_WIDTH*BOARD_WIDTH;
-    int max_y = GEM_HEIGHT*BOARD_HEIGHT;
+    int max_x = cfg::gem_width*cfg::board_width;
+    int max_y = cfg::gem_height*cfg::board_height;
     wattron(window1, COLOR_PAIR(COLOR_BLACK));
-    for(int x = x_loc; x < GEM_WIDTH+x_loc && x < max_x; x++)
+    for(int x = x_loc; x < cfg::gem_width+x_loc && x < max_x; x++)
     {
-        for(int y = y_loc; y < GEM_HEIGHT+y_loc && y < max_y; y++)
+        for(int y = y_loc; y < cfg::gem_height+y_loc && y < max_y; y++)
         {
             mvwaddch( window1, y,x,' ');
         }
@@ -38,12 +38,12 @@ void Gem::printVoid(int x_loc, int y_loc, WINDOW *window1)
 //By Default a gem prints it's color in a 6x3 square.
 void Gem::printGem(int x_loc,int y_loc, WINDOW *window1)
 {
-    int max_x = GEM_WIDTH*BOARD_WIDTH;
-    int max_y = GEM_HEIGHT*BOARD_HEIGHT;
+    int max_x = cfg::gem_width*cfg::board_width;
+    int max_y = cfg::gem_height*cfg::board_height;
     wattron(window1, COLOR_PAIR(color));
-    for(int x = x_loc; x < GEM_WIDTH+x_loc && x < max_x; x++)
+    for(int x = x_loc; x < cfg::gem_width+x_loc && x < max_x; x++)
     {
-        for(int y = y_loc; y < GEM_HEIGHT+y_loc && y < max_y; y++)
+        for(int y = y_loc; y < cfg::gem_height+y_loc && y < max_y; y++)
         {
             mvwaddch( window1, y,x,' ');
         }

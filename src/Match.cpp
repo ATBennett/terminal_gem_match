@@ -1,11 +1,11 @@
 #include "../include/Match.h"
-#include "../include/definitions.h"
+#include "../include/cfg.h"
 #include "../include/BasicGems.h"
 #include "../include/SpecialGems.h"
 
 #include <algorithm>
 
-Match::Match(std::vector<std::pair<int,int> > gem_locs_in)
+Match::Match(std::vector<std::pair<unsigned int,unsigned int> > gem_locs_in)
 {
     gem_locs = gem_locs_in;
     large_match = false; //Default value for 'Regular' match.
@@ -31,7 +31,7 @@ Match::Match(std::vector<std::pair<int,int> > gem_locs_in)
     length_of_match = gem_locs.size();
 }
 
-Match::Match(std::vector<std::pair<int,int> > gem_locs_in, bool quick_destroy)
+Match::Match(std::vector<std::pair<unsigned int,unsigned int> > gem_locs_in, bool quick_destroy)
 {
     gem_locs = gem_locs_in;
     intersecting = false;
@@ -62,43 +62,43 @@ Match::~Match()
     //dtor
 }
 
-void Match::printAbsorb(int num,WINDOW* Window_1, Gem* (&Gem_Grid)[MAX_BOARD_WIDTH][MAX_BOARD_HEIGHT])
+void Match::printAbsorb(int num,WINDOW* Window_1, std::vector<std::vector<Gem*> >(&Gem_Grid))
 {
     for(unsigned int i = 0; i < gem_locs.size(); i++)
     {
         int x = gem_locs[i].first;
         int y = gem_locs[i].second;
-        if(Gem_Grid[x][y] != nullptr)
-            Gem_Grid[x][y]->printVoid(x*GEM_WIDTH,y*GEM_HEIGHT,Window_1);
+        if(Gem_Grid[y][x] != nullptr)
+            Gem_Grid[y][x]->printVoid(x*cfg::gem_width,y*cfg::gem_height,Window_1);
     }
 
     for(unsigned int i = 0; i < gem_locs.size(); i++)
     {
         int x = gem_locs[i].first;
         int y = gem_locs[i].second;
-        if(Gem_Grid[x][y] != nullptr)
+        if(Gem_Grid[y][x] != nullptr)
         {
-            int diff_x = (gem_locs[i].first - start_loc.first) * GEM_WIDTH;
-            int diff_y = (gem_locs[i].second - start_loc.second) * GEM_HEIGHT;
-            int move_x = -(diff_x/ANIM_LENGTH) * (num + 1);
-            int move_y = -(diff_y/ANIM_LENGTH) * (num + 1);
-            Gem_Grid[x][y]->printGem(x*GEM_WIDTH + move_x,y*GEM_HEIGHT + move_y,Window_1);
+            int diff_x = (gem_locs[i].first - start_loc.first) * cfg::gem_width;
+            int diff_y = (gem_locs[i].second - start_loc.second) * cfg::gem_height;
+            int move_x = -(diff_x/cfg::anim_frames) * (num + 1);
+            int move_y = -(diff_y/cfg::anim_frames) * (num + 1);
+            Gem_Grid[y][x]->printGem(x*cfg::gem_width + move_x,y*cfg::gem_height + move_y,Window_1);
         }
     }
 }
 
-void Match::printVoid(WINDOW* Window_1, Gem* (&Gem_Grid)[MAX_BOARD_WIDTH][MAX_BOARD_HEIGHT])
+void Match::printVoid(WINDOW* Window_1, std::vector<std::vector<Gem*> >(&Gem_Grid))
 {
     for(unsigned int i = 0; i < gem_locs.size(); i++)
     {
         int x = gem_locs[i].first;
         int y = gem_locs[i].second;
-        if(Gem_Grid[x][y] != nullptr)
-            Gem_Grid[x][y]->printVoid(x*GEM_WIDTH,y*GEM_HEIGHT,Window_1);
+        if(Gem_Grid[y][x] != nullptr)
+            Gem_Grid[y][x]->printVoid(x*cfg::gem_width,y*cfg::gem_height,Window_1);
     }
 }
 
-float Match::deleteGems(Gem* (&Gem_Grid)[MAX_BOARD_WIDTH][MAX_BOARD_HEIGHT])
+float Match::deleteGems(std::vector<std::vector<Gem*> >(&Gem_Grid))
 {
     float score = 0;
     float multiplier = 0;
@@ -106,92 +106,92 @@ float Match::deleteGems(Gem* (&Gem_Grid)[MAX_BOARD_WIDTH][MAX_BOARD_HEIGHT])
     {
         int x = gem_locs[i].first;
         int y = gem_locs[i].second;
-        if(Gem_Grid[x][y] != nullptr)
+        if(Gem_Grid[y][x] != nullptr)
         {
-            score += Gem_Grid[x][y]->getScore();
-            multiplier += Gem_Grid[x][y]->getMultiplier();
-            delete Gem_Grid[x][y];
-            Gem_Grid[x][y]=nullptr;
+            score += Gem_Grid[y][x]->getScore();
+            multiplier += Gem_Grid[y][x]->getMultiplier();
+            delete Gem_Grid[y][x];
+            Gem_Grid[y][x]=nullptr;
         }
     }
     return score*multiplier;
 }
 
-void Match::replaceWithRand(Gem* (&Gem_Grid)[MAX_BOARD_WIDTH][MAX_BOARD_HEIGHT])
+void Match::replaceWithRand(std::vector<std::vector<Gem*> >(&Gem_Grid))
 {
     for(unsigned int i = 0; i < gem_locs.size(); i++)
     {
         int x = gem_locs[i].first;
         int y = gem_locs[i].second;
-        if(Gem_Grid[x][y] != nullptr)
-            delete Gem_Grid[x][y];
-        Gem_Grid[x][y]=randGem();
+        if(Gem_Grid[y][x] != nullptr)
+            delete Gem_Grid[y][x];
+        Gem_Grid[y][x]=randGem();
     }
 }
 
-float Match::replaceWithSpecial(Gem* (&Gem_Grid)[MAX_BOARD_WIDTH][MAX_BOARD_HEIGHT])
+float Match::replaceWithSpecial(std::vector<std::vector<Gem*> >(&Gem_Grid))
 {
     float score = 0;
     float multiplier = 0;
     for(unsigned int i = 0; i < gem_locs.size(); i++)
     {
-        int x = gem_locs[i].first;
-        int y = gem_locs[i].second;
-        if(Gem_Grid[x][y] != nullptr)
+        unsigned int x = gem_locs[i].first;
+        unsigned int y = gem_locs[i].second;
+        if(Gem_Grid[y][x] != nullptr)
         {
-            score += Gem_Grid[x][y]->getScore();
-            multiplier += Gem_Grid[x][y]->getMultiplier();
+            score += Gem_Grid[y][x]->getScore();
+            multiplier += Gem_Grid[y][x]->getMultiplier();
         }
         if(gem_locs[i] == start_loc)
         {
             int color = COLOR_BLACK;
-            if(Gem_Grid[x][y] != nullptr)
+            if(Gem_Grid[y][x] != nullptr)
             {
-                color = Gem_Grid[x][y]->getColor();
-                delete Gem_Grid[x][y];
+                color = Gem_Grid[y][x]->getColor();
+                delete Gem_Grid[y][x];
             }
 
             if(intersecting)
-                Gem_Grid[x][y] = new StarGem(color);
+                Gem_Grid[y][x] = new StarGem(color);
 
             else if(length_of_match == 4)
-                Gem_Grid[x][y] = new FireGem(color);
+                Gem_Grid[y][x] = new FireGem(color);
 
             else if(length_of_match == 5)
-                Gem_Grid[x][y] = new ColorNukeGem();
+                Gem_Grid[y][x] = new ColorNukeGem();
 
             else if(length_of_match >= 6)
-                Gem_Grid[x][y] = new StarNukeGem(color);
+                Gem_Grid[y][x] = new StarNukeGem(color);
 
             else
-                Gem_Grid[x][y] = createRegularGem(color);
+                Gem_Grid[y][x] = createRegularGem(color);
 
-            Gem_Grid[x][y]->setNew(false);
+            Gem_Grid[y][x]->setNew(false);
         }
         else
         {
-            if(Gem_Grid[x][y] != nullptr)
+            if(Gem_Grid[y][x] != nullptr)
             {
-                delete Gem_Grid[x][y];
-                Gem_Grid[x][y]=nullptr;
+                delete Gem_Grid[y][x];
+                Gem_Grid[y][x]=nullptr;
             }
         }
     }
     return score*multiplier;
 }
 
-void Match::printGems(WINDOW* Window_1,Gem* (&Gem_Grid)[MAX_BOARD_WIDTH][MAX_BOARD_HEIGHT])
+void Match::printGems(WINDOW* Window_1,std::vector<std::vector<Gem*> >(&Gem_Grid))
 {
     for(unsigned int i = 0; i < gem_locs.size(); i++)
     {
         int x = gem_locs[i].first;
         int y = gem_locs[i].second;
-        if (Gem_Grid[x][y] != nullptr)
-            Gem_Grid[x][y]->printGem(x*GEM_WIDTH,y*GEM_HEIGHT,Window_1);
+        if (Gem_Grid[y][x] != nullptr)
+            Gem_Grid[y][x]->printGem(x*cfg::gem_width,y*cfg::gem_height,Window_1);
         else
         {
             Gem* GemBuffer = randGem();
-            GemBuffer->printVoid(x*GEM_WIDTH,y*GEM_HEIGHT,Window_1);
+            GemBuffer->printVoid(x*cfg::gem_width,y*cfg::gem_height,Window_1);
             delete GemBuffer;
         }
     }

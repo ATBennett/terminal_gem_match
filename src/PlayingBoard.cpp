@@ -1,19 +1,20 @@
 #include "../include/PlayingBoard.h"
+#include "../include/cfg.h"
 #include <unistd.h>
 #include <ncurses.h>
 
 PlayingBoard::PlayingBoard()
-: Gem_Grid(BOARD_WIDTH,BOARD_HEIGHT, newwin(GEM_HEIGHT*BOARD_HEIGHT,GEM_WIDTH*BOARD_WIDTH,1,1))
+: Gem_Grid(cfg::board_width,cfg::board_height, newwin(cfg::gem_height*cfg::board_height,cfg::gem_width*cfg::board_width,1,1))
 {
     cursor_x = 0;
     cursor_y = 0;
-    turns = GAME_TURNS;
+    turns = cfg::game_turns;
     score = 0;
     highlight = false;
 
     Grid_Window = Gem_Grid.getWindow();
-    Stats_Window = newwin(GEM_HEIGHT*BOARD_HEIGHT, 24, 0, GEM_WIDTH*BOARD_WIDTH + 3);
-    Background_Window = newwin(GEM_HEIGHT*BOARD_HEIGHT + 2,GEM_WIDTH*BOARD_WIDTH + 2,0,0);
+    Stats_Window = newwin(cfg::gem_height*cfg::board_height, 24, 0, cfg::gem_width*cfg::board_width + 3);
+    Background_Window = newwin(cfg::gem_height*cfg::board_height + 2,cfg::gem_width*cfg::board_width + 2,0,0);
     wrefresh(Grid_Window);
     wrefresh(Stats_Window);
 
@@ -35,7 +36,7 @@ void PlayingBoard::printEnding()
 
 void PlayingBoard::mvCursorH(int val)
 {
-    if(cursor_x + val < BOARD_WIDTH && cursor_x + val >= 0)
+    if(cursor_x + val < cfg::board_width && cursor_x + val >= 0)
     {
         Gem_Grid.removeCursor(cursor_x,cursor_y);
         cursor_x = cursor_x+val;
@@ -46,7 +47,7 @@ void PlayingBoard::mvCursorH(int val)
 
 void PlayingBoard::mvCursorV(int val)
 {
-    if(cursor_y + val < BOARD_HEIGHT && cursor_y + val >= 0)
+    if(cursor_y + val < cfg::board_height && cursor_y + val >= 0)
     {
         Gem_Grid.removeCursor(cursor_x,cursor_y);
         cursor_y = cursor_y+val;
@@ -133,9 +134,9 @@ void PlayingBoard::resizeW()
 {
     clear();
     refresh();
-    wresize(Grid_Window,GEM_HEIGHT*BOARD_HEIGHT, GEM_WIDTH*BOARD_WIDTH);
-    wresize(Background_Window,GEM_HEIGHT*BOARD_HEIGHT+2, GEM_WIDTH*BOARD_WIDTH+2);
-    wresize(Stats_Window, GEM_HEIGHT*BOARD_HEIGHT, 24);
+    wresize(Grid_Window,cfg::gem_height*cfg::board_height, cfg::gem_width*cfg::board_width);
+    wresize(Background_Window,cfg::gem_height*cfg::board_height+2, cfg::gem_width*cfg::board_width+2);
+    wresize(Stats_Window, cfg::gem_height*cfg::board_height, 24);
     wborder(Background_Window,0,0,0,0,0,0,0,0);
     wrefresh(Background_Window);
     printEverything();

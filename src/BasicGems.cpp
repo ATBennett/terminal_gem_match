@@ -1,7 +1,7 @@
 //Implementations of the 7 basic gems with seperate print functions.
 
 #include "../include/BasicGems.h"
-#include "../include/definitions.h"
+#include "../include/cfg.h"
 #include <ncurses.h>
 
 RedGem::RedGem()
@@ -19,7 +19,7 @@ RedGem::~RedGem()
 
 void RedGem::printGem(int x_loc,int y_loc, WINDOW *window1)
 {
-    int max_y = GEM_HEIGHT*BOARD_HEIGHT;
+    int max_y = cfg::gem_height*cfg::board_height;
     wattron( window1, COLOR_PAIR(COLOR_RED));
     if(y_loc >= 0 && y_loc < max_y)
     {
@@ -61,7 +61,7 @@ GreenGem::~GreenGem()
 
 void GreenGem::printGem(int x_loc,int y_loc, WINDOW *window1)
 {
-    int max_y = GEM_HEIGHT*BOARD_HEIGHT;
+    int max_y = cfg::gem_height*cfg::board_height;
     wattron( window1, COLOR_PAIR(COLOR_GREEN));
     if(y_loc >= 0 && y_loc < max_y)
     {
@@ -103,7 +103,7 @@ YellowGem::~YellowGem()
 
 void YellowGem::printGem(int x_loc,int y_loc, WINDOW *window1)
 {
-    int max_y = GEM_HEIGHT*BOARD_HEIGHT;
+    int max_y = cfg::gem_height*cfg::board_height;
     wattron( window1, COLOR_PAIR(COLOR_YELLOW));
     if(y_loc >= 0 && y_loc < max_y)
     {
@@ -145,7 +145,7 @@ BlueGem::~BlueGem()
 
 void BlueGem::printGem(int x_loc,int y_loc, WINDOW *window1)
 {
-    int max_y = GEM_HEIGHT*BOARD_HEIGHT;
+    int max_y = cfg::gem_height*cfg::board_height;
     wattron( window1, COLOR_PAIR(COLOR_BLUE));
     if(y_loc >= 0 && y_loc < max_y)
     {
@@ -187,7 +187,7 @@ MagentaGem::~MagentaGem()
 
 void MagentaGem::printGem(int x_loc,int y_loc, WINDOW *window1)
 {
-    int max_y = GEM_HEIGHT*BOARD_HEIGHT;
+    int max_y = cfg::gem_height*cfg::board_height;
     wattron( window1, COLOR_PAIR(COLOR_MAGENTA));
     if(y_loc >= 0 && y_loc < max_y)
     {
@@ -223,7 +223,7 @@ CyanGem::~CyanGem()
 
 void CyanGem::printGem(int x_loc,int y_loc, WINDOW *window1)
 {
-    int max_y = GEM_HEIGHT*BOARD_HEIGHT;
+    int max_y = cfg::gem_height*cfg::board_height;
     wattron( window1, COLOR_PAIR(COLOR_CYAN));
     if(y_loc >= 0 && y_loc < max_y)
     {
@@ -265,7 +265,7 @@ WhiteGem::~WhiteGem()
 
 void WhiteGem::printGem(int x_loc,int y_loc, WINDOW *window1)
 {
-    int max_y = GEM_HEIGHT*BOARD_HEIGHT;
+    int max_y = cfg::gem_height*cfg::board_height;
     wattron( window1, COLOR_PAIR(COLOR_WHITE));
     if(y_loc >= 0 && y_loc < max_y)
     {

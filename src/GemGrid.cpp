@@ -11,18 +11,22 @@
 GemGrid::GemGrid(unsigned int width, unsigned int height, WINDOW* Screen_1)
 {
     srand(time(nullptr));
-    grid_height = height;
-    grid_width = width;
     Window_1 = Screen_1;
 
-    //Sets entire grid to nullptr
-    for(int x = 0; x < MAX_BOARD_WIDTH; x++)
-        for(int y = 0; y < MAX_BOARD_HEIGHT; y++)
-            Gem_Matrix[x][y]=nullptr;
+    //creates entire grid and sets to to nullptr
+    for(unsigned int y = 0; y < height; y++)
+    {
+        std::vector<Gem*> column;
+        for(unsigned int x = 0; x < width; x++)
+        {
+            column.push_back(nullptr);
+        }
+        Gem_Matrix.push_back(column);
+    }
 
     //Initialises the colors for ncurses (may move this).
     init_pair(COLOR_BLACK,COLOR_BLACK,COLOR_BLACK);
-    init_pair(COLOR_NUKE,COLOR_BLACK,COLOR_BLACK);
+    init_pair(cfg::color_nuke,COLOR_BLACK,COLOR_BLACK);
     init_pair(COLOR_BLUE,COLOR_WHITE,COLOR_BLUE);
     init_pair(COLOR_CYAN,COLOR_BLACK,COLOR_CYAN);
     init_pair(COLOR_GREEN,COLOR_BLACK,COLOR_GREEN);
@@ -35,14 +39,14 @@ GemGrid::GemGrid(unsigned int width, unsigned int height, WINDOW* Screen_1)
 GemGrid::~GemGrid()
 {
     delwin(Window_1);
-    for(int y = 0; y < MAX_BOARD_HEIGHT; y++)
+    for(unsigned int y = 0; y < Gem_Matrix.size(); y++)
     {
-        for(int x = 0; x < MAX_BOARD_WIDTH; x++)
+        for(unsigned int x = 0; x < Gem_Matrix[y].size(); x++)
         {
-            if(Gem_Matrix[x][y] != nullptr)
+            if(Gem_Matrix[y][x] != nullptr)
             {
-                delete Gem_Matrix[x][y];
-                Gem_Matrix[x][y] = nullptr;
+                delete Gem_Matrix[y][x];
+                Gem_Matrix[y][x] = nullptr;
             }
         }
     }
@@ -50,13 +54,14 @@ GemGrid::~GemGrid()
 
 void GemGrid::createRandomGrid()
 {
-    for(int i = 0; i < grid_height; i++)
+    for(unsigned int y = 0; y < Gem_Matrix.size(); y++)
     {
-        for(int j = 0; j < grid_width; j++)
+        for(unsigned int x = 0; x < Gem_Matrix[y].size(); x++)
         {
-            Gem_Matrix[j][i]=randGem();
+            Gem_Matrix[y][x] = randGem();
         }
     }
+
     while(!getMatched().empty())
     {
         quickRemoveMatches(getMatched());
@@ -66,22 +71,30 @@ void GemGrid::createRandomGrid()
 //Animation to make gems appear as if they are falling onto the board.
 void GemGrid::fallOntoBoard()
 {
-    Gem* Gem_Buffer[MAX_BOARD_WIDTH][MAX_BOARD_HEIGHT];
-    for(int y = 0; y < grid_height; y++)
+    std::vector<std::vector<Gem*> > Gem_Buffer;
+    for(unsigned int y = 0; y < Gem_Matrix.size(); y++)
     {
-        for(int x = 0; x < grid_width; x++)
+        std::vector<Gem*> Buffer_Column;
+        for(unsigned int x = 0; x < Gem_Matrix[y].size(); x++)
         {
-            Gem_Buffer[x][y]=Gem_Matrix[x][y];
-            Gem_Buffer[x][y]->setNew(true);
-            Gem_Matrix[x][y]=nullptr;
+            if(Gem_Matrix[y][x] == nullptr)
+                Buffer_Column.push_back(nullptr);
+
+            else
+            {
+                Gem_Matrix[y][x]->setNew(true);
+                Buffer_Column.push_back(Gem_Matrix[y][x]);
+                Gem_Matrix[y][x]=nullptr;
+            }
         }
+        Gem_Buffer.push_back(Buffer_Column);
     }
     //Loops backwards through the buffer matrix.
-    for(int b_y = grid_height - 1; b_y >= 0; b_y--)
+    for(int b_y = Gem_Matrix.size() - 1; b_y >= 0; b_y--)
     {
-        for(int x = 0; x < grid_width; x++)
+        for(unsigned int x = 0; x < Gem_Matrix[b_y].size(); x++)
         {
-            Gem_Matrix[x][0]=Gem_Buffer[x][b_y];
+            Gem_Matrix[0][x]=Gem_Buffer[b_y][x];
         }
         fallGems();
         if(b_y != 0) fallGems();
@@ -107,24 +120,24 @@ Gem* GemGrid::randGem()
 
 //Loops through and tells each gem to print itself onto the terminal.
 void GemGrid::printGrid(){
-    for(int i = 0;i < grid_height;i ++)
+    for(unsigned int y = 0; y < Gem_Matrix.size(); y++)
     {
-        for(int j = 0; j < grid_width; j++)
+        for(unsigned int x = 0;x < Gem_Matrix[y].size();x ++)
         {
-            if(Gem_Matrix[j][i] == nullptr)
+            if(Gem_Matrix[y][x] == nullptr)
             {
                 //Creates a gem just to print a gem sized void.
                 Gem* Temp_Gem = randGem();
-                Temp_Gem->printVoid(j*GEM_WIDTH,i*GEM_HEIGHT,Window_1);
+                Temp_Gem->printVoid(x*cfg::gem_width,y*cfg::gem_height,Window_1);
                 delete Temp_Gem;
             }
-            else if(!Gem_Matrix[j][i]->getNew())
+            else if(!Gem_Matrix[y][x]->getNew())
             {
-                Gem_Matrix[j][i]->printGem(j*GEM_WIDTH,i*GEM_HEIGHT,Window_1);
+                Gem_Matrix[y][x]->printGem(x*cfg::gem_width,y*cfg::gem_height,Window_1);
             }
-            else if(Gem_Matrix[j][i]->getNew())
+            else if(Gem_Matrix[y][x]->getNew())
             {
-               Gem_Matrix[j][i]->printVoid(j*GEM_WIDTH,i*GEM_HEIGHT,Window_1);
+               Gem_Matrix[y][x]->printVoid(x*cfg::gem_width,y*cfg::gem_height,Window_1);
             }
         }
     }
@@ -134,12 +147,12 @@ void GemGrid::printGrid(){
 std::vector<Match> GemGrid::getMatched()
 {
     std::vector<Match> matches;
-    std::vector<std::pair<int,int> > made_matches_h;
-    std::vector<std::pair<int,int> > made_matches_v;
+    std::vector<std::pair<unsigned int,unsigned int> > made_matches_h;
+    std::vector<std::pair<unsigned int,unsigned int> > made_matches_v;
     //Loops through the entire matrix top down.
-    for(int y = 0; y<grid_height; y++)
+    for(unsigned int y = 0; y<Gem_Matrix.size(); y++)
     {
-        for(int x = 0; x<grid_width; x++)
+        for(unsigned int x = 0; x<Gem_Matrix[y].size(); x++)
         {
             bool skip_h = false;
             bool skip_v = false;
@@ -157,7 +170,7 @@ std::vector<Match> GemGrid::getMatched()
             }
             if(!skip_h)
             {
-                std::vector<std::pair<int,int> > h_matches;
+                std::vector<std::pair<unsigned int,unsigned int> > h_matches;
                 h_matches = matchH(x,y);
                 if(!h_matches.empty())
                 {
@@ -167,7 +180,7 @@ std::vector<Match> GemGrid::getMatched()
             }
             if(!skip_v)
             {
-                std::vector<std::pair<int,int> > v_matches;
+                std::vector<std::pair<unsigned int,unsigned int> > v_matches;
                 v_matches = matchV(x,y);
                 if(!v_matches.empty())
                 {
@@ -183,17 +196,17 @@ std::vector<Match> GemGrid::getMatched()
 }
 
 //From leftmost position, checks for a horizontal match, returns locations of all matched gems
-std::vector<std::pair<int,int> > GemGrid::matchH(int x,int y)
+std::vector<std::pair<unsigned int,unsigned int> > GemGrid::matchH(unsigned int x,unsigned int y)
 {
-    std::vector<std::pair<int,int> > matches_h;
-    if(x < grid_width && Gem_Matrix[x][y]!=nullptr)
+    std::vector<std::pair<unsigned int,unsigned int> > matches_h;
+    if(x < Gem_Matrix[0].size() && Gem_Matrix[y][x]!=nullptr)
     {
         bool matching = true;
-        for(int new_x = x; new_x < grid_width && matching; new_x++)
+        for(unsigned int new_x = x; new_x < Gem_Matrix[0].size() && matching; new_x++)
         {
-            if(Gem_Matrix[new_x][y] != nullptr)
+            if(Gem_Matrix[y][new_x] != nullptr)
             {
-                if(Gem_Matrix[x][y]->getColor() == Gem_Matrix[new_x][y]->getColor())
+                if(Gem_Matrix[y][x]->getColor() == Gem_Matrix[y][new_x]->getColor())
                     matches_h.push_back(std::make_pair(new_x,y));
                 else
                     matching = false;
@@ -210,17 +223,17 @@ std::vector<std::pair<int,int> > GemGrid::matchH(int x,int y)
 }
 
 //from topmost position, checks for a verticle match
-std::vector<std::pair<int,int> > GemGrid::matchV(int x,int y)
+std::vector<std::pair<unsigned int,unsigned int> > GemGrid::matchV(unsigned int x,unsigned int y)
 {
-    std::vector<std::pair<int,int> > matches_v;
-    if(x < grid_height && Gem_Matrix[x][y]!=nullptr)
+    std::vector<std::pair<unsigned int,unsigned int> > matches_v;
+    if(x < Gem_Matrix.size() && Gem_Matrix[y][x]!=nullptr)
     {
         bool matching = true;
-        for(int new_y = y; new_y < grid_width && matching; new_y++)
+        for(unsigned int new_y = y; new_y < Gem_Matrix.size() && matching; new_y++)
         {
-            if(Gem_Matrix[x][new_y] != nullptr)
+            if(Gem_Matrix[new_y][x] != nullptr)
             {
-                if(Gem_Matrix[x][y]->getColor() == Gem_Matrix[x][new_y]->getColor())
+                if(Gem_Matrix[y][x]->getColor() == Gem_Matrix[new_y][x]->getColor())
                     matches_v.push_back(std::make_pair(x,new_y));
                 else
                     matching = false;
@@ -247,16 +260,16 @@ std::vector<Match> GemGrid::intersectMatches(std::vector<Match> matches)
         int num_matches = matches.size();
         for(int i = 0; i < num_matches && !found_intersect; i++)
         {
-            std::vector<std::pair<int,int> > first_match_locs = matches[i].getGemLocs();
+            std::vector<std::pair<unsigned int,unsigned int> > first_match_locs = matches[i].getGemLocs();
             for(int j = i+1; j < num_matches && !found_intersect; j++)
             {
-                std::vector<std::pair<int,int> > second_match_locs = matches[j].getGemLocs();
+                std::vector<std::pair<unsigned int,unsigned int> > second_match_locs = matches[j].getGemLocs();
                 for(unsigned int k = 0; k < first_match_locs.size() && !found_intersect; k++)
                 {
-                    std::pair<int,int> first_gem_loc = first_match_locs[k];
+                    std::pair<unsigned int,unsigned int> first_gem_loc = first_match_locs[k];
                     for(unsigned int l = 0; l < second_match_locs.size() && !found_intersect; l++)
                     {
-                        std::pair<int,int> second_gem_loc = second_match_locs[l];
+                        std::pair<unsigned int,unsigned int> second_gem_loc = second_match_locs[l];
                         if(first_gem_loc == second_gem_loc)
                             found_intersect = true;
                     }
@@ -289,10 +302,10 @@ void GemGrid::quickRemoveMatches(std::vector<Match> matches)
     }
 }
 
-float GemGrid::swapGems(int first_x, int first_y, char dir)
+float GemGrid::swapGems(unsigned int first_x, unsigned int first_y, char dir)
 {
     //Input checking
-    if(first_x >= grid_width || first_y >= grid_height)
+    if(first_x >= Gem_Matrix[first_y].size() || first_y >= Gem_Matrix.size())
         return 0;
 
     else if(first_x < 0 || first_y < 0)
@@ -313,7 +326,7 @@ float GemGrid::swapGems(int first_x, int first_y, char dir)
             break;
 
         case 'D' :
-            if(first_y < grid_height-1)
+            if(first_y < Gem_Matrix.size()-1)
             {
                 second_x = first_x;
                 second_y = first_y + 1;
@@ -333,7 +346,7 @@ float GemGrid::swapGems(int first_x, int first_y, char dir)
             break;
 
         case 'R' :
-            if(first_x < grid_width - 1)
+            if(first_x < Gem_Matrix[first_y].size() - 1)
             {
                 second_x = first_x + 1;
                 second_y = first_y;
@@ -346,11 +359,11 @@ float GemGrid::swapGems(int first_x, int first_y, char dir)
             return 0;
     }
 
-    if(Gem_Matrix[first_x][first_y] == nullptr || Gem_Matrix[second_x][second_y] == nullptr)
+    if(Gem_Matrix[first_y][first_x] == nullptr || Gem_Matrix[second_y][second_x] == nullptr)
         return 0;
 
     std::vector<Match> matches;
-    if(Gem_Matrix[first_x][first_y]->getType() == 'N')
+    if(Gem_Matrix[first_y][first_x]->getType() == 'N')
     {
         matches = color_nuke(first_x, first_y, second_x, second_y);
     }
@@ -362,7 +375,7 @@ float GemGrid::swapGems(int first_x, int first_y, char dir)
         matches = getMatched();
         if(matches.empty())
         {
-            if(SWAP_BACK)
+            if(cfg::swap_back)
                 swapGemPosition(first_x, first_y, second_x, second_y);
             return 0;
         }
@@ -378,12 +391,12 @@ float GemGrid::swapGems(int first_x, int first_y, char dir)
         {
             falling  = false;
             fallGems();
-            for(int x = 0; x < grid_width; x++)
+            for(unsigned int x = 0; x < Gem_Matrix[0].size() ; x++)
             {
-                if(Gem_Matrix[x][0] == nullptr)
+                if(Gem_Matrix[0][x] == nullptr)
                 {
                     falling = true;
-                    Gem_Matrix[x][0] = randGem();
+                    Gem_Matrix[0][x] = randGem();
                 }
             }
             if(falling) fallGems();
@@ -396,38 +409,38 @@ float GemGrid::swapGems(int first_x, int first_y, char dir)
 }
 //Swaps the position of 2 Gem pointers.
 //Returns false if this was not possible.
-int GemGrid::swapGemPosition(int first_x, int first_y, int second_x, int second_y)
+int GemGrid::swapGemPosition(unsigned int first_x, unsigned int first_y, unsigned int second_x, unsigned int second_y)
 {
     // Input checking
-    if(first_x >= grid_width || first_y >= grid_height || second_x >= grid_width || second_y >= grid_height)
+    if(first_x >= Gem_Matrix[first_y].size() || first_y >= Gem_Matrix.size() || second_x >=  Gem_Matrix[second_y].size() || second_y >= Gem_Matrix.size())
         return ERR;
 
     else if(first_x < 0 || first_y < 0 || second_x < 0 || second_y < 0)
         return ERR;
 
-    if(Gem_Matrix[first_x][first_y] != nullptr && Gem_Matrix[second_x][second_y]!= nullptr)
+    if(Gem_Matrix[first_y][first_x] != nullptr && Gem_Matrix[second_x][second_y]!= nullptr)
     {
         Gem* Gem_Buffer;
         int vec_y = second_y - first_y;
         int vec_x = second_x - first_x;
-        int loop_time = (GEM_HEIGHT * std::abs(vec_y)) + (GEM_WIDTH * std::abs(vec_x));   //
-        int sleep_time = (SPEED*75000)/loop_time;
+        int loop_time = (cfg::gem_height * std::abs(vec_y)) + (cfg::gem_width * std::abs(vec_x));   //
+        int sleep_time = (cfg::speed*75000)/loop_time;
         //Swap animation.
         for(int i = 1; i <= loop_time; i++)
         {
             int move_x = i*vec_x;
             int move_y = i*vec_y;
-            Gem_Matrix[first_x][first_y]->printVoid(first_x*GEM_WIDTH,first_y*GEM_HEIGHT, Window_1);
-            Gem_Matrix[second_x][second_y]->printVoid(second_x*GEM_WIDTH,second_y*GEM_HEIGHT, Window_1);
-            Gem_Matrix[second_x][second_y]->printGem(second_x*GEM_WIDTH-move_x,second_y*GEM_HEIGHT-move_y, Window_1);
-            Gem_Matrix[first_x][first_y]->printGem(first_x*GEM_WIDTH+move_x,first_y*GEM_HEIGHT+move_y, Window_1);
+            Gem_Matrix[first_y][first_x]->printVoid(first_x*cfg::gem_width,first_y*cfg::gem_height, Window_1);
+            Gem_Matrix[second_y][second_x]->printVoid(second_x*cfg::gem_width,second_y*cfg::gem_height, Window_1);
+            Gem_Matrix[second_y][second_x]->printGem(second_x*cfg::gem_width-move_x,second_y*cfg::gem_height-move_y, Window_1);
+            Gem_Matrix[first_y][first_x]->printGem(first_x*cfg::gem_width+move_x,first_y*cfg::gem_height+move_y, Window_1);
             wrefresh(Window_1);
             usleep(sleep_time);
         }
 
-        Gem_Buffer = Gem_Matrix[second_x][second_y];
-        Gem_Matrix[second_x][second_y] = Gem_Matrix[first_x][first_y];
-        Gem_Matrix[first_x][first_y] = Gem_Buffer;
+        Gem_Buffer = Gem_Matrix[second_y][second_x];
+        Gem_Matrix[second_y][second_x] = Gem_Matrix[first_y][first_x];
+        Gem_Matrix[first_y][first_x] = Gem_Buffer;
         return 1;
     }
     else
@@ -437,28 +450,28 @@ int GemGrid::swapGemPosition(int first_x, int first_y, int second_x, int second_
 std::vector<Match> GemGrid::color_nuke(int first_x,int first_y,int second_x,int second_y)
 {
     std::vector<Match> matches;
-    std::vector<std::pair<int,int> > gem_locs;
+    std::vector<std::pair<unsigned int,unsigned int> > gem_locs;
     std::vector<ColorNukeEffect> effects;
-    int color = Gem_Matrix[second_x][second_y]->getColor();
+    int color = Gem_Matrix[second_y][second_x]->getColor();
 
-    for(int y = 0; y < BOARD_HEIGHT; y++)
-        for(int x = 0; x < BOARD_WIDTH; x++)
-            if(Gem_Matrix[x][y]->getColor() == color)
+    for(int y = 0; y < cfg::board_height; y++)
+        for(int x = 0; x < cfg::board_width; x++)
+            if(Gem_Matrix[y][x]->getColor() == color)
             {
                 gem_locs.push_back(std::make_pair(x,y));
-                effects.push_back(ColorNukeEffect(x*GEM_WIDTH,y*GEM_HEIGHT,ANIM_LENGTH,Window_1));
+                effects.push_back(ColorNukeEffect(x*cfg::gem_width,y*cfg::gem_height,cfg::anim_frames,Window_1));
             }
 
     gem_locs.push_back(std::make_pair(first_x,first_y));
-    effects.push_back(ColorNukeEffect(first_x*GEM_WIDTH,first_y*GEM_HEIGHT,ANIM_LENGTH,Window_1));
+    effects.push_back(ColorNukeEffect(first_x*cfg::gem_width,first_y*cfg::gem_height,cfg::anim_frames,Window_1));
 
-    for(int num = 0; num < ANIM_LENGTH; num++)
+    for(int num = 0; num < cfg::anim_frames; num++)
     {
         for(unsigned int i = 0; i < effects.size(); i++)
             effects[i].playEffect();
 
         wrefresh(Window_1);
-        usleep((SPEED*100000)/ANIM_LENGTH);
+        usleep((cfg::speed*100000)/cfg::anim_frames);
     }
 
     matches.push_back(Match(gem_locs,true));
@@ -469,12 +482,12 @@ std::vector<Match> GemGrid::color_nuke(int first_x,int first_y,int second_x,int 
 //Returns matches that include the special gem kills and plays the animations
 std::vector<Match> GemGrid::fireSpecials(std::vector<Match> matches)
 {
-    std::vector<std::pair<int,int> > current_gem_locs;
-    std::vector<std::pair<int,int> > new_gem_locs;
+    std::vector<std::pair<unsigned int,unsigned int> > current_gem_locs;
+    std::vector<std::pair<unsigned int,unsigned int> > new_gem_locs;
     std::vector<Effect*> effects;
     for(unsigned int i = 0; i < matches.size(); i++)
     {
-        std::vector<std::pair<int,int> > temp_gem_locs = matches[i].getGemLocs();
+        std::vector<std::pair<unsigned int,unsigned int> > temp_gem_locs = matches[i].getGemLocs();
 
         for(unsigned int j = 0; j < temp_gem_locs.size(); j++)
         {
@@ -486,10 +499,10 @@ std::vector<Match> GemGrid::fireSpecials(std::vector<Match> matches)
     {
         int x = current_gem_locs[i].first;
         int y = current_gem_locs[i].second;
-        if(Gem_Matrix[x][y]->getType() == 'S' && !Gem_Matrix[x][y]->getActivated())
+        if(Gem_Matrix[y][x]->getType() == 'S' && !Gem_Matrix[y][x]->getActivated())
         {
-            std::vector<std::pair<int,int> > temp_gem_locs = Gem_Matrix[x][y]->getKillCoords(x,y);
-            effects.push_back(Gem_Matrix[x][y]->initEffect(x*GEM_WIDTH,y*GEM_HEIGHT,Window_1));
+            std::vector<std::pair<int,int> > temp_gem_locs = Gem_Matrix[y][x]->getKillCoords(x,y);
+            effects.push_back(Gem_Matrix[y][x]->initEffect(x*cfg::gem_width,y*cfg::gem_height,Window_1));
 
             for(unsigned int j = 0; j < temp_gem_locs.size(); j++)
                 new_gem_locs.push_back(temp_gem_locs[j]);
@@ -499,13 +512,13 @@ std::vector<Match> GemGrid::fireSpecials(std::vector<Match> matches)
 
     if(!new_gem_locs.empty())
     {
-        for(int num = 0; num < ANIM_LENGTH; num++)
+        for(int num = 0; num < cfg::anim_frames; num++)
         {
             for(unsigned int i = 0; i < effects.size(); i++)
                 effects[i]->playEffect();
 
             wrefresh(Window_1);
-            usleep((SPEED*100000)/ANIM_LENGTH);
+            usleep((cfg::speed*100000)/cfg::anim_frames);
         }
 
         for(unsigned int i = 0; i < effects.size(); i++)
@@ -518,8 +531,8 @@ std::vector<Match> GemGrid::fireSpecials(std::vector<Match> matches)
         {
             int x = current_gem_locs[j].first;
             int y = current_gem_locs[j].second;
-            if(Gem_Matrix[x][y]->getType() == 'S' && !Gem_Matrix[x][y]->getActivated())
-                Gem_Matrix[x][y]->setActivated(true);
+            if(Gem_Matrix[y][x]->getType() == 'S' && !Gem_Matrix[y][x]->getActivated())
+                Gem_Matrix[y][x]->setActivated(true);
         }
     }
 
@@ -563,12 +576,12 @@ float GemGrid::removeMatches(std::vector<Match> matches)
     {
         if( !matches[i].getLargeMatch() )
         {
-            std::vector<std::pair<int,int>> gem_locs = matches[i].getGemLocs();
+            std::vector<std::pair<unsigned int,unsigned int>> gem_locs = matches[i].getGemLocs();
             for(unsigned int j = 0; j < gem_locs.size(); j++)
-                shrink_effects.push_back(ShrinkEffect(gem_locs[j].first*GEM_WIDTH,gem_locs[j].second*GEM_HEIGHT,ANIM_LENGTH,Window_1));
+                shrink_effects.push_back(ShrinkEffect(gem_locs[j].first*cfg::gem_width,gem_locs[j].second*cfg::gem_height,cfg::anim_frames,Window_1));
         }
     }
-    for(int num = 0; num < ANIM_LENGTH; num++)
+    for(int num = 0; num < cfg::anim_frames; num++)
     {
         for(unsigned int i = 0; i < matches.size(); i++)
             if(matches[i].getLargeMatch())
@@ -578,7 +591,7 @@ float GemGrid::removeMatches(std::vector<Match> matches)
             shrink_effects[i].playEffect();
 
         wrefresh(Window_1);
-        usleep((SPEED*60000)/ANIM_LENGTH);
+        usleep((cfg::speed*60000)/cfg::anim_frames);
     }
     for(unsigned int i = 0; i < matches.size(); i++)
     {
@@ -593,7 +606,7 @@ float GemGrid::removeMatches(std::vector<Match> matches)
         matches[i].printGems(Window_1,Gem_Matrix);
     }
     wrefresh(Window_1);
-    usleep(SPEED*30000);
+    usleep(cfg::speed*30000);
     return score;
 }
 
@@ -601,77 +614,79 @@ float GemGrid::removeMatches(std::vector<Match> matches)
 void GemGrid::fallGems()
 {
     //Loops through the matrix from bottom up, and sets any gems that need to fall, to falling.
-    for(int i = grid_height - 1; i > 0; i--)
+    for(unsigned int y = Gem_Matrix.size() - 1; y > 0; y--)
     {
-        for(int j = 0; j < grid_width; j++)
+        for(unsigned int x = 0; x < Gem_Matrix[y].size(); x++)
         {
-            if(Gem_Matrix[j][i]==nullptr)
+            if(Gem_Matrix[y][x]==nullptr)
             {
-                if(Gem_Matrix[j][i-1]!=nullptr) Gem_Matrix[j][i-1]->setFalling(true);
+                if(Gem_Matrix[y-1][x]!=nullptr) Gem_Matrix[y-1][x]->setFalling(true);
             }
-            else if(Gem_Matrix[j][i]->getFalling())
+            else if(Gem_Matrix[y][x]->getFalling())
             {
-                if(Gem_Matrix[j][i-1]!=nullptr) Gem_Matrix[j][i-1]->setFalling(true);
+                if(Gem_Matrix[y-1][x]!=nullptr) Gem_Matrix[y-1][x]->setFalling(true);
             }
         }
     }
     //Plays the falling animation b_y lots of loops.
     bool falling = false;
-    for(int k = 1; k <= GEM_HEIGHT; k++)
+    for(int k = 1; k <= cfg::gem_height; k++)
     {
-        for(int i = grid_height - 1; i >= 0; i--)
+        int height = (int) Gem_Matrix.size();
+        for(int y = height - 1; y >= 0; y--)
         {
-            for(int j = 0; j < grid_width; j++)
+            for(unsigned int x = 0; x < Gem_Matrix[y].size(); x++)
             {
-                if(Gem_Matrix[j][i]!=nullptr)
+                if(Gem_Matrix[y][x]!=nullptr)
                 {
-                    if(Gem_Matrix[j][i]->getFalling() && !Gem_Matrix[j][i]->getNew())
+                    if(Gem_Matrix[y][x]->getFalling() && !Gem_Matrix[y][x]->getNew())
                     {
-                        Gem_Matrix[j][i]->printVoid( j*GEM_WIDTH, i*GEM_HEIGHT, Window_1);
-                        Gem_Matrix[j][i]->printGem( j*GEM_WIDTH, i*GEM_HEIGHT+k, Window_1);
+                        Gem_Matrix[y][x]->printVoid( x*cfg::gem_width, y*cfg::gem_height, Window_1);
+                        Gem_Matrix[y][x]->printGem( x*cfg::gem_width, y*cfg::gem_height+k, Window_1);
                         falling = true;
                     }
-                    else if(Gem_Matrix[j][i]->getNew())
+                    else if(Gem_Matrix[y][x]->getNew())
                     {
-                        Gem_Matrix[j][i]->printVoid( j*GEM_WIDTH, i*GEM_HEIGHT, Window_1);
-                        Gem_Matrix[j][i]->printGem( j*GEM_WIDTH, i*GEM_HEIGHT+k - 3, Window_1);
+                        Gem_Matrix[y][x]->printVoid( x*cfg::gem_width, y*cfg::gem_height, Window_1);
+                        Gem_Matrix[y][x]->printGem( x*cfg::gem_width, y*cfg::gem_height+k - 3, Window_1);
                         falling = true;
                     }
-                    else Gem_Matrix[j][i]->printGem(j*GEM_WIDTH,i*GEM_HEIGHT, Window_1);
+                    else Gem_Matrix[y][x]->printGem(x*cfg::gem_width,y*cfg::gem_height, Window_1);
                 }
+                refresh();
             }
         }
         wrefresh(Window_1);
-        if(falling) usleep(SPEED*20000);
+        if(falling) usleep(cfg::speed*20000);
     }
     //Loops through the matrix from the bottom and shifts gems around in the Gem matrix.
-    for(int i = grid_height - 1; i > 0; i--) //Doesn't include top row of gems.
+    for(unsigned int y = Gem_Matrix.size() - 1; y > 0; y--) //Doesn't include top row of gems.
     {
-        for(int j = 0; j < grid_width; j++)
+        for(unsigned int x = 0; x < Gem_Matrix.size(); x++)
         {
-            if(Gem_Matrix[j][i] == nullptr)
+            if(Gem_Matrix[y][x] == nullptr)
             {
-                if(Gem_Matrix[j][i-1] != nullptr && !Gem_Matrix[j][i-1]->getNew()) //Checks if gem above is present and not new.
+                if(Gem_Matrix[y-1][x] != nullptr && !Gem_Matrix[y-1][x]->getNew()) //Checks if gem above is present and not new.
                 {
-                    Gem_Matrix[j][i] = Gem_Matrix[j][i-1];
-                    Gem_Matrix[j][i]->setFalling(false);
-                    Gem_Matrix[j][i-1] = nullptr;
+                    Gem_Matrix[y][x] = Gem_Matrix[y-1][x];
+                    Gem_Matrix[y][x]->setFalling(false);
+                    Gem_Matrix[y-1][x] = nullptr;
                 }
             }
             else
             {
-                Gem_Matrix[j][i]->setFalling(false);
-                Gem_Matrix[j][i]->setNew(false); //If a gem isn't on the top row, makes sure it is set to old.
+                Gem_Matrix[y][x]->setFalling(false);
+                Gem_Matrix[y][x]->setNew(false); //If a gem isn't on the top row, makes sure it is set to old.
             }
         }
     }
     //Loops through the top row.
-    for(int j = 0; j < grid_width; j++)
+    for(unsigned int x = 0; x < Gem_Matrix[0].size(); x++)
     {
-        if(Gem_Matrix[j][0] != nullptr)
+        if(Gem_Matrix[0][x] != nullptr)
         {
-            Gem_Matrix[j][0]->setFalling(false);
-            Gem_Matrix[j][0]->setNew(false);
+            Gem_Matrix[0][x]->setFalling(false);
+            Gem_Matrix[0][x]->setNew(false);
         }
     }
 }
@@ -679,81 +694,82 @@ void GemGrid::fallGems()
 //Prints all the gems falling off the screen in a fancy animation.
 void GemGrid::fallAll()
 {
-    for( int y = grid_height - 1; y >= 0; y-- ) //Falls the gems until there are spaces between them all.
+    int height = (int) Gem_Matrix.size();
+    for( int y = height - 1; y >= 0; y-- ) //Falls the gems until there are spaces between them all.
     {
         //Plays the falling animation.
-        for(int h = 0; h < GEM_HEIGHT; h++)
+        for(int h = 0; h < cfg::gem_height; h++)
         {
-            for(int b_y = grid_height - 1; b_y >= y; b_y-- ) //Counts up from bottom to Y.
+            for( int b_y = height - 1; b_y >= y; b_y-- ) //Counts up from bottom to Y.
             {
-                for(int x = 0; x < grid_width; x++)
+                for(unsigned int x = 0; x < Gem_Matrix[b_y].size(); x++)
                 {
-                    if(Gem_Matrix[x][b_y]!=nullptr)
+                    if(Gem_Matrix[b_y][x]!=nullptr)
                     {
-                        Gem_Matrix[x][b_y]->printVoid(x*GEM_WIDTH,b_y*GEM_HEIGHT+h,Window_1);
-                        Gem_Matrix[x][b_y]->printGem(x*GEM_WIDTH,b_y*GEM_HEIGHT+h + 1,Window_1);
+                        Gem_Matrix[b_y][x]->printVoid(x*cfg::gem_width,b_y*cfg::gem_height+h,Window_1);
+                        Gem_Matrix[b_y][x]->printGem(x*cfg::gem_width,b_y*cfg::gem_height+h + 1,Window_1);
                     }
                 }
             }
             wrefresh(Window_1);
-            usleep(SPEED*15000);
+            usleep(cfg::speed*15000);
         }
         //Moves the gems below y down one.
-        for(int b_y = grid_height - 1; b_y >= y; b_y-- ) //Counts up from bottom to Y.
+        for( int b_y = height - 1; b_y >= y; b_y-- ) //Counts up from bottom to Y.
         {
-            for(int x = 0; x < grid_width; x++)
+            for(unsigned int x = 0; x < Gem_Matrix[b_y].size(); x++)
             {
-                if(Gem_Matrix[x][b_y]!=nullptr)
+                if(Gem_Matrix[b_y][x]!=nullptr)
                 {
-                    if(b_y < grid_height-1)
+                    if(b_y < height-1)
                     {
-                        Gem_Matrix[x][b_y+1] = Gem_Matrix[x][b_y];
-                        Gem_Matrix[x][b_y] = nullptr;
+                        Gem_Matrix[b_y+1][x] = Gem_Matrix[b_y][x];
+                        Gem_Matrix[b_y][x] = nullptr;
                     }
                     else
                     {
-                        delete Gem_Matrix[x][b_y];
-                        Gem_Matrix[x][b_y] = nullptr;
+                        delete Gem_Matrix[b_y][x];
+                        Gem_Matrix[b_y][x] = nullptr;
                     }
                 }
             }
         }
     }
-    for(int i = 1; i < grid_height; i++) // Keep falling until all the gems are off the board.
+    for(unsigned int i = 1; i < Gem_Matrix.size(); i++) // Keep falling until all the gems are off the board.
     {
         //Plays the falling animation.
-        for(int h = 0; h < GEM_HEIGHT; h++)
+        for(int h = 0; h < cfg::gem_height; h++)
         {
-            for(int y = grid_height - 1; y > 0; y-- )
+            for(unsigned int y = Gem_Matrix.size() - 1; y > 0; y-- )
             {
-                for(int x = 0; x < grid_width; x++)
+                for(unsigned int x = 0; x < Gem_Matrix[y].size(); x++)
                 {
-                    if(Gem_Matrix[x][y]!=nullptr)
+                    if(Gem_Matrix[y][x]!=nullptr)
                     {
-                        Gem_Matrix[x][y]->printVoid(x*GEM_WIDTH,y*GEM_HEIGHT+h,Window_1);
-                        Gem_Matrix[x][y]->printGem(x*GEM_WIDTH,y*GEM_HEIGHT+h + 1,Window_1);
+                        Gem_Matrix[y][x]->printVoid(x*cfg::gem_width,y*cfg::gem_height+h,Window_1);
+                        Gem_Matrix[y][x]->printGem(x*cfg::gem_width,y*cfg::gem_height+h + 1,Window_1);
                     }
                 }
             }
             wrefresh(Window_1);
-            usleep(SPEED*15000);
+            usleep(cfg::speed*15000);
         }
         //Moves all the gems down one.
-        for(int y = grid_height - 1; y > 0; y-- )
+        for(unsigned int y = Gem_Matrix.size() - 1; y > 0; y-- )
         {
-            for(int x = 0; x < grid_width; x++)
+            for(unsigned int x = 0; x < Gem_Matrix[y].size(); x++)
             {
-                if(Gem_Matrix[x][y]!=nullptr)
+                if(Gem_Matrix[y][x]!=nullptr)
                 {
-                    if(y < grid_height - 1)
+                    if(y < Gem_Matrix.size() - 1)
                     {
-                        Gem_Matrix[x][y+1] = Gem_Matrix[x][y];
-                        Gem_Matrix[x][y] = nullptr;
+                        Gem_Matrix[y+1][x] = Gem_Matrix[y][x];
+                        Gem_Matrix[y][x] = nullptr;
                     }
                     else
                     {
-                        delete Gem_Matrix[x][y];
-                        Gem_Matrix[x][y] = nullptr;
+                        delete Gem_Matrix[y][x];
+                        Gem_Matrix[y][x] = nullptr;
                     }
                 }
             }
@@ -763,8 +779,8 @@ void GemGrid::fallAll()
 
 void GemGrid::printCursor(int x_loc, int y_loc, char cursor)
 {
-    int y = y_loc*GEM_HEIGHT + GEM_HEIGHT - 1;
-    for(int x = x_loc*GEM_WIDTH; x < (x_loc+1)*GEM_WIDTH; x++)
+    int y = y_loc*cfg::gem_height + cfg::gem_height - 1;
+    for(int x = x_loc*cfg::gem_width; x < (x_loc+1)*cfg::gem_width; x++)
     {
         mvwaddch(Window_1,y,x,cursor);
     }
@@ -772,5 +788,5 @@ void GemGrid::printCursor(int x_loc, int y_loc, char cursor)
 
 void GemGrid::removeCursor(int x, int y)
 {
-    Gem_Matrix[x][y]->printGem(x*GEM_WIDTH,y*GEM_HEIGHT,Window_1);
+    Gem_Matrix[y][x]->printGem(x*cfg::gem_width,y*cfg::gem_height,Window_1);
 }

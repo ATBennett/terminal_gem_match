@@ -1,5 +1,5 @@
 #include "../include/ShrinkEffect.h"
-#include "../include/definitions.h"
+#include "../include/cfg.h"
 #include <math.h>
 
 ShrinkEffect::ShrinkEffect(int x_loc, int y_loc, int length, WINDOW* Window_1)
@@ -19,15 +19,15 @@ void ShrinkEffect::playEffect()
     {
         cycle++;
         wattron(Window_1, COLOR_PAIR(COLOR_BLACK));
-        int shrink_lines[GEM_HEIGHT];
-        float line_weight = 200/GEM_HEIGHT;
-        for(int i = 0; i < GEM_HEIGHT; i++)
+        int shrink_lines[cfg::gem_height];
+        float line_weight = 200/cfg::gem_height;
+        for(int i = 0; i < cfg::gem_height; i++)
         {
             //if i is in the second half of the gem, copies from first half
             //supposed to work with both even and odd gem heights
-            if(i > (GEM_HEIGHT-1)/2)
+            if(i > (cfg::gem_height-1)/2)
             {
-                shrink_lines[i]=shrink_lines[(GEM_HEIGHT-1)-i];
+                shrink_lines[i]=shrink_lines[(cfg::gem_height-1)-i];
             }
             else
             {
@@ -38,23 +38,23 @@ void ShrinkEffect::playEffect()
                     line_lifespan = length;
 
                 //Calculates the number of blank chars to be deleted each cycle relative to when each line should be blanked out by
-                float remove_num = ceil(((GEM_WIDTH / 2) / line_lifespan) * cycle);
+                float remove_num = ceil(((cfg::gem_width / 2) / line_lifespan) * cycle);
 
                 shrink_lines[i] = remove_num;
                 //Makes sure the blanj char amount does not go ever the maximum
-                if(shrink_lines[i] > (GEM_WIDTH/2) + 1)
-                   shrink_lines[i] = (GEM_WIDTH/2) + 1;
+                if(shrink_lines[i] > (cfg::gem_width/2) + 1)
+                   shrink_lines[i] = (cfg::gem_width/2) + 1;
             }
         }
         //Printing the blank spaces around the gem
-        for(int i = 0; i < GEM_HEIGHT; i++)
+        for(int i = 0; i < cfg::gem_height; i++)
         {
             int y = y_location + i;
             int x = x_location;
             for(int j = 0; j < shrink_lines[i]; j++)
             {
                 mvwaddch(Window_1,y,x+j,' ');
-                mvwaddch(Window_1,y,x+GEM_WIDTH - (j+1),' ');
+                mvwaddch(Window_1,y,x+cfg::gem_width - (j+1),' ');
             }
         }
         wattroff(Window_1, COLOR_PAIR(COLOR_BLACK));

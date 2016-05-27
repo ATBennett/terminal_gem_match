@@ -4,7 +4,6 @@
 #define PLAYINGBOARD_H
 
 #include "GemGrid.h"
-#include "definitions.h"
 
 class PlayingBoard
 {

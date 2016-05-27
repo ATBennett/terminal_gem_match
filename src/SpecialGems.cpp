@@ -1,5 +1,5 @@
 #include "../include/SpecialGems.h"
-#include "../include/definitions.h"
+#include "../include/cfg.h"
 #include "../include/SpecialEffects.h"
 #include <ncurses.h>
 
@@ -18,7 +18,7 @@ StarGem::~StarGem()
 
 void StarGem::printGem(int x_loc,int y_loc,WINDOW *window1)
 {
-    int max_y = GEM_HEIGHT*BOARD_HEIGHT;
+    int max_y = cfg::gem_height*cfg::board_height;
     wattron( window1, COLOR_PAIR(color));
     if(y_loc >= 0 && y_loc < max_y)
     {
@@ -50,10 +50,10 @@ void StarGem::printGem(int x_loc,int y_loc,WINDOW *window1)
 std::vector<std::pair<int,int> > StarGem::getKillCoords(int x_loc, int y_loc)
 {
     std::vector<std::pair<int,int> > coord_buffer;
-    for(int i = 0; i < BOARD_HEIGHT; i++)
+    for(int i = 0; i < cfg::board_height; i++)
         coord_buffer.push_back(std::make_pair(x_loc,i));
 
-    for(int i = 0; i < BOARD_WIDTH; i++)
+    for(int i = 0; i < cfg::board_width; i++)
         if(i != x_loc)
             coord_buffer.push_back(std::make_pair(i,y_loc));
 
@@ -62,7 +62,7 @@ std::vector<std::pair<int,int> > StarGem::getKillCoords(int x_loc, int y_loc)
 
 Effect* StarGem::initEffect(int x_loc,int y_loc,WINDOW* Window_1)
 {
-    return new LightningEffect(x_loc,y_loc,ANIM_LENGTH,Window_1);
+    return new LightningEffect(x_loc,y_loc,cfg::anim_frames,Window_1);
 }
 
 FireGem::FireGem(int color_in)
@@ -80,7 +80,7 @@ FireGem::~FireGem()
 
 void FireGem::printGem(int x_loc,int y_loc,WINDOW *window1)
 {
-    int max_y = GEM_HEIGHT*BOARD_HEIGHT;
+    int max_y = cfg::gem_height*cfg::board_height;
     wattron( window1, COLOR_PAIR(color));
     if(y_loc >= 0 && y_loc < max_y)
     {
@@ -118,20 +118,20 @@ std::vector<std::pair<int,int> > FireGem::getKillCoords(int x_loc, int y_loc)
         coord_buffer.push_back(std::make_pair(x_loc-1,y_loc));
         if(y_loc > 0)
             coord_buffer.push_back(std::make_pair(x_loc-1,y_loc-1));
-        if(y_loc < BOARD_HEIGHT - 1)
+        if(y_loc < cfg::board_height - 1)
             coord_buffer.push_back(std::make_pair(x_loc-1,y_loc+1));
     }
-    if(x_loc < BOARD_WIDTH - 1)
+    if(x_loc < cfg::board_width - 1)
     {
         coord_buffer.push_back(std::make_pair(x_loc+1,y_loc));
         if(y_loc > 0)
             coord_buffer.push_back(std::make_pair(x_loc+1,y_loc-1));
-        if(y_loc < BOARD_HEIGHT - 1)
+        if(y_loc < cfg::board_height - 1)
             coord_buffer.push_back(std::make_pair(x_loc+1,y_loc+1));
     }
     if(y_loc > 0)
         coord_buffer.push_back(std::make_pair(x_loc,y_loc-1));
-    if(y_loc < BOARD_HEIGHT - 1)
+    if(y_loc < cfg::board_height - 1)
         coord_buffer.push_back(std::make_pair(x_loc,y_loc+1));
 
     return coord_buffer;
@@ -139,11 +139,11 @@ std::vector<std::pair<int,int> > FireGem::getKillCoords(int x_loc, int y_loc)
 
 Effect* FireGem::initEffect(int x_loc,int y_loc,WINDOW* Window_1)
 {
-    return new ExplosionEffect(x_loc,y_loc,ANIM_LENGTH,Window_1);
+    return new ExplosionEffect(x_loc,y_loc,cfg::anim_frames,Window_1);
 }
 
 ColorNukeGem::ColorNukeGem()
-: Gem(COLOR_NUKE)
+: Gem(cfg::color_nuke)
 {
     type = 'N';
     score = 20;
@@ -157,7 +157,7 @@ ColorNukeGem::~ColorNukeGem()
 
 void ColorNukeGem::printGem(int x_loc,int y_loc,WINDOW *window1)
 {
-    int max_y = GEM_HEIGHT*BOARD_HEIGHT;
+    int max_y = cfg::gem_height*cfg::board_height;
     wattron( window1, COLOR_PAIR(color));
     wattron( window1, A_BOLD);
     if(y_loc >= 0 && y_loc < max_y)
@@ -203,7 +203,7 @@ StarNukeGem::~StarNukeGem()
 
 void StarNukeGem::printGem(int x_loc,int y_loc,WINDOW *window1)
 {
-    int max_y = GEM_HEIGHT*BOARD_HEIGHT;
+    int max_y = cfg::gem_height*cfg::board_height;
     wattron( window1, COLOR_PAIR(color));
     if(y_loc >= 0 && y_loc < max_y)
     {
@@ -235,17 +235,17 @@ void StarNukeGem::printGem(int x_loc,int y_loc,WINDOW *window1)
 std::vector<std::pair<int,int> > StarNukeGem::getKillCoords(int x_loc, int y_loc)
 {
     std::vector<std::pair<int,int> > coord_buffer;
-    for(int i = 0; i < BOARD_HEIGHT; i++)
+    for(int i = 0; i < cfg::board_height; i++)
     {
         if(x_loc > 0)
             coord_buffer.push_back(std::make_pair(x_loc-1,i));
 
         coord_buffer.push_back(std::make_pair(x_loc,i));
 
-        if(x_loc < BOARD_WIDTH - 1)
+        if(x_loc < cfg::board_width - 1)
             coord_buffer.push_back(std::make_pair(x_loc+1,i));
     }
-    for(int i = 0; i < BOARD_WIDTH; i++)
+    for(int i = 0; i < cfg::board_width; i++)
     {
         if(i != x_loc && i != x_loc - 1 && i != x_loc + 1)
         {
@@ -254,7 +254,7 @@ std::vector<std::pair<int,int> > StarNukeGem::getKillCoords(int x_loc, int y_loc
 
             coord_buffer.push_back(std::make_pair(i,y_loc));
 
-            if(y_loc < BOARD_HEIGHT - 1)
+            if(y_loc < cfg::board_height - 1)
                 coord_buffer.push_back(std::make_pair(i,y_loc + 1));
         }
     }
@@ -264,5 +264,5 @@ std::vector<std::pair<int,int> > StarNukeGem::getKillCoords(int x_loc, int y_loc
 
 Effect* StarNukeGem::initEffect(int x_loc,int y_loc,WINDOW* Window_1)
 {
-    return new StarNukeEffect(x_loc,y_loc,ANIM_LENGTH,Window_1);
+    return new StarNukeEffect(x_loc,y_loc,cfg::anim_frames,Window_1);
 }

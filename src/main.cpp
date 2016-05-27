@@ -2,9 +2,7 @@
 #include <string>
 #include <unistd.h>
 #include "../include/PlayingBoard.h"
-#include "../include/definitions.h"
-
-using namespace std;
+#include "../include/cfg.h"
 
 //Makes sure the terminal window is larger than min_x and min_y, prints message and waits if not.
 //Returns false if it needed to wait for a screen resize
@@ -32,9 +30,12 @@ bool checkWindowSize(int min_x, int min_y){
 
 int main()
 {
+    if(!cfg::importConfig("settings.cfg"))
+        cfg::writeConfig("settings.cfg");
+
     //Calculating required terminal size.
-    int min_x = GEM_WIDTH*BOARD_WIDTH + 27;
-    int min_y = GEM_HEIGHT*BOARD_HEIGHT + 2;
+    int min_x = cfg::gem_height*cfg::board_height + 27;
+    int min_y = cfg::gem_height*cfg::board_height + 2;
     int last_x, last_y, curr_x, curr_y;
     getmaxyx( stdscr, curr_y, curr_x);
 
