@@ -40,14 +40,23 @@ LightningEffect::~LightningEffect()
 void LightningEffect::playEffect()
 {
     attron(COLOR_PAIR(COLOR_BLACK));
-    for(int y = y_location; y < y_location + GEM_HEIGHT; y++)
+    if(cycle < length)
     {
+        wattron(Window_1,COLOR_PAIR(COLOR_CYAN));
+        cycle++;
+        //Colors the soecial gem cyan
+        for(int y = y_location; y < y_location + GEM_HEIGHT; y++)
+            for(int x = 0; x < GEM_WIDTH*BOARD_WIDTH; x++)
+                mvwaddch(Window_1,y,x,' ');
+
         for(int x = x_location; x < x_location + GEM_WIDTH; x++)
-        {
-            mvwaddch(Window_1, y, x, 'L');
-        }
+            for(int y = 0; y < GEM_HEIGHT*BOARD_HEIGHT; y++)
+                mvwaddch(Window_1,y,x,' ');
+        
+        int down_lines = GEM_HEIGHT*BOARD_HEIGHT - (y_location + (GEM_HEIGHT - 1));
+        int right_lines = GEM_WIDTH*BOARD_WIDTH - (x_location + (GEM_WIDTH - 1));
+        wattroff(Window_1,COLOR_PAIR(COLOR_CYAN));
     }
-    attroff(COLOR_PAIR(COLOR_BLACK));
 }
 
 ColorNukeEffect::ColorNukeEffect(int x_loc, int y_loc, int length, WINDOW* Window_1)

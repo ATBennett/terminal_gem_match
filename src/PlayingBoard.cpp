@@ -78,7 +78,7 @@ void PlayingBoard::updateExtras()
 {
     //Printing the cursor into the Grid_Window.
     if(highlight) Gem_Grid.printCursor(cursor_x,cursor_y,'+'); //Highlight changes the cursor
-    else Gem_Grid.printCursor(cursor_x,cursor_y,'+');
+    else Gem_Grid.printCursor(cursor_x,cursor_y,'=');
 
     //Printing extra info.
     mvwprintw( Stats_Window, 13, 1,"Score:             ");
