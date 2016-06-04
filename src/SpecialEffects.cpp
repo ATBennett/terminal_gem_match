@@ -40,20 +40,39 @@ LightningEffect::~LightningEffect()
 void LightningEffect::playEffect()
 {
     attron(COLOR_PAIR(COLOR_BLACK));
+    int x_step = 1+(cfg::gem_width*cfg::board_width)/(length-1);
+    int y_step = 1+(cfg::gem_height*cfg::board_height)/(length-1);
+
     if(cycle < length)
     {
+        int max_x = x_location + cfg::gem_width + (x_step*cycle);
+        int min_x = x_location - (x_step*cycle);
+        int max_y = y_location + cfg::gem_height + (y_step*cycle);
+        int min_y = y_location - (y_step*cycle);
+        
+        if(min_x < 0)
+            min_x = 0;
+        
+        if(min_y < 0)
+            min_y = 0;
+        
+        if(max_x > cfg::gem_width*cfg::board_width)
+            max_x = cfg::gem_width*cfg::board_width;
+        
+        if(max_y > cfg::gem_height*cfg::board_height)
+            max_y = cfg::gem_height*cfg::board_height; 
+
         wattron(Window_1,COLOR_PAIR(COLOR_CYAN));
-        cycle++;
-        //Colors the soecial gem cyan
         for(int y = y_location; y < y_location + cfg::gem_height; y++)
-            for(int x = 0; x < cfg::gem_width*cfg::board_width; x++)
+            for(int x = min_x; x < max_x; x++)
                 mvwaddch(Window_1,y,x,' ');
 
         for(int x = x_location; x < x_location + cfg::gem_width; x++)
-            for(int y = 0; y < cfg::gem_height*cfg::board_height; y++)
+            for(int y = min_y; y < max_y; y++)
                 mvwaddch(Window_1,y,x,' ');
 
         wattroff(Window_1,COLOR_PAIR(COLOR_CYAN));
+        cycle++;
     }
 }
 
