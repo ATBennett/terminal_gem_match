@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <ncurses.h>
 
-PlayingBoard::PlayingBoard()
+PlayingBoard::PlayingBoard(bool debug)
 : Gem_Grid(cfg::board_width,cfg::board_height, newwin(cfg::gem_height*cfg::board_height,cfg::gem_width*cfg::board_width,1,1))
 {
     cursor_x = 0;
@@ -11,6 +11,7 @@ PlayingBoard::PlayingBoard()
     turns = cfg::game_turns;
     score = 0;
     highlight = false;
+    _debug = debug;
 
     Grid_Window = Gem_Grid.getWindow();
     Stats_Window = newwin(cfg::gem_height*cfg::board_height, 24, 0, cfg::gem_width*cfg::board_width + 3);
@@ -59,6 +60,7 @@ void PlayingBoard::mvCursorV(int val)
 void PlayingBoard::swapGem(char dir)
 {
     float tmp = Gem_Grid.swapGems(cursor_x,cursor_y,dir);
+    if(_debug) mvwprintw(Stats_Window, 1, 1, "Debug: swapGems");
     if( tmp != 0)
     {
         score += tmp;
@@ -111,6 +113,11 @@ void PlayingBoard::printEverything()
     mvwprintw( Stats_Window, 13, 1,"Score: %.0f",score);
     mvwprintw( Stats_Window, 14, 1,"Turns Remaining: %d",turns);
 
+    if(_debug)
+    {
+        mvwprintw( Stats_Window, 5, 1, "Debug: ");
+    }
+
     wrefresh(Grid_Window);
     wrefresh(Stats_Window);
 }
@@ -123,6 +130,8 @@ void PlayingBoard::resetGems()
         Gem_Grid.createRandomGrid();
         Gem_Grid.fallOntoBoard();
         turns = turns - 1;
+        if(_debug)
+            mvwprintw(Stats_Window,1,1,"Debug: resetting gems");
     }
     else
     {

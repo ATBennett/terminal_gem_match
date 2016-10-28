@@ -14,6 +14,7 @@ class PlayingBoard
         WINDOW *Grid_Window;
         WINDOW *Background_Window;
 
+        bool _debug;
         int turns;
         float score;
         int cursor_x;
@@ -21,7 +22,7 @@ class PlayingBoard
         bool highlight;
 
     public:
-        PlayingBoard();
+        PlayingBoard(bool);
         virtual ~PlayingBoard();
 
         void updateExtras();

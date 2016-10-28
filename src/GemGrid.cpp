@@ -657,12 +657,12 @@ void GemGrid::fallGems()
             }
         }
         wrefresh(Window_1);
-        if(falling) usleep(cfg::speed*20000);
+        if(falling) usleep(cfg::speed*10000);
     }
     //Loops through the matrix from the bottom and shifts gems around in the Gem matrix.
     for(unsigned int y = Gem_Matrix.size() - 1; y > 0; y--) //Doesn't include top row of gems.
     {
-        for(unsigned int x = 0; x < Gem_Matrix.size(); x++)
+        for(unsigned int x = 0; x < Gem_Matrix[y].size(); x++)
         {
             if(Gem_Matrix[y][x] == nullptr)
             {
@@ -712,7 +712,7 @@ void GemGrid::fallAll()
                 }
             }
             wrefresh(Window_1);
-            usleep(cfg::speed*15000);
+            usleep(cfg::speed*10000);
         }
         //Moves the gems below y down one.
         for( int b_y = height - 1; b_y >= y; b_y-- ) //Counts up from bottom to Y.
@@ -752,7 +752,7 @@ void GemGrid::fallAll()
                 }
             }
             wrefresh(Window_1);
-            usleep(cfg::speed*15000);
+            usleep(cfg::speed*10000);
         }
         //Moves all the gems down one.
         for(unsigned int y = Gem_Matrix.size() - 1; y > 0; y-- )

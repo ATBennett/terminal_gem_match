@@ -34,7 +34,7 @@ int main()
         cfg::writeConfig("settings.cfg");
 
     //Calculating required terminal size.
-    int min_x = cfg::gem_height*cfg::board_height + 27;
+    int min_x = cfg::gem_width*cfg::board_width + 27;
     int min_y = cfg::gem_height*cfg::board_height + 2;
     int last_x, last_y, curr_x, curr_y;
     getmaxyx( stdscr, curr_y, curr_x);
@@ -64,7 +64,7 @@ int main()
     getmaxyx(stdscr, last_x,last_y);
 
     //Initialises the board.
-    PlayingBoard Main_Board;
+    PlayingBoard Main_Board(true);
     Main_Board.initialise();
     Main_Board.printEverything();
 

@@ -45,7 +45,7 @@ void Gem::printGem(int x_loc,int y_loc, WINDOW *window1)
     {
         for(int y = y_loc; y < cfg::gem_height+y_loc && y < max_y; y++)
         {
-            mvwaddch( window1, y,x,' ');
+            mvwaddch( window1, y,x,'n');
         }
     }
     wattroff(window1, COLOR_PAIR(color));
