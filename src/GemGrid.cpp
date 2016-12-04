@@ -370,7 +370,7 @@ float GemGrid::swapGems(unsigned int first_x, unsigned int first_y, char dir)
     else
     {
         if(swapGemPosition(first_x, first_y, second_x, second_y) == ERR)
-            return 0;
+            return -1;
 
         matches = getMatched();
         if(matches.empty())

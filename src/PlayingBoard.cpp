@@ -61,10 +61,18 @@ void PlayingBoard::swapGem(char dir)
 {
     float tmp = Gem_Grid.swapGems(cursor_x,cursor_y,dir);
     if(_debug) mvwprintw(Stats_Window, 1, 1, "Debug: swapGems");
-    if( tmp != 0)
+    if( tmp != 0 && tmp != -1)
     {
         score += tmp;
         turns--;
+    }
+    else if(tmp == -1 && _debug)
+    {
+        mvwprintw(Stats_Window, 1, 1, "Debug: error during swapgems");
+    }
+    else if(tmp == 0 && _debug)
+    {
+        mvwprintw(Stats_Window, 1, 1, "Debug: swapgems failed");
     }
 }
 
