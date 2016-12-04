@@ -446,8 +446,10 @@ int GemGrid::swapGemPosition(unsigned int first_x, unsigned int first_y, unsigne
     }
     else if(Gem_Matrix[first_y][first_x] == nullptr)
         return -3;
-    else
+    else if(Gem_Matrix[second_x][second_y] == nullptr)
         return -4;
+    else
+        return -5;
 }
 
 std::vector<Match> GemGrid::color_nuke(int first_x,int first_y,int second_x,int second_y)
