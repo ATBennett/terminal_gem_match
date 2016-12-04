@@ -360,7 +360,7 @@ float GemGrid::swapGems(unsigned int first_x, unsigned int first_y, char dir)
     }
 
     if(Gem_Matrix[first_y][first_x] == nullptr || Gem_Matrix[second_y][second_x] == nullptr)
-        return 0;
+        return ERR;
 
     std::vector<Match> matches;
     if(Gem_Matrix[first_y][first_x]->getType() == 'N')
@@ -369,9 +369,8 @@ float GemGrid::swapGems(unsigned int first_x, unsigned int first_y, char dir)
     }
     else
     {
-        float result = swapGemPosition(first_x, first_y, second_x, second_y);
-        if(result < 0)
-            return result;
+        if(swapGemPosition(first_x, first_y, second_x, second_y) == ERR)
+            return ERR;
 
         matches = getMatched();
         if(matches.empty())
@@ -414,12 +413,12 @@ int GemGrid::swapGemPosition(unsigned int first_x, unsigned int first_y, unsigne
 {
     // Input checking
     if(first_x >= Gem_Matrix[first_y].size() || first_y >= Gem_Matrix.size() || second_x >=  Gem_Matrix[second_y].size() || second_y >= Gem_Matrix.size())
-        return -1;
+        return ERR;
 
     else if(first_x < 0 || first_y < 0 || second_x < 0 || second_y < 0)
-        return -2;
+        return ERR;
 
-    if(Gem_Matrix[first_y][first_x] != nullptr && Gem_Matrix[second_x][second_y]!= nullptr)
+    if(Gem_Matrix[first_y][first_x] != nullptr && Gem_Matrix[second_y][second_x]!= nullptr)
     {
         Gem* Gem_Buffer;
         int vec_y = second_y - first_y;
@@ -444,12 +443,8 @@ int GemGrid::swapGemPosition(unsigned int first_x, unsigned int first_y, unsigne
         Gem_Matrix[first_y][first_x] = Gem_Buffer;
         return 1;
     }
-    else if(Gem_Matrix[first_y][first_x] == nullptr)
-        return -3;
-    else if(Gem_Matrix[second_x][second_y] == nullptr)
-        return -4;
     else
-        return -5;
+        return ERR;
 }
 
 std::vector<Match> GemGrid::color_nuke(int first_x,int first_y,int second_x,int second_y)
