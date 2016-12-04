@@ -226,7 +226,7 @@ std::vector<std::pair<unsigned int,unsigned int> > GemGrid::matchH(unsigned int 
 std::vector<std::pair<unsigned int,unsigned int> > GemGrid::matchV(unsigned int x,unsigned int y)
 {
     std::vector<std::pair<unsigned int,unsigned int> > matches_v;
-    if(x < Gem_Matrix.size() && Gem_Matrix[y][x]!=nullptr)
+    if(y < Gem_Matrix.size() && Gem_Matrix[y][x]!=nullptr)
     {
         bool matching = true;
         for(unsigned int new_y = y; new_y < Gem_Matrix.size() && matching; new_y++)
