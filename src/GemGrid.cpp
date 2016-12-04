@@ -369,8 +369,9 @@ float GemGrid::swapGems(unsigned int first_x, unsigned int first_y, char dir)
     }
     else
     {
-        if(swapGemPosition(first_x, first_y, second_x, second_y) == ERR)
-            return -1;
+        float result = swapGemPosition(first_x, first_y, second_x, second_y);
+        if(result < 0)
+            return result;
 
         matches = getMatched();
         if(matches.empty())
@@ -413,10 +414,10 @@ int GemGrid::swapGemPosition(unsigned int first_x, unsigned int first_y, unsigne
 {
     // Input checking
     if(first_x >= Gem_Matrix[first_y].size() || first_y >= Gem_Matrix.size() || second_x >=  Gem_Matrix[second_y].size() || second_y >= Gem_Matrix.size())
-        return ERR;
+        return -1;
 
     else if(first_x < 0 || first_y < 0 || second_x < 0 || second_y < 0)
-        return ERR;
+        return -2;
 
     if(Gem_Matrix[first_y][first_x] != nullptr && Gem_Matrix[second_x][second_y]!= nullptr)
     {
@@ -444,7 +445,7 @@ int GemGrid::swapGemPosition(unsigned int first_x, unsigned int first_y, unsigne
         return 1;
     }
     else
-        return ERR;
+        return -3;
 }
 
 std::vector<Match> GemGrid::color_nuke(int first_x,int first_y,int second_x,int second_y)
